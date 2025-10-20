@@ -1,0 +1,88 @@
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 3rem;
+  width: 100%;
+  /* box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25); */
+  flex-shrink: 0; 
+  background-color: #22313B;
+
+}
+
+.buttonDesign{
+  border: none;
+  display: flex;
+  padding-right: 50px;
+  font-size: 10px;
+  gap: 20px;
+}
+
+button{
+	background: none;
+	color: #ffffff;
+  font-size: 10px;
+	border: none;
+	padding: 0;
+	font: inherit;
+	cursor: pointer;
+	outline: inherit;
+}
+
+nav {
+  height: 100%;
+  width: auto;
+  padding-left: 50px;
+  text-align: left;
+  /* margin-right: 112px; */
+}
+
+ul {
+  height: 100%;
+  list-style: none;
+  display: flex;
+  padding: 0;
+  margin: 0;
+  background-color: #22313B ;
+}
+
+li {
+  height: 100%;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  font-family: "Pridi", "Roboto", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  width: 140px;
+}
+
+.active {
+  /* background: rgba(255, 255, 255, 0.75); */
+  text-decoration: underline solid #ffffff;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+  /* box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);*/
+}
+
+nav a {
+  color: #ffffff;
+  font-family: "Pridi", "Roboto", sans-serif;
+  font-size: 10px;
+  font-weight: 100;
+  line-height: normal;
+  text-decoration: none;
+}
+
+.adminHeader {
+  color: #ffffff;
+  font-family: "Pridi", "Roboto", sans-serif;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  padding-left: 20px;
+  width: 1%;
+}
