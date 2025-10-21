@@ -67,3 +67,44 @@ th, td {
     line-height: 1.2;
     height: 0%;
 }
+
+th{
+    height:60px;
+    background-color: #F7F7F5;
+
+}
+
+input[type="text"] {
+    width: 90%;
+    font-size: 10px;
+    line-break: normal;
+}
+
+.rdt_Table {
+  border: 1px solid #ccc;
+  overflow: hidden;
+  font-size: 12px;
+
+}
+
+.rdt_TableRow {
+  border-bottom: 1px solid #ccc;
+}
+.rdt_TableCell {
+  border-right: 1px solid #ccc;
+}
+
+.rdt_TableCell:last-child {
+  border-right: none;
+}
+
+.rdt_TableHeadRow .rdt_TableCol {
+  border-right: 1px solid #ccc;
+}
+
+.rdt_TableHeadRow {
+    font-size: 10px;
+}
+.rdt_TableRow, .rdt_TableCell {
+  font-size: 10px;
+}

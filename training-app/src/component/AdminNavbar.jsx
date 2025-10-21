@@ -15,7 +15,7 @@ const AdminNavbar = () => {
             </nav>
             <div className="buttonDesign" >
                 <Link to="/" className="">
-                    <button className="bg-orange-600 text-white p-2 rounded-lg pl-3 pr-3 cursor-pointer hover:bg-orange-700">
+                    <button>
                         Log In
                     </button>
                 </Link>
@@ -23,7 +23,7 @@ const AdminNavbar = () => {
                 <div style = {{color:"white"}}>|</div>
 
                 <Link to="/signup">
-                    <button className="border border-solid border-orange-600 p-2 rounded-lg pl-3 pr-3 text-orange-600 cursor-pointer hover:bg-gray-200">
+                    <button>
                         Sign Up
                     </button>
                 </Link>

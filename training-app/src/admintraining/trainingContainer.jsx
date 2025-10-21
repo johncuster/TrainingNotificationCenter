@@ -124,7 +124,7 @@ const TrainingContainer = () => {
     const isChecked = (id) => selectedRows.includes(id);
 
 return (
-    <div>
+    <div>   
             <div className="table_design">
                 <table>
                     <thead>
@@ -136,12 +136,12 @@ return (
                                     onChange={handleSelectAll}
                                 />
                             </th>
-                            <th>ID</th>
-                            <th>Assigned Team</th>
-                            <th>Training Title</th>
-                            <th>Due Date</th>
-                            <th>Team Progress</th>
-                            <th>Status</th>
+                            <th className="selectColumn">ID<br/><input type = "text"/></th>
+                            <th>Assigned Team<br/><input type = "text"/></th>
+                            <th>Training Title<br/><input type = "text"/></th>
+                            <th>Due Date<br/><input type = "text"/></th>
+                            <th>Team Progress<br/><input type = "text"/></th>
+                            <th>Status<br/><input type = "text"/></th>
                         </tr>
                     </thead>
                     <tbody>
