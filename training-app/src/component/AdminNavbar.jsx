@@ -6,8 +6,8 @@ import './AdminNavbar.css';
 const AdminNavbar = () => {
     return (
         <header>
-            <nav>
-                <ul>
+            <nav className="navbar">
+                <ul className="navbar">
                     <CustomLink to="/managetraining">Manage Trainings</CustomLink>
                     <CustomLink to="/manageteam">Manage Teams</CustomLink>
                     <CustomLink to="/managemember">Manage Members</CustomLink>

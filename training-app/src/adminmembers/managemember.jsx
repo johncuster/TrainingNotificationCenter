@@ -6,9 +6,7 @@ import '../adminView/adminGlobal.css';
 const AdminMember = () => {
     return (
         <main>
-            <div className="titleHeader">
-                <h2>Manage Members</h2>  
-            </div>
+            <h2 className="titleHeader">Manage Members</h2>  
 
             <MemberContainer />
         </main>

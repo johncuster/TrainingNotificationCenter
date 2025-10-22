@@ -1,0 +1,38 @@
+.actionHeader{
+    height: 40px;
+    width: 100%;
+    margin:0;
+    padding: 0;
+}   
+nav.action{
+    height: 100%;
+    margin-left: 50px;
+    margin-right: 50px;
+    
+}
+
+ul.linkContainer{
+    height: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 20px;
+    
+}
+
+ul.linkContainer li {
+    text-decoration: none;
+    list-style: none;
+    margin-left: 10px;
+    
+}
+
+nav.action a{
+    font-size: 10px;
+    color: black; 
+    text-decoration: none;    
+}
+nav.action a:hover {
+  text-decoration: underline; /* optional: show underline on hover */
+}
+
