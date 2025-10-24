@@ -1,79 +1,118 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import React, { useState, useEffect } from "react";
+import "../adminView/createTraining.css";
 
-export default function CreateTrainingPopup({ onClose }) {
-  return ReactDOM.createPortal(
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-[9999] flex justify-center items-start pt-10">
-      <div className="bg-white rounded-2xl shadow-lg p-6 w-96 relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl"
-        >
-          ×
-        </button>
+const CreateTraining = ({ isOpen, onClose, onSubmit, initialData }) => {
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    due_date: "",
+    training_link: "",
+    team: "",
+    training_status: "",
+    progress: ""
+  });
 
-        {/* Header */}
-        <h2 className="text-xl font-semibold mb-4 text-center">
-          Create Training
-        </h2>
+ useEffect(() => {
+    if (initialData) setFormData(initialData);
+  }, [initialData]);
 
-        {/* Form */}
-        <form className="space-y-3">
-          <div>
-            <label className="block text-sm font-medium">Assigned Team</label>
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+   if (onSubmit) {
+    onSubmit(formData);
+  }
+    // setFormData({
+    //   title: "",
+    //   description: "",
+    //   due_date: "",
+    //   training_link: "",
+    //   team: "",
+    //   training_status: "",
+    //   progress: ""
+    // });
+    onClose();
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="close-btn" onClick={onClose}>&times;</button> <br/>
+
+        <h2>Create Training</h2>
+        
+        <form onSubmit={handleSubmit} className="create-form">
+          <label>
+            Training Title:<br/>
             <input
+              className="text-input"
               type="text"
-              className="w-full border rounded-md p-2 mt-1 focus:ring focus:ring-blue-200"
-              placeholder="Enter team name"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              required
             />
-          </div>
+          </label>
 
-          <div>
-            <label className="block text-sm font-medium">Training Title</label>
+          <label>
+            Description:<br/>
+            <textarea 
+              className="text-input"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Assigned Team:<br/>
             <input
+              className="text-input"
               type="text"
-              className="w-full border rounded-md p-2 mt-1 focus:ring focus:ring-blue-200"
-              placeholder="Enter training title"
+              name="team"
+              value={formData.team}
+              onChange={handleChange}
+              required
             />
-          </div>
+          </label>
 
-          <div>
-            <label className="block text-sm font-medium">Due Date</label>
+          <label>
+            Training Link:<br/>
+            <input
+              className="text-input"
+              type="text"
+              name="training_link"
+              value={formData.training_link}
+              onChange={handleChange}
+              required
+            />
+          </label>
+
+          <label>
+            Due Date:<br/>
             <input
               type="date"
-              className="w-full border rounded-md p-2 mt-1 focus:ring focus:ring-blue-200"
+              name="due_date"
+              value={formData.due_date}
+              onChange={handleChange}
+              required
             />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium">Status</label>
-            <select className="w-full border rounded-md p-2 mt-1">
-              <option value="Pending">Pending</option>
-              <option value="Ongoing">Ongoing</option>
-              <option value="Completed">Completed</option>
-            </select>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex justify-end space-x-2 pt-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-3 py-1.5 bg-gray-300 rounded-md hover:bg-gray-400"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-3 py-1.5 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-            >
-              Save
-            </button>
+          </label>
+          <br/>
+          <div className="modal-buttons">
+            <button type="submit" className="create-btn">Create</button>
           </div>
         </form>
       </div>
-    </div>,
-    document.body // 👈 this renders the popup *on top of everything*
+    </div>
   );
-}
+};
+
+export default CreateTraining;

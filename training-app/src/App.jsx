@@ -6,10 +6,9 @@
   import AdminNavbar from "./component/AdminNavbar";
 
   //pages
-  import ManageTraining from "./admintraining/managetraining";  
+  import ManageTraining from "./admintraining/ManageTraining.jsx";  
   import ManageMember from "./adminmembers/managemember";
-  import ManageTeam from "./adminteam/manageteam";  
-  import CreateTrainingPopup from "./admintraining/createTraining"
+  import ManageTeam from "./adminteam/manageteam"; 
 
   function App() {
     return (
@@ -25,7 +24,6 @@
             <Route path="/managetraining" element={<ManageTraining />} />
             <Route path="/manageteam" element={<ManageTeam />} />
             <Route path="/managemember" element={<ManageMember />} />
-            <Route path="/training" element={<CreateTrainingPopup />}/>
           </Routes>
         </div>
       </BrowserRouter>

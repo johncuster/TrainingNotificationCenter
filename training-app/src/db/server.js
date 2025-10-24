@@ -1,29 +1,25 @@
-const express = require('express'); 
-const mysql = require('mysql2');   
+const express = require('express');  
 const cors = require('cors'); 
+const db = require('../db/db.js');
+const trainingRoutes = require('../routes/routes.js')
 
 const app = express();  
 app.use(cors());
-
-//connect to MySQL Database
-const db = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: '1234',
-    database: 'training_db'
-});
+app.use(express.json());
 
 app.get('/', (req, res) => {
     return res.json("From backend side");
 });
 
-app.get('/user', (req, res) => {
-    const sql = "select * from user";
-    db.query(sql, (err, data) => { 
-        if (err) return res.json(err); 
-        return res.json(data); 
-    })
-});
+// app.get('/user', (req, res) => {
+//     const sql = "select * from user";
+//     db.query(sql, (err, data) => { 
+//         if (err) return res.json(err); 
+//         return res.json(data); 
+//     })
+// });
+
+app.use('/training', trainingRoutes);
 
 app.listen(8081, () => {
     console.log("listening");

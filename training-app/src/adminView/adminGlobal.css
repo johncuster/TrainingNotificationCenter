@@ -51,12 +51,12 @@ th, td {
 
 th{
     height:60px;
-    background-color: #F7F7F5;
+    background-color: #e8e8e8;
 
 }
 
 input[type="text"] {
-    width: 90%;
+    width: 100%;
     font-size: 10px;
     line-break: normal;
 }

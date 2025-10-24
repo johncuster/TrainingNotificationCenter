@@ -2,112 +2,82 @@ import React from "react";
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import "../adminView/adminGlobal.css";  
-
+/*
 const data = [
   {
-    id: 1,
+    training_id: 1,
     team: "Dev Team",
-    trainingTitle: "React Basics",
-    dueDate: "2024-11-01",
-    teamProgress: "80%",
-    status: "Ongoing"
+    title: "React Basics",
+    due_date: "2024-11-01",
+    progress: "80%",
+    training_status: "Ongoing"
   },
   {
-    id: 2,
+    training_id: 2,
     team: "HR",
-    trainingTitle: "Workplace Ethics",
-    dueDate: "2024-10-25",
-    teamProgress: "100%",
-    status: "Completed"
+    title: "Workplace Ethics",
+    due_date: "2024-10-25",
+    progress: "100%",
+    training_status: "Completed"
   },
   {
-    id: 3,
+    training_id: 3,
     team: "Marketing",
-    trainingTitle: "SEO Fundamentals",
-    dueDate: "2024-11-10",
-    teamProgress: "60%",
-    status: "Ongoing"
+    title: "SEO Fundamentals",
+    due_date: "2024-11-10",
+    progress: "60%",
+    training_status: "Ongoing"
   },
   {
-    id: 4,
+    training_id: 4,
     team: "Sales",
-    trainingTitle: "CRM Training",
-    dueDate: "2024-10-30",
-    teamProgress: "90%",
-    status: "Ongoing"
+    title: "CRM Training",
+    due_date: "2024-10-30",
+    progress: "90%",
+    training_status: "Ongoing"
   },
   {
-    id: 5,
+    training_id: 5,
     team: "IT Support",
-    trainingTitle: "Cybersecurity Awareness",
-    dueDate: "2024-11-15",
-    teamProgress: "40%",
-    status: "Ongoing"
-  },
-  {
-    id: 6,
-    team: "Finance",
-    trainingTitle: "Budget Planning",
-    dueDate: "2024-11-05",
-    teamProgress: "100%",
-    status: "Completed"
-  },
-  {
-    id: 7,
-    team: "Dev Team",
-    trainingTitle: "Git & Version Control",
-    dueDate: "2024-11-20",
-    teamProgress: "20%",
-    status: "Not Started"
-  },
-  {
-    id: 8,
-    team: "HR",
-    trainingTitle: "Diversity & Inclusion",
-    dueDate: "2024-11-12",
-    teamProgress: "70%",
-    status: "Ongoing"
-  },
-  {
-    id: 9,
-    team: "Marketing",
-    trainingTitle: "Social Media Strategy",
-    dueDate: "2024-11-18",
-    teamProgress: "50%",
-    status: "Ongoing"
-  },
-  {
-    id: 10,
-    team: "Sales",
-    trainingTitle: "Negotiation Skills",
-    dueDate: "2024-11-08",
-    teamProgress: "100%",
-    status: "Completed"
+    title: "Cybersecurity Awareness",
+    due_date: "2024-11-15",
+    progress: "40%",
+    training_status: "Ongoing"
   }
 ];
-
-const TrainingContainer = () => {
+*/
+const TrainingContainer = ({ data, setData }) => {
+  
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedRows, setSelectedRows] = useState([]);
+
+  //For Edit Training
+  const [selectedTraining, setSelectedTraining] = useState(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
   
   const [filters, setFilters] = useState({
-    id: "",
+    training_id: "",
     team: "",
-    trainingTitle: "",
-    dueDate: "",
-    teamProgress: "",
-    status: ""
+    title: "",
+    due_date: "",
+    progress: "",
+    training_status: ""
   });
+
+  // Handle row click → selects one row
+  const handleRowClick = (training) => {
+    setSelectedTraining(training);
+    setSelectedRows([training.training_id]);
+  };
 
   //Data Filtering Logic
   const filteredData = data.filter((row) =>
-    row.id.toString().includes(filters.id) &&
-    row.team.toLowerCase().includes(filters.team.toLowerCase()) &&
-    row.trainingTitle.toLowerCase().includes(filters.trainingTitle.toLowerCase()) &&
-    row.dueDate.toLowerCase().includes(filters.dueDate.toLowerCase()) &&
-    row.teamProgress.toLowerCase().includes(filters.teamProgress.toLowerCase()) &&
-    row.status.toLowerCase().includes(filters.status.toLowerCase())
+    (!filters.training_id || row.training_id.toString().includes(filters.training_id)) &&
+    (!filters.team || row.team?.toLowerCase().includes(filters.team.toLowerCase())) &&
+    (!filters.title || row.title?.toLowerCase().includes(filters.title.toLowerCase())) &&
+    (!filters.due_date || row.due_date?.toLowerCase().includes(filters.due_date.toLowerCase())) &&
+    (!filters.training_status || row.training_status?.toLowerCase().includes(filters.training_status.toLowerCase()))
   );
 
   //Pagination Logic
@@ -117,27 +87,27 @@ const TrainingContainer = () => {
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
 
   //Handling Checkbox Selection Logic
-  const handleCheckboxChange = (id) => {
+  const handleCheckboxChange = (training_id) => {
     setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+      prev.includes(training_id) ? prev.filter((rowId) => rowId !== training_id) : [...prev, training_id]
     );
   };
 
   //If Select All is checked
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      const currentPageIds = currentRows.map((row) => row.id);
+      const currentPageIds = currentRows.map((row) => row.training_id);
       const newSelected = Array.from(new Set([...selectedRows, ...currentPageIds]));
       setSelectedRows(newSelected);
     } else {
-      const currentPageIds = currentRows.map((row) => row.id);
-      const newSelected = selectedRows.filter((id) => !currentPageIds.includes(id));
+      const currentPageIds = currentRows.map((row) => row.training_id);
+      const newSelected = selectedRows.filter((training_id) => !currentPageIds.includes(training_id));
       setSelectedRows(newSelected);
     }
   };
 
-  const isAllSelected = currentRows.every((row) => selectedRows.includes(row.id));
-  const isChecked = (id) => selectedRows.includes(id);
+  const isAllSelected = currentRows.every((row) => selectedRows.includes(row.training_id));
+  const isChecked = (training_id) => selectedRows.includes(training_id);
 
   const handleRowsPerPageChange = (e) => {
     setRowsPerPage(Number(e.target.value));
@@ -163,16 +133,16 @@ return (
             </thead>
             <tbody>
               {currentRows.map((row) => (
-                <tr key={row.id} className={isChecked(row.id) ? "active-row" : ""}>
+                <tr key={row.training_id} className={isChecked(row.training_id) ? "active-row" : ""}>
                   <td className="selectColumn">
-                    <input type="checkbox" checked={isChecked(row.id)} onChange={() => handleCheckboxChange(row.id)}/>
+                    <input type="checkbox" checked={isChecked(row.training_id)} onChange={() => handleCheckboxChange(row.training_id)}/>
                   </td>
-                  <td>{row.id}</td>
+                  <td>{row.training_id}</td>
                   <td>{row.team}</td>
-                  <td>{row.trainingTitle}</td>
-                  <td>{row.dueDate}</td>
-                  <td>{row.teamProgress}</td>
-                  <td>{row.status}</td>
+                  <td>{row.title}</td>
+                  <td>{row.due_date}</td>
+                  <td>{row.progress ?? 0}%</td>
+                  <td>{row.training_status}</td>
                 </tr>
               ))}
             </tbody>
@@ -182,7 +152,7 @@ return (
     <div className="pagination">
       <div className="rows-per-page">
         Rows per page: &nbsp;
-          <select value={rowsPerPage} onChange={handleRowsPerPageChange}>{[3, 5, 7, 10].map((num) => (
+          <select value={rowsPerPage} onChange={handleRowsPerPageChange}>{[10, 20, 30, 40].map((num) => (
                 <option key={num} value={num}>{num}</option>
             ))}
           </select>
