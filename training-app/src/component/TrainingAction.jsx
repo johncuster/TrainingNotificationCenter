@@ -4,31 +4,24 @@ import PropTypes from 'prop-types';
 import CreateTrainingModal from "../admintraining/CreateTraining.jsx";
 import "./actionHeader.css";
 
-const TrainingAction = ({onCreateTraining}) => {  
+const TrainingAction = ({onCreate, onEdit }) => {  
     const [showModal, setShowModal] = useState(false);
 
     return (
         <div className='actionHeader' style={{padding:0, margin:0}}>
             <nav className="action">
                 <ul className="linkContainer" >
-                    <a href = "#" onClick={(e) => { e.preventDefault(); setShowModal(true); }}>Create</a>
-                    <a href = "#" onClick={(e) => { e.preventDefault(); setShowModal(true)}}>Edit</a>
+                    <a href = "#" onClick={(e) => { e.preventDefault(); onCreate(); }}>Create</a>
+                    <a href = "#" onClick={(e) => { e.preventDefault(); onEdit();}}>Edit</a>
                     <a href = "#" onClick={(e) => { e.preventDefault();  }}>Delete</a>
                 </ul>
             </nav>
 
-            {/* <CreateTrainingModal isOpen={showModal} onClose={() => setShowModal(false)} onSubmit={(data) => {
+            <CreateTrainingModal isOpen={showModal} onClose={() => setShowModal(false)} onSubmit={(data) => {
                 onCreateTraining(data)
                 setShowModal(false)
             }}
-        /> */}
-        <CreateTrainingModal
-  isOpen={showModal}
-  onClose={() => setShowModal(false)}
-  mode={modalMode}
-  training={selectedTraining}
-  onSubmit={modalMode === "create" ? handleCreateTraining : handleUpdateTraining}
-/>
+        /> 
         </div>
     )
 }

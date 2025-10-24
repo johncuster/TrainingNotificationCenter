@@ -46,7 +46,7 @@ const data = [
   }
 ];
 */
-const TrainingContainer = ({ data, setData }) => {
+const TrainingContainer = ({ data, setData, onSelectTraining }) => {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -65,12 +65,11 @@ const TrainingContainer = ({ data, setData }) => {
     training_status: ""
   });
 
-  // Handle row click → selects one row
-  const handleRowClick = (training) => {
-    setSelectedTraining(training);
-    setSelectedRows([training.training_id]);
-  };
-
+ const handleRowClick = (training) => {
+  setSelectedTraining(training);
+  setSelectedRows([training.training_id]);
+  if (onSelectTraining) onSelectTraining(training);
+};
   //Data Filtering Logic
   const filteredData = data.filter((row) =>
     (!filters.training_id || row.training_id.toString().includes(filters.training_id)) &&
@@ -133,7 +132,12 @@ return (
             </thead>
             <tbody>
               {currentRows.map((row) => (
-                <tr key={row.training_id} className={isChecked(row.training_id) ? "active-row" : ""}>
+                <tr
+  key={row.training_id}
+  onClick={() => handleRowClick(row)}
+  className={isChecked(row.training_id) ? "active-row" : ""}
+>
+
                   <td className="selectColumn">
                     <input type="checkbox" checked={isChecked(row.training_id)} onChange={() => handleCheckboxChange(row.training_id)}/>
                   </td>

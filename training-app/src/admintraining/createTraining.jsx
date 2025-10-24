@@ -45,7 +45,7 @@ const CreateTraining = ({ isOpen, onClose, onSubmit, initialData }) => {
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button> <br/>
 
-        <h2>Create Training</h2>
+        <h2>{initialData ? "Edit Training" : "Create Training"}</h2>
         
         <form onSubmit={handleSubmit} className="create-form">
           <label>
@@ -107,7 +107,9 @@ const CreateTraining = ({ isOpen, onClose, onSubmit, initialData }) => {
           </label>
           <br/>
           <div className="modal-buttons">
-            <button type="submit" className="create-btn">Create</button>
+            <button type="submit" className="create-btn">
+  {initialData ? "Update" : "Create"}
+</button>
           </div>
         </form>
       </div>

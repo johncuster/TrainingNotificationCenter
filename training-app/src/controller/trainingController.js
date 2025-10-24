@@ -37,7 +37,7 @@ const trainingController = {
     updateTraining: (req, res) => {
       const id = req.params.id;
       const { title, description, due_date, training_link, team, training_status, progress } = req.body;
-
+      console.log("HELLOWORLDUPDATED");
       const sql = `
         UPDATE training
         SET title=?, description=?, due_date=?, training_link=?, team=?, training_status=?, progress=?
