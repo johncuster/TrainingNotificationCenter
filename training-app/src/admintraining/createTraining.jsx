@@ -12,29 +12,19 @@ const CreateTraining = ({ isOpen, onClose, onSubmit, initialData }) => {
     progress: ""
   });
 
- useEffect(() => {
-    if (initialData) setFormData(initialData);
-  }, [initialData]);
+  useEffect(() => {
+    if (initialData) setFormData(initialData);}, [initialData]);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-   if (onSubmit) {
-    onSubmit(formData);
-  }
-    // setFormData({
-    //   title: "",
-    //   description: "",
-    //   due_date: "",
-    //   training_link: "",
-    //   team: "",
-    //   training_status: "",
-    //   progress: ""
-    // });
+    if (onSubmit) {
+      onSubmit(formData);
+    }
     onClose();
   };
 
@@ -44,9 +34,9 @@ const CreateTraining = ({ isOpen, onClose, onSubmit, initialData }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button> <br/>
-
         <h2>{initialData ? "Edit Training" : "Create Training"}</h2>
         
+        {/* CREATE/EDIT FORM MODAL */}
         <form onSubmit={handleSubmit} className="create-form">
           <label>
             Training Title:<br/>
@@ -98,18 +88,18 @@ const CreateTraining = ({ isOpen, onClose, onSubmit, initialData }) => {
           <label>
             Due Date:<br/>
             <input
-              type="date"
+              type="Date"
               name="due_date"
-              value={formData.due_date}
+              value={formData.due_date ? new Date(formData.due_date).toISOString().split('T')[0]: ''}
               onChange={handleChange}
               required
             />
           </label>
           <br/>
           <div className="modal-buttons">
-            <button type="submit" className="create-btn">
-  {initialData ? "Update" : "Create"}
-</button>
+          <button type="submit" className="create-btn">
+          {initialData ? "Update" : "Create"}
+          </button>
           </div>
         </form>
       </div>

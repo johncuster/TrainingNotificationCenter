@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import CreateTrainingModal from "../admintraining/CreateTraining.jsx";
 import "./actionHeader.css";
 
-const TrainingAction = ({onCreate, onEdit }) => {  
+const TrainingAction = ({onCreate, onEdit, selectedTraining, onDelete }) => {  
     const [showModal, setShowModal] = useState(false);
 
     return (
@@ -12,8 +12,8 @@ const TrainingAction = ({onCreate, onEdit }) => {
             <nav className="action">
                 <ul className="linkContainer" >
                     <a href = "#" onClick={(e) => { e.preventDefault(); onCreate(); }}>Create</a>
-                    <a href = "#" onClick={(e) => { e.preventDefault(); onEdit();}}>Edit</a>
-                    <a href = "#" onClick={(e) => { e.preventDefault();  }}>Delete</a>
+                    <a href = "#" className={!selectedTraining ? "disabled-link" : ""} onClick={(e) => { e.preventDefault(); if(selectedTraining)onEdit();}}>Edit</a>
+                    <a href = "#" onClick={(e) => { e.preventDefault();  if(selectedTraining)onDelete();}}>Delete</a>
                 </ul>
             </nav>
 

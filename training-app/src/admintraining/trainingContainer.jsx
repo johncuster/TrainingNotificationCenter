@@ -2,61 +2,24 @@ import React from "react";
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import "../adminView/adminGlobal.css";  
-/*
-const data = [
-  {
-    training_id: 1,
-    team: "Dev Team",
-    title: "React Basics",
-    due_date: "2024-11-01",
-    progress: "80%",
-    training_status: "Ongoing"
-  },
-  {
-    training_id: 2,
-    team: "HR",
-    title: "Workplace Ethics",
-    due_date: "2024-10-25",
-    progress: "100%",
-    training_status: "Completed"
-  },
-  {
-    training_id: 3,
-    team: "Marketing",
-    title: "SEO Fundamentals",
-    due_date: "2024-11-10",
-    progress: "60%",
-    training_status: "Ongoing"
-  },
-  {
-    training_id: 4,
-    team: "Sales",
-    title: "CRM Training",
-    due_date: "2024-10-30",
-    progress: "90%",
-    training_status: "Ongoing"
-  },
-  {
-    training_id: 5,
-    team: "IT Support",
-    title: "Cybersecurity Awareness",
-    due_date: "2024-11-15",
-    progress: "40%",
-    training_status: "Ongoing"
-  }
-];
-*/
-const TrainingContainer = ({ data, setData, onSelectTraining }) => {
-  
+
+const TrainingContainer = ({ data, onSelectTraining}) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(40);
   const [selectedRows, setSelectedRows] = useState([]);
 
-  //For Edit Training
-  const [selectedTraining, setSelectedTraining] = useState(null);
-  const [isEditOpen, setIsEditOpen] = useState(false);
+  useEffect(() => {
+    if (onSelectTraining) {
+      if (selectedRows.length === 1) {
+        const selectedRow = data.find(t => t.training_id === selectedRows[0]);
+        onSelectTraining(selectedRow);
+      } else {
+        onSelectTraining(null);
+      }
+    }
+  }, [selectedRows, data, onSelectTraining]);
   
-  const [filters, setFilters] = useState({
+  const [filters] = useState({
     training_id: "",
     team: "",
     title: "",
@@ -65,11 +28,6 @@ const TrainingContainer = ({ data, setData, onSelectTraining }) => {
     training_status: ""
   });
 
- const handleRowClick = (training) => {
-  setSelectedTraining(training);
-  setSelectedRows([training.training_id]);
-  if (onSelectTraining) onSelectTraining(training);
-};
   //Data Filtering Logic
   const filteredData = data.filter((row) =>
     (!filters.training_id || row.training_id.toString().includes(filters.training_id)) &&
@@ -105,14 +63,14 @@ const TrainingContainer = ({ data, setData, onSelectTraining }) => {
     }
   };
 
-  const isAllSelected = currentRows.every((row) => selectedRows.includes(row.training_id));
-  const isChecked = (training_id) => selectedRows.includes(training_id);
-
   const handleRowsPerPageChange = (e) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
+  const isAllSelected = currentRows.every((row) => selectedRows.includes(row.training_id));
+  const isChecked = (training_id) => selectedRows.includes(training_id);
+  
 return (
     <div>   
       <div className="table_design">
@@ -132,19 +90,15 @@ return (
             </thead>
             <tbody>
               {currentRows.map((row) => (
-                <tr
-  key={row.training_id}
-  onClick={() => handleRowClick(row)}
-  className={isChecked(row.training_id) ? "active-row" : ""}
->
-
+                //onClick={() => setSelectedRows([row.training_id])}
+                <tr key={row.training_id}  className={isChecked(row.training_id) ? "active-row" : "" }>
                   <td className="selectColumn">
-                    <input type="checkbox" checked={isChecked(row.training_id)} onChange={() => handleCheckboxChange(row.training_id)}/>
+                    <input type="checkbox" checked={isChecked(row.training_id)} onChange={(e) =>{ e.stopPropagation(); handleCheckboxChange(row.training_id)}}/>
                   </td>
                   <td>{row.training_id}</td>
                   <td>{row.team}</td>
                   <td>{row.title}</td>
-                  <td>{row.due_date}</td>
+                  <td>{new Date(row.due_date).toISOString().split('T')[0]}</td>
                   <td>{row.progress ?? 0}%</td>
                   <td>{row.training_status}</td>
                 </tr>

@@ -36,3 +36,8 @@ nav.action a:hover {
   text-decoration: underline; /* optional: show underline on hover */
 }
 
+.disabled-link {
+  pointer-events: none;
+  opacity: 0.4;
+  cursor: default;
+}
