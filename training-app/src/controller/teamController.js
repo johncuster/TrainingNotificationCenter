@@ -1,31 +1,43 @@
 const db = require('../db/db.js');
-const trainingQueries = require('../db/trainingQueries.js');
-const trainingController = {
-  getAllTrainings: (req, res) => {
-    db.query(trainingQueries.selectTraining, (err, data) => {
+
+const teamController = {
+  getAllTeams: (req, res) => {
+    const sql = "SELECT * FROM team";
+    db.query(sql, (err, data) => {
       if (err) {
-        console.error("Error fetching trainings:", err);
+        console.error("Error fetching teams:", err);
         return res.status(500).json({ error: "Database error" });
       }
     res.json(data);  
     });
   },
 
-  createTraining: (req, res) => {
+  createTeam: (req, res) => {
     console.log("Create training");
-    const {training_title, training_desc, training_link} = req.body;
-    db.query(trainingQueries.createTraining, [training_title, training_desc, training_link], (err, result) => {
-      console.log("SQL :", training_title, training_desc, training_link);
+    const { title, description, due_date, training_link, team} = req.body;
+
+    const sql = `
+      INSERT INTO training (title, description, due_date, training_link, team)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    
+    console.log("sql");
+        
+    db.query(sql, [title, description, due_date, training_link, team], (err, result) => {
+          
+    console.log("Created Training3");
       if (err) {
         console.error("DB Error:", err.sqlMessage || err); // show what failed
         return res.status(500).json({ error: err });
       }
+          
       console.log("Created Training4");
       res.json({ training_id: result.insertId, ...req.body });
+          
     });
   },
 
-  updateTraining: (req, res) => {
+  updateTeam: (req, res) => {
     console.log(req.body.due_date);
     const formatdate = req.body.due_date ? new Date(req.body.due_date).toISOString().slice(0, 10): null;
     console.log(req.body.due_date);
@@ -33,9 +45,13 @@ const trainingController = {
     
     const values =
     [
-      req.body.training_title, 
-      req.body.training_desc, 
-      req.body.training_link,        
+      req.body.title, 
+      req.body.description, 
+      req.body.due_date, 
+      req.body.training_link, 
+      req.body.team, 
+      req.body.training_status, 
+      req.body.progress,        
       req.body.training_id
     ];
       
@@ -43,7 +59,7 @@ const trainingController = {
     
     const sql = `
       UPDATE training
-      SET training_title=?, training_desc=?, training_link=?
+      SET title=?, description=?, due_date=?, training_link=?, team=?, training_status=?, progress=?
       WHERE training_id=?`;
   
     db.query(sql, values, (err, result) => {
@@ -56,7 +72,7 @@ const trainingController = {
     })
   },
 
-  deleteTraining: (req, res) => {
+  deleteTeam: (req, res) => {
     const values = [req.params.training_id];
     console.log(values);
     console.log("DELETE TRAINING1");
@@ -70,27 +86,8 @@ const trainingController = {
       res.json({ message: "Training deleted" });
       console.log("DELETE TRAINING2");
     });
-  },
-
-  getTrainingTeams: (req, res) => {
-    const trainingId = req.params.training_id;
-
-    const sql = `
-      SELECT tt.team_id, t.team_name
-      FROM team_training tt
-      JOIN team t ON tt.team_id = t.team_id
-      WHERE tt.training_id = ?
-    `;
-
-    db.query(sql, [trainingId], (err, results) => {
-      if (err) {
-        console.error("Error fetching teams for training:", err);
-        return res.status(500).json({ error: "Database error" });
-      }
-
-      res.json(results);
-    });
-  },
+    
+  }
 };
 
-module.exports = trainingController; 
+module.exports = teamController; 

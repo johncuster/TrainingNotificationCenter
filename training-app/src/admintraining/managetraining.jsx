@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import CreateTrainingModal from "../admintraining/CreateTraining.jsx"
-import TrainingContainer from "./TrainingContainer.jsx";    
+import UpdateTrainingModal from "../admintraining/UpdateTraining.jsx"
+import TrainingContainer from "./TrainingContainer.jsx"; 
+import TrainingAction from "../component/TrainingAction.jsx";   
 import '../adminView/adminGlobal.css';
-import TrainingAction from "../component/TrainingAction.jsx";
 
 const ManageTraining = () => {
   const [showModal, setShowModal] = useState(false);
   const [trainings, setTrainings] = useState([]);
-  const [selectedTraining, setSelectedTraining] = useState(null);    
-  const [modalMode, setModalMode] = useState("create");
+  const [selectedTraining, setSelectedTraining] = useState(null);  
+  const [modalMode, setModalMode] = useState(null);  
 
   const handleSelectTraining = (training) => {
     setSelectedTraining(training);
@@ -21,8 +21,7 @@ const ManageTraining = () => {
       .then(data => setTrainings(data))
       .catch((err) => {
     console.error("Fetch error:", err);
-  });
-  }, []);
+  });}, []);
 
   const handleCreateTraining = (newTraining) => {
     fetch("http://localhost:8081/training", {
@@ -65,59 +64,74 @@ const ManageTraining = () => {
         prev.filter(t => t.training_id !== selectedTraining.training_id)
       );
       setSelectedTraining(null);
-      alert("Training deleted successfully!");
       window.location.reload();
     })
     .catch(err => console.error("Delete error:", err));
 };
   
-
   return (    
     <main>
-    <h2 className="titleHeader">Manage Trainings</h2> 
-    
-    <TrainingAction
-        onCreate={() => {
-          setModalMode("create");
-          setSelectedTraining(null);
-          setShowModal(true);
-        }}
-        onEdit={() => {
-          if (!selectedTraining) {
-            alert("Select exactly one row to edit!");
-            return;
-          }
-          setModalMode("edit");
-          setShowModal(true);
-        }}
-        
-        onDelete={() => {
-          if (selectedTraining.length === 0) {
-            return alert("Select at least one training to delete!");
-          }
+      <h2 className="titleHeader">Manage Trainings</h2> 
+      
+      <TrainingAction
+          onCreate={() => {
+            //setSelectedTraining(null);
+            setModalMode('create');
+            setShowModal(true);
+          }}
 
-          const confirmDelete = window.confirm("Are you sure you want to delete the selected training(s)?");
-          if (!confirmDelete) return;
-          handleDeleteTraining()
+          onEdit={() => {
+            if (!selectedTraining) {
+              alert("Select exactly one row to edit!");
+              return;
+            }
+            setModalMode('update');
+            setShowModal(true);
+          }}
+          
+          onDelete={() => {
+            if (selectedTraining.length === 0) {
+              return alert("Select at least one training to delete!");
+            }
+
+            const confirmDelete = window.confirm("Are you sure you want to delete the selected training(s)?");
+            if (!confirmDelete) return;
+              handleDeleteTraining()
+            }
           }
-        }
-        selectedTraining={selectedTraining}
+          selectedTraining={selectedTraining}
+        />
+      
+      <TrainingContainer
+        data={trainings}
+        setData={setTrainings}
+        onSelectTraining={handleSelectTraining}
       />
 
-    <TrainingContainer
-      data={trainings}
-      setData={setTrainings}
-      onSelectTraining={handleSelectTraining}
-    />
-
-    <CreateTrainingModal
-      isOpen={showModal}
-      onClose={() => setShowModal(false)}
-      onSubmit={modalMode === "create" ? handleCreateTraining : handleUpdateTraining}
-      initialData={modalMode === "edit" ? selectedTraining : null}
-    />
-      </main>
+      {modalMode === 'create' && (
+        <CreateTrainingModal
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setModalMode("");
+          }}
+          onSubmit={handleCreateTraining}
+        />
+      )}
+      
+      {modalMode === 'update' && (
+        <UpdateTrainingModal
+          isOpen={showModal}
+          onClose={() => {
+              setShowModal(false);
+              setModalMode(null);
+            }}
+          onSubmit={handleUpdateTraining}
+          initialData={selectedTraining}
+      />
+      )}
+    </main>
     )
 };
 
-export default ManageTraining;
+export default ManageTraining; 

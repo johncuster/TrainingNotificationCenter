@@ -8,7 +8,7 @@
   //pages
   import ManageTraining from "./admintraining/ManageTraining.jsx";  
   import ManageMember from "./adminmembers/managemember";
-  import ManageTeam from "./adminteam/manageteam"; 
+  import ManageTeam from "./adminteam/ManageTeam"; 
 
   function App() {
     return (

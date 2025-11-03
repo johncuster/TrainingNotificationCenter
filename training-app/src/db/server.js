@@ -1,7 +1,8 @@
 const express = require('express');  
 const cors = require('cors'); 
 const db = require('../db/db.js');
-const trainingRoutes = require('../routes/routes.js')
+const trainingRoutes = require('../routes/trainingroutes.js')
+const teamRoutes = require('../routes/teamroutes.js')
 
 const app = express();  
 app.use(cors());
@@ -20,6 +21,7 @@ app.get('/', (req, res) => {
 // });
 
 app.use('/training', trainingRoutes);
+app.use('/team', teamRoutes);
 
 app.listen(8081, () => {
     console.log("listening");

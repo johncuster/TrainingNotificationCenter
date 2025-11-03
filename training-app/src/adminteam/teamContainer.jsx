@@ -3,29 +3,31 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import "../adminView/adminGlobal.css";  
 
-const data = [
-  { id: 1, name: 'Juan Dela Cruz', email: 'juan@example.com', age: 25 },
-  { id: 2, name: 'Maria Santos', email: 'maria@example.com', age: 30 },
-  { id: 3, name: 'Pedro Reyes', email: 'pedro@example.com', age: 28 },
-];
-
-const TrainingContainer = () => {
+const TeamContainer = ({data, onSelectTeam}) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(40);
   const [selectedRows, setSelectedRows] = useState([]);
-  
-  const [filters, setFilters] = useState({
-    id: "",
-    name: "",
-    email: "",
-    age: "",
-  });
+ 
+  useEffect(() => {
+    if (onSelectTeam) {
+      if (selectedRows.length === 1) {
+        const selectedRow = data.find(t => t.team_id === selectedRows[0]);
+        onSelectTeam(selectedRow);
+      } else {
+        onSelectTeam(null);
+      }
+    }
+  }, [selectedRows, data, onSelectTeam]);  
+
+  const [filters] = useState({
+      team_id: "",
+      team_name: ""
+    });
 
   //Data Filtering Logic
   const filteredData = data.filter((row) =>
-    row.id.toString().includes(filters.id) &&
-    row.name.toLowerCase().includes(filters.name.toLowerCase()) &&
-    row.email.toLowerCase().includes(filters.email.toLowerCase())
+    (!filters.team_id || row.team_id.toString().includes(filters.team_id)) &&
+    (!filters.team_name || row.team_name?.toLowerCase().includes(filters.team_name.toLowerCase()))
   );
 
   //Pagination Logic
@@ -35,32 +37,32 @@ const TrainingContainer = () => {
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
 
   //Handling Checkbox Selection Logic
-  const handleCheckboxChange = (id) => {
+  const handleCheckboxChange = (team_id) => {
     setSelectedRows((prev) =>
-      prev.includes(id) ? prev.filter((rowId) => rowId !== id) : [...prev, id]
+      prev.includes(team_id) ? prev.filter((rowId) => rowId !== team_id) : [...prev, team_id]
     );
   };
 
   //If Select All is checked
   const handleSelectAll = (e) => {
     if (e.target.checked) {
-      const currentPageIds = currentRows.map((row) => row.id);
+      const currentPageIds = currentRows.map((row) => row.team_id);
       const newSelected = Array.from(new Set([...selectedRows, ...currentPageIds]));
       setSelectedRows(newSelected);
     } else {
-      const currentPageIds = currentRows.map((row) => row.id);
-      const newSelected = selectedRows.filter((id) => !currentPageIds.includes(id));
+      const currentPageIds = currentRows.map((row) => row.team_id);
+      const newSelected = selectedRows.filter((team_id) => !currentPageIds.includes(team_id));
       setSelectedRows(newSelected);
     }
   };
-
-  const isAllSelected = currentRows.every((row) => selectedRows.includes(row.id));
-  const isChecked = (id) => selectedRows.includes(id);
 
   const handleRowsPerPageChange = (e) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
+
+  const isAllSelected = currentRows.every((row) => selectedRows.includes(row.team_id));
+  const isChecked = (team_id) => selectedRows.includes(team_id);
 
 return (
     <div>   
@@ -72,21 +74,17 @@ return (
                     <input type="checkbox" checked={isAllSelected} onChange={handleSelectAll}/>
                   </th>
                   <th className="selectColumn">ID<br/><input type = "text"/></th>
-                  <th>Name<br/><input type = "text"/></th>
-                  <th>Email<br/><input type = "text"/></th>
-                  <th>Age<br/><input type = "text"/></th>
+                  <th>Team Name<br/><input type = "text"/></th>
               </tr>
             </thead>
             <tbody>
               {currentRows.map((row) => (
-                <tr key={row.id} className={isChecked(row.id) ? "active-row" : ""}>
+                <tr key={row.team_id} className={isChecked(row.team_id) ? "active-row" : ""}>
                   <td className="selectColumn">
-                    <input type="checkbox" checked={isChecked(row.id)} onChange={() => handleCheckboxChange(row.id)}/>
+                    <input type="checkbox" checked={isChecked(row.team_id)} onChange={() => handleCheckboxChange(row.team_id)}/>
                   </td>
-                  <td>{row.id}</td>
-                  <td>{row.name}</td>
-                  <td>{row.email}</td>
-                  <td>{row.age}</td>
+                  <td>{row.team_id}</td>
+                  <td>{row.team_name}</td>
                 </tr>
               ))}
             </tbody>
@@ -112,4 +110,4 @@ return (
     )
 };
 
-export default TrainingContainer;
+export default TeamContainer;
