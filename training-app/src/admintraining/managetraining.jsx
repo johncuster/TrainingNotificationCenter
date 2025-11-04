@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import CreateTrainingModal from "../admintraining/CreateTraining.jsx"
 import UpdateTrainingModal from "../admintraining/UpdateTraining.jsx"
-import TrainingContainer from "./TrainingContainer.jsx"; 
+import TrainingContainer from "../admintraining/TrainingContainer.jsx"; 
 import TrainingAction from "../component/TrainingAction.jsx";   
 import '../adminView/adminGlobal.css';
 

@@ -1,5 +1,6 @@
 const db = require('../db/db.js');
 const trainingQueries = require('../db/trainingQueries.js');
+
 const trainingController = {
   getAllTrainings: (req, res) => {
     db.query(trainingQueries.selectTraining, (err, data) => {
@@ -71,8 +72,7 @@ const trainingController = {
       console.log("DELETE TRAINING2");
     });
   },
-
-  getTrainingTeams: (req, res) => {
+getTrainingTeams: (req, res) => {
     const trainingId = req.params.training_id;
 
     const sql = `
@@ -80,6 +80,7 @@ const trainingController = {
       FROM team_training tt
       JOIN team t ON tt.team_id = t.team_id
       WHERE tt.training_id = ?
+      ORDER BY tt.team_id ASC;
     `;
 
     db.query(sql, [trainingId], (err, results) => {
@@ -87,10 +88,11 @@ const trainingController = {
         console.error("Error fetching teams for training:", err);
         return res.status(500).json({ error: "Database error" });
       }
-
+      console.log("YAY WORKING");
       res.json(results);
     });
   },
+  
 };
 
 module.exports = trainingController; 

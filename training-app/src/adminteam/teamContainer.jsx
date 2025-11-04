@@ -13,11 +13,13 @@ const TeamContainer = ({data, onSelectTeam}) => {
       if (selectedRows.length === 1) {
         const selectedRow = data.find(t => t.team_id === selectedRows[0]);
         onSelectTeam(selectedRow);
+        console.log("Selected Team Row");
       } else {
         onSelectTeam(null);
+        console.log("Deselected Team Row");
       }
-    }
-  }, [selectedRows, data, onSelectTeam]);  
+    }}, [selectedRows, data, onSelectTeam]);
+  
 
   const [filters] = useState({
       team_id: "",

@@ -13,77 +13,66 @@ const teamController = {
   },
 
   createTeam: (req, res) => {
-    console.log("Create training");
-    const { title, description, due_date, training_link, team} = req.body;
+    console.log("Create team");
+    const { team_name} = req.body;
 
     const sql = `
-      INSERT INTO training (title, description, due_date, training_link, team)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO team (team_name)
+      VALUES (?)
     `;
     
     console.log("sql");
         
-    db.query(sql, [title, description, due_date, training_link, team], (err, result) => {
+    db.query(sql, [team_name], (err, result) => {
           
-    console.log("Created Training3");
+    console.log("Created Team2");
       if (err) {
         console.error("DB Error:", err.sqlMessage || err); // show what failed
         return res.status(500).json({ error: err });
       }
           
-      console.log("Created Training4");
-      res.json({ training_id: result.insertId, ...req.body });
+      console.log("Created Team3");
+      res.json({ team_id: result.insertId, ...req.body });
           
     });
   },
 
   updateTeam: (req, res) => {
-    console.log(req.body.due_date);
-    const formatdate = req.body.due_date ? new Date(req.body.due_date).toISOString().slice(0, 10): null;
-    console.log(req.body.due_date);
-    req.body.due_date = formatdate;
-    
     const values =
     [
-      req.body.title, 
-      req.body.description, 
-      req.body.due_date, 
-      req.body.training_link, 
-      req.body.team, 
-      req.body.training_status, 
-      req.body.progress,        
-      req.body.training_id
+      req.body.team_name,
+      req.body.team_id
     ];
       
-    console.log("HELLOWORLDUPDATED1");
+    console.log("TEAMUPDATED1");
     
     const sql = `
-      UPDATE training
-      SET title=?, description=?, due_date=?, training_link=?, team=?, training_status=?, progress=?
-      WHERE training_id=?`;
+      UPDATE team
+      SET team_name = ?
+      WHERE team_id=?`;
   
     db.query(sql, values, (err, result) => {
       if (err) {
         console.error("DB Error:", err.sqlMessage || err); 
         return res.status(500).json({ error: err });
       }
-      res.json({ message: "Training updated successfully" });
-      console.log("HELLOWORLDUPDATED3");      
+      res.json({ message: "Team updated successfully" });
+      console.log("TEAMUPDATED3");      
     })
   },
 
   deleteTeam: (req, res) => {
-    const values = [req.params.training_id];
+    const values = [req.params.team_id];
     console.log(values);
-    console.log("DELETE TRAINING1");
-    const sql = `DELETE FROM training WHERE training_id = ?`;
+    console.log("DELETE TEAM1");
+    const sql = `DELETE FROM team WHERE team_id = ?`;
     db.query(sql, values, (err, result) => {
       console.log(sql);
       if (err) {
         console.error("DB Error:", err.sqlMessage || err); 
         return res.status(500).json({ error: err });
       }
-      res.json({ message: "Training deleted" });
+      res.json({ message: "Team deleted" });
       console.log("DELETE TRAINING2");
     });
     

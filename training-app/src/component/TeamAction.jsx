@@ -3,24 +3,18 @@ import { useMatch, useResolvedPath, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import "./actionHeader.css";
 
-const TeamAction = ({selectedTraining}) => {  
+const TeamAction = ({onCreate, onEdit, selectedTeam, onDelete}) => {  
     const [showModal, setShowModal] = useState(false);
 
     return (
         <div className='actionHeader' style={{padding:0, margin:0}}>
             <nav className="action">
                 <ul className="linkContainer" >
-                    <a href = "#" onClick={(e) => { e.preventDefault();}}>Create</a>
-                    <a href = "#" className={!selectedTraining ? "disabled-link" : ""} onClick={(e) => { e.preventDefault();}}>Edit</a>
-                    <a href = "#" onClick={(e) => { e.preventDefault();}}>Delete</a>
+                    <a href = "#" onClick={(e) => { e.preventDefault(); onCreate();}}>Create</a>
+                    <a href = "#" className={!selectedTeam ? "disabled-link" : ""} onClick={(e) => { e.preventDefault(); if(selectedTeam!=null)onEdit();}}>Edit</a>
+                    <a href = "#" onClick={(e) => { e.preventDefault(); onDelete();}}>Delete</a>
                 </ul>
             </nav>
-
-            {/* <CreateTrainingModal isOpen={showModal} onClose={() => setShowModal(false)} onSubmit={(data) => {
-                //onCreateTraining(data)
-                setShowModal(false)
-            }}
-        />  */}
         </div>
     )
 }

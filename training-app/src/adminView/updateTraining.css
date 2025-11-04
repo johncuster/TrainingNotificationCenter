@@ -16,7 +16,7 @@
   padding: 20px;
   border-radius: 10px;
   width: 600px;
-  height: 650px;
+  height: 500px;
   overflow-y: auto;
   position: relative;
   font-size: 10px;
@@ -79,4 +79,17 @@ table {
     border: 1px solid #e0e0e0;
     border-collapse: collapse;
     table-layout: auto;
+}
+
+.delete-btn {
+  background-color: #d9534f;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-btn:hover {
+  background-color: #c9302c;
 }

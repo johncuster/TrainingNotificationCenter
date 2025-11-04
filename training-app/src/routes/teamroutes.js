@@ -5,8 +5,9 @@ const teamController = require('../controller/teamController.js')
 //router.get('/', trainingController.getAllTrainings); 
 //router.post('/', trainingController.createTraining);
 //router.put('/:training_id', trainingController.updateTraining);
-//router.delete('/:training_id', trainingController.deleteTraining);
-
+router.delete('/:team_id', teamController.deleteTeam);
 router.get('/', teamController.getAllTeams);
+router.post('/', teamController.createTeam);
+router.put('/:team_id', teamController.updateTeam)
 
 module.exports = router;

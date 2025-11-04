@@ -84,7 +84,6 @@ return (
             </thead>
             <tbody>
               {currentRows.map((row) => (
-                //onClick={() => setSelectedRows([row.training_id])}
                 <tr key={row.training_id}  className={isChecked(row.training_id) ? "active-row" : "" }>
                   <td className="selectColumn">
                     <input type="checkbox" checked={isChecked(row.training_id)} onChange={(e) =>{ e.stopPropagation(); handleCheckboxChange(row.training_id)}}/>
