@@ -72,6 +72,7 @@ const trainingController = {
       console.log("DELETE TRAINING2");
     });
   },
+  
 getTrainingTeams: (req, res) => {
     const trainingId = req.params.training_id;
 

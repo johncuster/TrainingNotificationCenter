@@ -8,6 +8,7 @@ const teamController = require('../controller/teamController.js')
 router.delete('/:team_id', teamController.deleteTeam);
 router.get('/', teamController.getAllTeams);
 router.post('/', teamController.createTeam);
-router.put('/:team_id', teamController.updateTeam)
+router.put('/:team_id', teamController.updateTeam);
+router.get('/:team_id/members', teamController.getTeamMembers);
 
 module.exports = router;

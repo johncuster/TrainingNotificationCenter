@@ -3,7 +3,7 @@ const db = require('../db/db.js');
 
 const teamTrainingController = {
 
-    getAllTeamTraining: (req, res) => {
+  getAllTeamTraining: (req, res) => {
     const sql = `
       SELECT 
         teamtraining_id, 

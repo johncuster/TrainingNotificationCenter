@@ -76,6 +76,27 @@ const teamController = {
       console.log("DELETE TRAINING2");
     });
     
+  },
+
+  getTeamMembers: (req, res) => {
+    const teamId = req.params.team_id;
+    console.log("TEAM MEMBERS !");
+    const sql = `
+    SELECT u.user_id, u.user_ln, u.user_fn, u.user_role, u.user_email
+    FROM user_member u
+    JOIN user_team ut ON u.user_id = ut.user_id
+    WHERE ut.team_id = ?
+    ORDER BY u.user_id ASC;
+  `;
+
+  db.query(sql, [teamId], (err, results) => {
+    if (err) {
+      console.error("Error fetching members for team:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    console.log("Team members fetched successfully");
+    res.json(results);
+  });
   }
 };
 

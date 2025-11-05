@@ -2,59 +2,58 @@ import React, { useState, useEffect } from "react";
 import "../adminView/updateTraining.css";
 
 const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
-    const [formData, setFormData] = useState({
-        training_title: "",
-        training_desc: "",
-        training_link: "",
-    });
+  const [formData, setFormData] = useState({
+    training_title: "",
+    training_desc: "",
+    training_link: "",
+  });
 
-    const [assignedTeams, setAssignedTeams] = useState([]);
-    const [allTeams, setAllTeams] = useState([]);
+  const [assignedTeams, setAssignedTeams] = useState([]);
+  const [allTeams, setAllTeams] = useState([]);    
   const [selectedTeam, setSelectedTeam] = useState("");
 
-    useEffect(() => {
-        if (initialData){
-            setFormData(initialData);
-            //fetch assigned teams
-            fetch(`http://localhost:8081/training/${initialData.training_id}/teams`)
-                .then((res) => res.json())
-                .then((data) => setAssignedTeams(data))
-                .catch((err) => console.error("Error fetching assigned teams:", err));
+  useEffect(() => {      
+    if (initialData){
+      setFormData(initialData);
+      
+      //fetch assigned teams
+      fetch(`http://localhost:8081/training/${initialData.training_id}/teams`)
+        .then((res) => res.json())
+        .then((data) => setAssignedTeams(data))
+        .catch((err) => console.error("Error fetching assigned teams:", err));
 
-            // Fetch all available teams
-            fetch("http://localhost:8081/team")
-                .then((res) => res.json())
-                .then((data) => setAllTeams(data))
-                .catch((err) => console.error("Error fetching teams:", err));
+      // Fetch all available teams
+      fetch("http://localhost:8081/team")
+        .then((res) => res.json())
+        .then((data) => setAllTeams(data))
+        .catch((err) => console.error("Error fetching teams:", err));
         }
     }, [initialData]);
 
-        const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
+    const handleChange = (e) => {
+      const { name, value } = e.target;
+      setFormData({ ...formData, [name]: value });
     };
 
     const handleSubmit = (e) => {
-        e.preventDefault();
-        if (onSubmit) {
-        onSubmit(formData);
-        }
-        onClose();
+      e.preventDefault();
+      if (onSubmit) {onSubmit(formData);}
+      onClose();
     };
 
     const handleAddTeam = async () => {
-        if (!selectedTeam) {
-            alert("Please select a team to assign.");
-            return;
-        }
+      if (!selectedTeam) {
+        alert("Please select a team to assign.");
+        return;
+      }
 
-        try {
-            const response = await fetch("http://localhost:8081/team_training", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                training_id: initialData.training_id,
-                team_id: selectedTeam,
+      try {
+        const response = await fetch("http://localhost:8081/team_training", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+          training_id: initialData.training_id,
+          team_id: selectedTeam,
                 }),
         });
 
@@ -164,63 +163,63 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
 
                 <h3 style={{ marginTop: "20px" }}>Newly Assigned Teams</h3>
 
-                        {/* Team selection and add button */}
+        {/* Team selection and add button */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <select
-            value={selectedTeam}
-            onChange={(e) => setSelectedTeam(e.target.value)}
-            className="text-input"
-          >
-            <option value="">-- Select Team --</option>
-            {availableTeams.length > 0 ? (
-              availableTeams.map((team) => (
-                <option key={team.team_id} value={team.team_id}>
-                  {team.team_name}
-                </option>
-              ))
-            ) : (
-              <option disabled>No more teams available</option>
-            )}
-          </select>
-                        <button onClick={handleAddTeam} className="create-btn">
-                            Add Team
-                        </button>
-                        </div>
+              <select
+                value={selectedTeam}
+                onChange={(e) => setSelectedTeam(e.target.value)}
+                className="text-input"
+              >
+                <option value="">-- Select Team --</option>
+                {availableTeams.length > 0 ? (
+                  availableTeams.map((team) => (
+                    <option key={team.team_id} value={team.team_id}>
+                      {team.team_name}
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No more teams available</option>
+                )}
+              </select>
+                            <button onClick={handleAddTeam} className="create-btn">
+                                Add Team
+                            </button>
+                            </div>
 
-                        <table className="tb_design" style={{ marginTop: "10px" }}>
-                        <thead>
-                            <tr>
-                            <th>Team ID</th>
-                            <th>Team Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-  {assignedTeams.length > 0 ? (
-    assignedTeams.map((team) => (
-      <tr key={team.team_id}>
-        <td>{team.team_id}</td>
-        <td>{team.team_name}</td>
-        <td>
-          <button
-            onClick={() => handleDeleteTeam(team.team_id)}
-            className="delete-btn"
-          >
-            Remove
-          </button>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="3" style={{ textAlign: "center" }}>
-        No teams assigned to this training.
-      </td>
-    </tr>
-  )}
-</tbody>
-                        </table>
-            </div>
-        </div>
+                            <table className="tb_design" style={{ marginTop: "10px" }}>
+                            <thead>
+                                <tr>
+                                <th>Team ID</th>
+                                <th>Team Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+              {assignedTeams.length > 0 ? (
+                assignedTeams.map((team) => (
+                  <tr key={team.team_id}>
+                    <td>{team.team_id}</td>
+                    <td>{team.team_name}</td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteTeam(team.team_id)}
+                        className="delete-btn"
+                      >
+                        Remove
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" style={{ textAlign: "center" }}>
+                    No teams assigned to this training.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+            </table>
+          </div>
+      </div>
     );
 };
 
