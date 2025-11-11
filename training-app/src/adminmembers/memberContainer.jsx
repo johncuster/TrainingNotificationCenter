@@ -4,35 +4,35 @@ import { Link, useLocation } from 'react-router-dom';
 import "../adminView/adminGlobal.css";  
 
 const MemberContainer = ({data, onSelectMember}) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const [rowsPerPage, setRowsPerPage] = useState(40);
-    const [selectedRows, setSelectedRows] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(40);    
+  const [selectedRows, setSelectedRows] = useState([]);
 
-    useEffect(() => {
-        if (onSelectMember) {
-        if (selectedRows.length === 1) {
-            const selectedRow = data.find(t => t.user_id === selectedRows[0]);
-            onSelectMember(selectedRow);
-            console.log("Selected Member Row");
-        } else {
-            onSelectMember(null);
-            console.log("Deselected Member Row");
-        }
-        }}, [selectedRows, data, onSelectMember]);
+  useEffect(() => {
+    if (onSelectMember) {
+    if (selectedRows.length === 1) {
+      const selectedRow = data.find(t => t.user_id === selectedRows[0]);
+      onSelectMember(selectedRow);
+      console.log("Selected Member Row");
+    } 
+    else {
+      onSelectMember(null);
+      console.log("Deselected Member Row");
+    }}}, [selectedRows, data, onSelectMember]);
 
     const [filters] = useState({
-        user_id: "",
-        user_ln: "",
-        user_fn: "",
-        user_role: "",
-        user_email: "",
+      user_id: "",
+      user_ln: "",
+      user_fn: "",
+      user_role: "",
+      user_email: "",
     });
 
-    //Data Filtering Logic
-    const filteredData = data.filter((row) =>
-        (!filters.user_id || row.user_id.toString().includes(filters.user_id)) &&
-        (!filters.user_ln || row.user_ln?.toLowerCase().includes(filters.user_ln.toLowerCase()))
-    );
+  //Data Filtering Logic
+  const filteredData = data.filter((row) =>
+    (!filters.user_id || row.user_id.toString().includes(filters.user_id)) &&
+    (!filters.user_ln || row.user_ln?.toLowerCase().includes(filters.user_ln.toLowerCase()))
+  );
 
 //Pagination Logic
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -68,8 +68,8 @@ const MemberContainer = ({data, onSelectMember}) => {
   const isAllSelected = currentRows.every((row) => selectedRows.includes(row.user_id));
   const isChecked = (user_id) => selectedRows.includes(user_id);
 
-return (
-     <div>   
+  return (
+    <div>   
       <div className="table_design">
         <table>
           <thead>

@@ -16,9 +16,7 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSubmit) {
-      onSubmit(formData);
-    }
+    if (onSubmit) { onSubmit(formData);}
     onClose();
   };
 
@@ -28,6 +26,7 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="close-btn" onClick={onClose}>&times;</button> <br/>
+        
         <h2>Add Member</h2>
     
         <form onSubmit={handleSubmit} className="create-form">
@@ -41,6 +40,7 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
               required
             />
           </label>
+
           <label>
             First Name:<br/>
             <input
@@ -62,6 +62,7 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
               required
             />
           </label>
+
           <label>
             User Email:<br/>
             <input
@@ -72,11 +73,10 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
               required
             />
           </label>
+
           <br/>
           <div className="modal-buttons">
-              <button type="submit" className="create-btn">
-              Create
-              </button>
+            <button type="submit" className="create-btn">Create</button>
           </div>
         </form>
       </div>

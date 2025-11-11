@@ -45,15 +45,14 @@ const ManageMembers = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedMember),
         })
-        .then(res => res.json())
-        .then(saved => {
-            setMembers(prev =>
-            prev.map(t => t.user_id === saved.user_id ? saved : t)
-            );
-            setShowModal(false);
-            window.location.reload();
-        })
-        .catch(console.error);
+            .then(res => res.json())
+            .then(saved => {
+                setMembers(prev =>
+                prev.map(t => t.user_id === saved.user_id ? saved : t)
+                );
+                setShowModal(false);
+                window.location.reload();
+        }).catch(console.error);
     };
   
     const handleDeleteMember = () => {
@@ -67,8 +66,7 @@ const ManageMembers = () => {
         );
         setSelectedMember(null);
         window.location.reload();
-        })
-        .catch(err => console.error("Delete error:", err));
+        }).catch(err => console.error("Delete error:", err));
     };
 
     return (

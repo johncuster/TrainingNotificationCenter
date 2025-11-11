@@ -9,6 +9,7 @@
   import ManageTraining from "./admintraining/ManageTraining.jsx";  
   import ManageMember from "./adminmembers/ManageMembers.jsx";
   import ManageTeam from "./adminteam/ManageTeam"; 
+  import Login from "./adminuserlogin/Login.jsx";
 
   function App() {
     return (
@@ -21,6 +22,8 @@
 
         <div className="pages"></div>
           <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/member" element={<ManageTraining />}/>
             <Route path="/managetraining" element={<ManageTraining />} />
             <Route path="/manageteam" element={<ManageTeam />} />
             <Route path="/managemember" element={<ManageMember />} />

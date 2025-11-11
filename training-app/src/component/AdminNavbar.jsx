@@ -14,7 +14,7 @@ const AdminNavbar = () => {
                 </ul>
             </nav>
             <div className="buttonDesign" >
-                <Link to="/" className="">
+                <Link to="/login" className="">
                     <button>
                         Log In
                     </button>
