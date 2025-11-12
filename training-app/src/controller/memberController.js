@@ -84,7 +84,32 @@ getTrainingTeams: (req, res) => {
       res.json(results);
     });
   },
-  
+  getUser: (req, res) => {
+    const userId = req.params.user_id;
+    const sql = `
+SELECT t.team_name AS team_name,
+       tr.training_title AS training_title,
+       tr.training_desc AS training_desc,
+       tr.training_link AS training_link,
+       ut.ut_status AS ut_status,
+       ut.ut_assigndate AS ut_assigndate,
+       ut.ut_completedate AS ut_completedate
+FROM user_team utm
+JOIN team t ON t.team_id = utm.team_id
+LEFT JOIN user_training ut ON ut.user_id = utm.user_id AND ut.team_id = t.team_id
+LEFT JOIN training tr ON tr.training_id = ut.training_id
+WHERE utm.user_id = ? 
+
+
+    `;
+    db.query(sql, [userId], (err, result) => {
+      if (err) {
+        console.error("Error fetching member dashboard data:", err);
+        return res.status(500).json({ error: "Database error" });
+      }
+      res.json(result);
+    });
+  },
 };
 
 module.exports = memberController; 

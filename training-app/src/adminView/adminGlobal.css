@@ -124,3 +124,56 @@ input[type="text"] {
     text-align: center;
     
 }
+
+.dashboard-container {
+  padding: 20px;
+}
+
+.dashboard-table {
+  width: 100%;             /* Make table take full width */
+  table-layout: fixed;     /* Equal column widths */
+  border-collapse: collapse;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  border: 1px solid #ccc; /* optional: add borders */
+  padding: 8px;
+  text-align: left;
+  overflow: hidden;        /* hide overflow text */
+  text-overflow: ellipsis; /* show ... for long text */
+  white-space: nowrap;     /* prevent text wrapping */
+}
+
+
+.dashboardDesign{
+    
+    padding: 50px;
+}
+
+.teams-columnar {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto; /* allows horizontal scroll if many teams */
+}
+
+.team-column {
+  min-width: 250px;
+  background: #f8f8f8;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 6px;
+}
+
+.training-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.tableButton{
+    background-color: black;
+    width: 100px;
+}

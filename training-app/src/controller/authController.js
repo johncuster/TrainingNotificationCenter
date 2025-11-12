@@ -2,12 +2,12 @@ const db = require("../db/db.js");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
-const SECRET_KEY = "yoursecretkey"; // move to .env later
+const SECRET_KEY = "yoursecretkey";
 
 const authController = {
     
   loginUser: (req, res) => {
-    console.log("HEYLOGGINGIN");
+    console.log("HEY LOGGING IN");
     const { user_ln } = req.body;
 
     const sql = "SELECT * FROM user_member WHERE user_ln = ?";
@@ -23,11 +23,11 @@ const authController = {
 
       const user = result[0];
       try {
-    //     // compare password
-    //     const validPass = await bcrypt.compare(password, user.user_password);
-    //     if (!validPass) {
-    //       return res.status(401).json({ error: "Invalid password" });
-    //     }
+        //     // compare password
+        //     const validPass = await bcrypt.compare(password, user.user_password);
+        //     if (!validPass) {
+        //       return res.status(401).json({ error: "Invalid password" });
+        //     }
 
          // generate token
          const token = jwt.sign(

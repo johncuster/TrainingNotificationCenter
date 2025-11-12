@@ -9,5 +9,6 @@ router.delete('/:user_id', memberController.deleteMember);
 router.get('/', memberController.getAllMembers);
 router.post('/', memberController.createMember);
 router.put('/:user_id', memberController.updateMember)
+router.get('/:user_id', memberController.getUser);
 
 module.exports = router;

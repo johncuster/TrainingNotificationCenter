@@ -1,34 +1,33 @@
   import React from "react";
   import "./App.css";
-  import { BrowserRouter, Routes, Route } from "react-router-dom";
+  import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 
   //components
   import AdminNavbar from "./component/AdminNavbar";
-  import IsNavBar from "./component/IsNavBar.jsx";
 
   //pages
   import ManageTraining from "./admintraining/ManageTraining.jsx";  
   import ManageMember from "./adminmembers/ManageMembers.jsx";
   import ManageTeam from "./adminteam/ManageTeam"; 
+  import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
   import Login from "./adminuserlogin/Login.jsx";
-  import LeadDashboard from "./leadDashboard/LeadDashboard.jsx";
-  import memberDashboard from "./memberDashboard/MemberDashboard.jsx";
-import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
 
   function App() {
+    const location = useLocation();
+    const path = location.pathname;
     return (
-      <BrowserRouter>
       
+      <BrowserRouter>
+      <div style={{background: "#22313B", height: "5%",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}>
+        <h1>Admin Dashboard</h1>
+      </div>
         <div style={{ textAlign: "center", }}>
-          <IsNavBar>
-           
-            <AdminNavbar />
-          </IsNavBar>
+        
+        
 
         <div className="pages"></div>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/lead" element={<LeadDashboard />}/>
             <Route path="/member" element={<MemberDashboard />}/>
             <Route path="/managetraining" element={<ManageTraining />} />
             <Route path="/manageteam" element={<ManageTeam />} />
