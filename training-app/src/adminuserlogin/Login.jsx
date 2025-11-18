@@ -34,11 +34,15 @@ const Login = () => {
           window.location.href = "/admin";
         } else if (data.user_role === 'lead')
         {
-            alert("member");
+            alert("lead");
             window.location.href = "/lead"
+        } else if (data.user_role === 'member')
+        {
+            alert("member");
+            window.location.href = "/member"
         }
         else {
-          window.location.href = "/member";
+            alert("user not found.");
         }
       } else {
         setMessage(data.error || "Invalid credentials");
@@ -49,6 +53,7 @@ const Login = () => {
       setMessage("Server error. Please try again.");
     }
   };
+
 
   //password = "";
   return (

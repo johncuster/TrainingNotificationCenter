@@ -5,7 +5,6 @@ const jwt = require("jsonwebtoken");
 const SECRET_KEY = "yoursecretkey";
 
 const authController = {
-    
   loginUser: (req, res) => {
     console.log("HEY LOGGING IN");
     const { user_ln } = req.body;
@@ -77,6 +76,7 @@ const authController = {
     //   }
     });
   },
+
 };
 
 module.exports = authController;

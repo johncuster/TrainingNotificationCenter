@@ -4,22 +4,97 @@ const db = require('../db/db.js');
 const teamTrainingController = {
 
   getAllTeamTraining: (req, res) => {
-    const sql = `
-      SELECT 
-        teamtraining_id, 
-        training_id, 
-        team_id
-      FROM team_training
-    `;
+  const sqlTeamTraining = `
+    SELECT teamtraining_id, training_id, team_id
+    FROM team_training
+  `;
 
-    db.query(sql, (err, results) => {
-      if (err) {
-        console.error("Error fetching team-training data:", err);
-        return res.status(500).json({ error: "Database error" });
+  db.query(sqlTeamTraining, (err, teamTrainings) => {
+    if (err) {
+      console.error("Error fetching team-training data:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    if (teamTrainings.length === 0) {
+      return res.json([]);
+    }
+
+    let processed = 0; // counter to track completed syncs
+
+    // Function to check if all items have been processed
+    const checkDone = () => {
+      processed++;
+      if (processed === teamTrainings.length) {
+        return res.json(teamTrainings);
       }
-      res.json(results);
+    };
+
+    teamTrainings.forEach(tt => {
+      const { training_id, team_id } = tt;
+
+      // 1️⃣ Get all users in the team
+      const sqlUsers = `SELECT user_id FROM user_team WHERE team_id = ?`;
+      db.query(sqlUsers, [team_id], (err, users) => {
+        if (err) {
+          console.error("Error fetching users:", err);
+          return checkDone();
+        }
+
+        if (users.length === 0) {
+          return checkDone(); // no users → nothing to sync
+        }
+
+        const userIds = users.map(u => u.user_id);
+
+        // 2️⃣ Get user_training entries for this training and team
+        const placeholders = userIds.map(() => '?').join(',');
+        const sqlUserTraining = `
+          SELECT user_id FROM user_training
+          WHERE training_id = ? AND team_id = ? AND user_id IN (${placeholders})
+        `;
+
+        db.query(sqlUserTraining, [training_id, team_id, ...userIds], (err, existingRows) => {
+          if (err) {
+            console.error("Error fetching user_training:", err);
+            return checkDone();
+          }
+
+          const existingIds = existingRows.map(r => r.user_id);
+          const missingUsers = userIds.filter(uid => !existingIds.includes(uid));
+
+          if (missingUsers.length === 0) {
+            return checkDone(); // all users already have training
+          }
+
+          // 3️⃣ Insert missing user_training rows
+          const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+          const insertValues = missingUsers.map(uid => [
+            uid,
+            training_id,
+            'Pending',
+            now,
+            null,
+            team_id
+          ]);
+
+          const sqlInsert = `
+            INSERT INTO user_training 
+            (user_id, training_id, ut_status, ut_assigndate, ut_completedate, team_id)
+            VALUES ?
+          `;
+
+          db.query(sqlInsert, [insertValues], (err2) => {
+            if (err2) {
+              console.error("Error inserting missing user_training:", err2);
+            }
+            checkDone(); // continue regardless
+          });
+        });
+      });
     });
-  },
+  });
+},
+
 
  addTeamToTraining: (req, res) => {
   console.log("ADDTEAMTOTRAINING1");
@@ -116,7 +191,6 @@ const teamTrainingController = {
     });
   });
 },
-
 
   deleteTeamFromTraining: (req, res) => {
     const { training_id, team_id } = req.params;

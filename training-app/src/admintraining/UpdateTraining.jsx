@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../adminView/updateTraining.css";
 
-const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
+const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => { 
   const [formData, setFormData] = useState({
     training_title: "",
     training_desc: "",
@@ -11,6 +11,7 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
   const [assignedTeams, setAssignedTeams] = useState([]);
   const [allTeams, setAllTeams] = useState([]);    
   const [selectedTeam, setSelectedTeam] = useState("");
+  const [teamProgress, setTeamProgress] = useState([]);
 
   useEffect(() => {      
     if (initialData){
@@ -27,6 +28,12 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
         .then((res) => res.json())
         .then((data) => setAllTeams(data))
         .catch((err) => console.error("Error fetching teams:", err));
+
+      // Fetch progress
+      fetch(`http://localhost:8081/user_training/progress/${initialData.training_id}`)
+        .then((res) => res.json())
+        .then((data) => setTeamProgress(data))
+        .catch((err) => console.error("Error fetching progress:", err));
         }
     }, [initialData]);
 
@@ -54,9 +61,8 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
           body: JSON.stringify({
           training_id: initialData.training_id,
           team_id: selectedTeam,
-                }),
+          }),
         });
-
             if (response.ok) {
                 // Refresh assigned teams list
                 const updatedTeams = await fetch(
@@ -102,6 +108,11 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
         console.error("Error deleting team:", error);
         alert("Error removing team from training.");
     }
+    };
+
+    const computeCompletion = (teamId) => {
+      const teamData = teamProgress.find(p => p.team_id === teamId);
+      return teamData ? teamData.completion_percentage : 0;
     };
 
   // Filter out teams that are already assigned
@@ -191,6 +202,7 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
                                 <tr>
                                 <th>Team ID</th>
                                 <th>Team Name</th>
+                                <th>Progress</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -199,6 +211,7 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
                   <tr key={team.team_id}>
                     <td>{team.team_id}</td>
                     <td>{team.team_name}</td>
+                    <td>{computeCompletion(team.team_id)}%</td>
                     <td>
                       <button
                         onClick={() => handleDeleteTeam(team.team_id)}
@@ -207,6 +220,7 @@ const UpdateTraining = ({ isOpen, onClose, onSubmit, initialData}) => {
                         Remove
                       </button>
                     </td>
+                    
                   </tr>
                 ))
               ) : (

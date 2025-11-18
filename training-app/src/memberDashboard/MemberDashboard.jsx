@@ -22,23 +22,43 @@ const MemberDashboard = () => {
   const handleUpdate = (teamName, index, field, value) => {
     const updatedData = { ...data };
     updatedData[teamName][index][field] = value;
+
+    if (field === "ut_status") {
+      updatedData[teamName][index].ut_completedate =
+        value === "Completed" ? new Date() : null;
+    }
+
     setData(updatedData);
   };
-
-  const saveUpdate = (row) => {
-    fetch(`http://localhost:8081/member/update/${row.ut_id}`, {
+const saveUpdate = (row) => {
+    return fetch(`http://localhost:8081/user_training/update/${row.usertraining_id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         ut_status: row.ut_status,
-        ut_completedate: row.ut_completedate,
+        usertraining_id : row.usertraining_id,
       }),
     })
       .then((res) => res.json())
-      .then(() => {
-        // Optional: reload dashboard
-      })
       .catch((err) => console.error("Error updating training:", err));
+  };
+
+  const handleSaveAll = async () => {
+    try {
+      const allRows = Object.values(data).flat();
+
+      if (allRows.length === 0) {
+        alert("No training data to save.");
+        return;
+      }
+
+      await Promise.all(allRows.map((row) => saveUpdate(row)));
+
+      alert("All changes saved successfully!");
+    } catch (err) {
+      console.error("Error saving all changes:", err);
+      alert("Failed to save changes.");
+    }
   };
 
   const hasTraining = Object.values(data).some((teamRows) => teamRows.length > 0);
@@ -47,7 +67,9 @@ const MemberDashboard = () => {
     <div className="dashboardDesign">
       <h1>MEMBER DASHBOARD</h1>
       <h2>User ID: {userId}</h2>
-
+      <button className="tableButton" onClick={handleSaveAll}>
+        Save All Changes
+      </button>
       {hasTraining ? (
         Object.entries(data).map(([teamName, teamRows]) =>
           teamRows.length > 0 ? (
@@ -61,6 +83,7 @@ const MemberDashboard = () => {
                     <th>Link</th>
                     <th>Status</th>
                     <th>Assigned</th>
+                    <th>Due Date</th>
                     <th>Completed</th>
                   </tr>
                 </thead>
@@ -82,12 +105,6 @@ const MemberDashboard = () => {
                               <option value="Pending">Pending</option>
                               <option value="Completed">Completed</option>
                             </select>
-                            <button
-                              className="tableButton"
-                              onClick={() => saveUpdate(row)}
-                            >
-                              Save
-                            </button>
                           </>
                         ) : (
                           "-"
@@ -96,6 +113,11 @@ const MemberDashboard = () => {
                       <td>
                         {row.ut_assigndate
                           ? new Date(row.ut_assigndate).toLocaleDateString()
+                          : "-"}
+                      </td>
+                      <td>
+                        {row.due_date
+                          ? new Date(row.due_date).toLocaleDateString()
                           : "-"}
                       </td>
                       <td>

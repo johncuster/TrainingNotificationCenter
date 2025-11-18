@@ -75,7 +75,7 @@ const ManageTraining = () => {
       
       <TrainingAction
           onCreate={() => {
-            //setSelectedTraining(null);
+            setSelectedTraining(null);
             setModalMode('create');
             setShowModal(true);
           }}

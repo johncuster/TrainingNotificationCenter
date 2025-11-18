@@ -12,7 +12,7 @@ const IsNavBar = (props) => {
     useEffect(()=> {
         console.log('this is location: ', location);
 
-        if(location.pathname === '/login' || location.pathname === '/signup'){
+        if(location.pathname === '/login' || location.pathname === '/signup' ){
             setShowNavBar(false);
         } else {
             setShowNavBar(true);
