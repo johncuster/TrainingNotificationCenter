@@ -1,41 +1,59 @@
-  import React from "react";
-  import "./App.css";
-  import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+// MembersPanel.jsx
+import React, { useState } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import "./sample.css";
 
-  //components
-  import AdminNavbar from "./component/AdminNavbar";
+const initialMembers = [
+  { id: 1, name: "Alice", role: "Admin" },
+  { id: 2, name: "Bob", role: "Member" },
+  { id: 3, name: "Charlie", role: "Moderator" },
+  { id: 4, name: "David", role: "Member" },
+  { id: 5, name: "Eve", role: "Admin" },
+];
 
-  //pages
-  import ManageTraining from "./admintraining/ManageTraining.jsx";  
-  import ManageMember from "./adminmembers/ManageMembers.jsx";
-  import ManageTeam from "./adminteam/ManageTeam"; 
-  import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
-  import Login from "./adminuserlogin/Login.jsx";
+export default function MembersPanel() {
+  const [filter, setFilter] = useState("");
 
-  function App() {
-    const location = useLocation();
-    const path = location.pathname;
-    return (
-      
-      <BrowserRouter>
-      <div style={{background: "#22313B", height: "5%",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}>
-        <h1>Admin Dashboard</h1>
+  const columns = [
+    { field: "id", headerName: "ID", width: 70 },
+    { field: "name", headerName: "Name", width: 150, flex: 1 },
+    { field: "role", headerName: "Role", width: 150, flex: 1 },
+  ];
+
+  // Filter members based on search input
+  const filteredMembers = initialMembers.filter((member) =>
+    member.name.toLowerCase().includes(filter.toLowerCase())
+  );
+
+  return (
+    <div className="container">
+      <div className="input-section">
+        <h3>Search Members</h3>
+        <input
+          type="text"
+          placeholder="Type a name..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+        />
       </div>
-        <div style={{ textAlign: "center", }}>
-        
-        
-
-        <div className="pages"></div>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/member" element={<MemberDashboard />}/>
-            <Route path="/managetraining" element={<ManageTraining />} />
-            <Route path="/manageteam" element={<ManageTeam />} />
-            <Route path="/managemember" element={<ManageMember />} />
-          </Routes>
+      <div className="table-section">
+        <h3>Members List</h3>
+        <div style={{ height: 400, width: "100%" }}>
+          <DataGrid
+            rows={filteredMembers}
+            columns={columns}
+            pageSize={5}
+            rowsPerPageOptions={[5]}
+            checkboxSelection // Enables checkboxes and "select all"
+            disableSelectionOnClick
+            sx={{
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "#f0f0f0", // Gray header row
+              },
+            }}
+          />
         </div>
-      </BrowserRouter>
-    );
-  }
-
-  export default App;
+      </div>
+    </div>
+  );
+}

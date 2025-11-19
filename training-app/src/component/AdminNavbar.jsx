@@ -19,9 +19,9 @@ const AdminNavbar = () => {
                         Log In
                     </button>
                 </Link>
-
-                <div style = {{color:"white"}}>|</div>
-
+                &nbsp;
+                <div style = {{color:"white", fontSize:"15px"}}>|</div>
+                &nbsp;
                 <Link to="/signup">
                     <button>
                         Sign Up

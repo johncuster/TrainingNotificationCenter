@@ -12,8 +12,9 @@
   import ManageTeam from "./adminteam/ManageTeam"; 
   import Login from "./adminuserlogin/Login.jsx";
   import LeadDashboard from "./leadDashboard/LeadDashboard.jsx";
-  import memberDashboard from "./memberDashboard/MemberDashboard.jsx";
-import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
+  import SampleDashboard from "./TeamsAndMembers.jsx";
+    import TeamPage from "./TeamPage.jsx";
+  import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
 
   function App() {
     return (
@@ -33,6 +34,9 @@ import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
             <Route path="/managetraining" element={<ManageTraining />} />
             <Route path="/manageteam" element={<ManageTeam />} />
             <Route path="/managemember" element={<ManageMember />} />
+            <Route path="/" element={<SampleDashboard />}/>
+            <Route path="/teams" element={<TeamPage />} />
+
           </Routes>
         </div>
       </BrowserRouter>

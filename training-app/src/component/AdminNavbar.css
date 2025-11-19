@@ -2,7 +2,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 3rem;
+  height: 8rem;
   width: 100%;
   flex-shrink: 0; 
   background-color: #22313B;
@@ -19,12 +19,13 @@ header {
 button{
 	background: none;
 	color: #ffffff;
-  font-size: 10px;
 	border: none;
 	padding: 0;
 	font: inherit;
 	cursor: pointer;
 	outline: inherit;
+  font-size: 15px;
+  
 }
 
 nav.navbar {
@@ -32,10 +33,11 @@ nav.navbar {
   width: auto;
   padding-left: 50px;
   text-align: left;
+  
 }
 
 nav.navbar a:hover{
-   text-decoration: underline solid #ffffff;
+  text-decoration: underline solid #ffffff;
   text-underline-offset: 5px;
   text-decoration-thickness: 2px;
 }
@@ -46,6 +48,7 @@ ul.navbar {
   display: flex;
   padding: 0;
   margin: 0;
+  gap: 10px;
 }
 
 ul.navbar li {
@@ -54,11 +57,10 @@ ul.navbar li {
   justify-content: left;
   align-items: center;
   font-family: "Pridi", "Roboto", sans-serif;
-  font-size: 20px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  width: 140px;
+  width: 250px;
 }
 
 .active {
@@ -72,16 +74,17 @@ ul.navbar li {
 nav.navbar a {
   color: #ffffff;
   font-family: "Pridi", "Roboto", sans-serif;
-  font-size: 10px;
+  font-size: 15px;
   font-weight: 100;
   line-height: normal;
   text-decoration: none;
+
 }
 
 .adminHeader {
   color: #ffffff;
   font-family: "Pridi", "Roboto", sans-serif;
-  font-size: 20px;
+  font-size: 15px;
   font-style: normal;
   font-weight: 400;
   line-height: normal;

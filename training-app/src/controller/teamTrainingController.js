@@ -218,6 +218,78 @@ const teamTrainingController = {
         console.log("DELETE 3");
     });
     },
+getLeadTeamTraining: (req, res) => {
+  const leadId = req.params.user_id;
+
+    const sql = `
+      SELECT 
+      u.user_id,
+      u.user_fn,
+      u.user_ln,
+      ut.usertraining_id,
+      ut.ut_status,
+      ut.ut_assigndate,
+      ut.ut_completedate,
+      tr.training_title,
+      tr.training_desc,
+      tr.training_link,
+      ut.due_date AS training_due_date,
+      t.team_id,
+      t.team_name
+  FROM team_lead tl
+  JOIN team t ON t.team_id = tl.team_id
+  JOIN user_team utm ON utm.team_id = t.team_id
+  JOIN user_member u ON u.user_id = utm.user_id
+  LEFT JOIN user_training ut 
+      ON ut.user_id = u.user_id AND ut.team_id = t.team_id
+  LEFT JOIN training tr 
+      ON tr.training_id = ut.training_id
+  WHERE tl.user_id = ?;
+  `;
+
+    db.query(sql, [leadId], (err, results) => {
+        if (err) {
+            console.error("Error fetching member training progress:", err);
+            return res.status(500).json({ error: "Server error" });
+        }
+        res.json(results);
+    });
+},
+getAllTeamLeads: (req, res) => {
+    const sql = `
+        SELECT * FROM team_lead tl
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Error fetching team leads:", err);
+            return res.status(500).json({ error: "Database error" });
+        }
+        res.json(results);
+    });
+},
+
+getLeadTeams: (req, res) => {
+    const leadId = req.params.leadId;
+
+    const sql = `
+        SELECT 
+            t.team_id,
+            t.team_name
+        FROM team_lead tl
+        JOIN team t ON t.team_id = tl.team_id
+        WHERE tl.user_id = ?
+        ORDER BY t.team_name;
+    `;
+
+    db.query(sql, [leadId], (err, results) => {
+        if (err) {
+            console.error("Error fetching teams led by lead:", err);
+            return res.status(500).json({ error: "Server error" });
+        }
+        res.json(results);
+    });
+},
 
 };
 
