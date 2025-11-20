@@ -1,12 +1,13 @@
-import React, { useState} from "react";
-import "../adminView/createTraining.css";
+import React, { useState } from "react";
+import "./memberFormStyle.css";
 
-const CreateMember = ({ isOpen, onClose, onSubmit}) => {
+const CreateMember = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     user_ln: "",
     user_fn: "",
-    user_role: "",
-    user_email: ""
+    user_role: "member", // default to member
+    user_email: "",
+    lead_team: "", // optional if role = lead
   });
 
   const handleChange = (e) => {
@@ -16,7 +17,11 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (onSubmit) { onSubmit(formData);}
+    if (onSubmit) {
+      const payload =
+        formData.user_role === "lead" ? formData : { ...formData, lead_team: "" };
+      onSubmit(payload);
+    }
     onClose();
   };
 
@@ -25,13 +30,12 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="close-btn" onClick={onClose}>&times;</button> <br/>
-        
+        <button className="close-btn" onClick={onClose}>&times;</button>
         <h2>Add Member</h2>
-    
+
         <form onSubmit={handleSubmit} className="create-form">
           <label>
-            Last Name:<br/>
+            Last Name:<br />
             <input
               className="text-input"
               type="text"
@@ -42,7 +46,7 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
           </label>
 
           <label>
-            First Name:<br/>
+            First Name:<br />
             <input
               className="text-input"
               type="text"
@@ -53,28 +57,47 @@ const CreateMember = ({ isOpen, onClose, onSubmit}) => {
           </label>
 
           <label>
-            User Role:<br/>
-            <input
+            User Role:<br />
+            <select
               className="text-input"
-              type="text"
               name="user_role"
+              value={formData.user_role}
               onChange={handleChange}
               required
-            />
+            >
+              <option value="member">member</option>
+              <option value="lead">lead</option>
+            </select>
           </label>
 
+          {/* Show team selection only if role is lead */}
+          {formData.user_role === "lead" && (
+            <label>
+              Team to Lead:<br />
+              <input
+                className="text-input"
+                type="text"
+                name="lead_team"
+                value={formData.lead_team}
+                onChange={handleChange}
+                placeholder="Enter team name"
+                required
+              />
+            </label>
+          )}
+
           <label>
-            User Email:<br/>
+            User Email:<br />
             <input
               className="text-input"
-              type="text"
+              type="email"
               name="user_email"
               onChange={handleChange}
               required
             />
           </label>
 
-          <br/>
+          <br />
           <div className="modal-buttons">
             <button type="submit" className="create-btn">Create</button>
           </div>

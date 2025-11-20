@@ -93,7 +93,49 @@ getTrainingTeams: (req, res) => {
       res.json(results);
     });
   },
-  
+ getTrainingMembers: (req, res) => {
+  const trainingId = req.params.training_id;
+
+  const sql = `
+   SELECT
+    t.team_id,
+    t.team_name,
+    m.user_id,
+    m.user_ln,
+    m.user_fn,
+    CASE 
+        WHEN ut.ut_status IS NULL THEN 'Pending'
+        ELSE ut.ut_status
+    END AS ut_status
+FROM team_training tt
+JOIN team t ON tt.team_id = t.team_id
+JOIN user_team ut_team ON ut_team.team_id = t.team_id
+JOIN user_member m ON m.user_id = ut_team.user_id
+LEFT JOIN user_training ut 
+    ON ut.user_id = m.user_id 
+    AND ut.training_id = tt.training_id
+    AND ut.team_id = t.team_id  -- ✅ Important: match team-specific training
+WHERE tt.training_id = ?
+ORDER BY t.team_id ASC, m.user_id ASC;
+  `;
+
+  db.query(sql, [trainingId], (err, results) => {
+    if (err) {
+      console.error("Error fetching training members:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    // Convert 1/0 or other ut_status values to boolean
+    const formattedResults = results.map(r => ({
+  ...r,
+  ut_status: r.ut_status || "Pending"  // default to "Pending" if null
+}));
+
+    res.json(formattedResults);
+  });
+}
+
+
+
 };
 
 module.exports = trainingController; 

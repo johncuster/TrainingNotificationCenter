@@ -35,11 +35,11 @@ const Login = () => {
         } else if (data.user_role === 'lead')
         {
             alert("lead");
-            window.location.href = "/lead"
+            window.location.href = "/leadDashboard"
         } else if (data.user_role === 'member')
         {
             alert("member");
-            window.location.href = "/member"
+            window.location.href = "/memberDashboard"
         }
         else {
             alert("user not found.");

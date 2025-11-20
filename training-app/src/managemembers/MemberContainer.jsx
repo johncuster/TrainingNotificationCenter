@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import "../adminView/adminGlobal.css";  
+//import "../adminView/adminGlobal.css";  
 
 const MemberContainer = ({data, onSelectMember}) => {
   const [currentPage, setCurrentPage] = useState(1);

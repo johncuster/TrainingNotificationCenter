@@ -1,0 +1,49 @@
+/* Container for the whole dashboard */
+.user-dashboard-container {
+  padding: 20px;
+  box-sizing: border-box;
+  min-height: 100vh; /* ensure it doesn't overlap navbar */
+  background: #f0f2f5; /* optional page background */
+}
+
+/* TOP HEADER */
+.user-info-header {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Main layout for left/right panels */
+.user-layout {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap; /* responsive stacking on small screens */
+}
+
+/* LEFT PANEL */
+.user-left {
+  flex: 1;
+  min-width: 300px; /* responsive */
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* RIGHT PANEL */
+.user-right {
+  flex: 2;
+  min-width: 400px; /* wider than left panel */
+  background: #ffffff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Optional: margin for DataGrid inside panels */
+.user-left .MuiDataGrid-root,
+.user-right .MuiDataGrid-root {
+  margin-top: 10px;
+}

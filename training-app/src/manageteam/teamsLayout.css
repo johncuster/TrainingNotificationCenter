@@ -1,0 +1,17 @@
+/* teamsLayout.css */
+.teams-layout {
+  display: flex;
+  gap: 24px;
+  padding: 50px;
+  height: 100%;
+}
+
+.left-panel {
+  flex: 1;
+  min-width: 45%;
+}
+
+.right-panel {
+  flex: 1;
+  min-width: 45%;
+}

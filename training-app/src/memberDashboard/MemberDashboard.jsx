@@ -1,14 +1,19 @@
 import { useState, useEffect } from "react";
-import "../adminView/adminGlobal.css";
+import { DataGrid } from "@mui/x-data-grid";
+import { Button } from "@mui/material";
+import "./userLayout.css";
 
-const MemberDashboard = () => {
+export default function MemberDashboard() {
   const [data, setData] = useState({});
+  const [selectedTeam, setSelectedTeam] = useState(null);
   const userId = localStorage.getItem("user_id");
 
+  // Fetch data and group by team
   useEffect(() => {
     fetch(`http://localhost:8081/member/${userId}`)
       .then((res) => res.json())
       .then((rows) => {
+        console.log("Fetched member data:", rows);
         const grouped = {};
         rows.forEach((row) => {
           if (!grouped[row.team_name]) grouped[row.team_name] = [];
@@ -16,127 +21,170 @@ const MemberDashboard = () => {
         });
         setData(grouped);
       })
-      .catch((err) => console.error("Error loading dashboard:", err));
+      .catch((err) => console.error("Error fetching member data:", err));
   }, [userId]);
 
-  const handleUpdate = (teamName, index, field, value) => {
-    const updatedData = { ...data };
-    updatedData[teamName][index][field] = value;
-
-    if (field === "ut_status") {
-      updatedData[teamName][index].ut_completedate =
-        value === "Completed" ? new Date() : null;
-    }
-
-    setData(updatedData);
-  };
-const saveUpdate = (row) => {
-    return fetch(`http://localhost:8081/user_training/update/${row.usertraining_id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ut_status: row.ut_status,
-        usertraining_id : row.usertraining_id,
-      }),
-    })
-      .then((res) => res.json())
-      .catch((err) => console.error("Error updating training:", err));
+  // Save single row
+  const saveUpdate = (row) => {
+    return fetch(
+      `http://localhost:8081/user_training/update/${row.usertraining_id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ut_status: row.ut_status,
+          usertraining_id: row.usertraining_id,
+        }),
+      }
+    ).then((res) => res.json());
   };
 
+  // Save ALL rows
   const handleSaveAll = async () => {
     try {
       const allRows = Object.values(data).flat();
-
-      if (allRows.length === 0) {
-        alert("No training data to save.");
-        return;
-      }
-
       await Promise.all(allRows.map((row) => saveUpdate(row)));
-
-      alert("All changes saved successfully!");
+      alert("Saved successfully!");
     } catch (err) {
-      console.error("Error saving all changes:", err);
-      alert("Failed to save changes.");
+      console.error(err);
+      alert("Failed to save.");
     }
   };
 
-  const hasTraining = Object.values(data).some((teamRows) => teamRows.length > 0);
+  const teamColumns = [{ field: "team_name", headerName: "Team Name", flex: 1 }];
+
+  const teamRows = Object.keys(data).map((team, index) => ({
+    id: index,
+    team_name: team,
+  }));
+
+  // Formatter for dates
+  const safeDateFormatter = (params) => {
+    const value = params?.value;
+    if (!value) return "-";
+
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return "-";
+
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  };
+const trainingColumns = [
+  { field: "training_title", headerName: "Training Title", flex: 1 },
+  { field: "training_desc", headerName: "Description", flex: 1 },
+  { field: "training_link", headerName: "Link", flex: 1 },
+  {
+    field: "ut_status",
+    headerName: "Status",
+    width: 150,
+    renderCell: (params) => (
+      <select
+        value={params?.row?.ut_status || "Pending"}
+        onChange={(e) => {
+          const newData = { ...data };
+          const teamName = selectedTeam;
+          const rowIndex = newData[teamName].findIndex(
+            (r) => r.training_id === params.row.training_id
+          );
+          newData[teamName][rowIndex].ut_status = e.target.value;
+          setData(newData);
+        }}
+      >
+        <option value="Pending">Pending</option>
+        <option value="Completed">Completed</option>
+      </select>
+    ),
+  },
+  {
+    field: "ut_assigndate",
+    headerName: "Assigned",
+    width: 150,
+    valueFormatter: (params) => {
+      const value = params?.value || params?.row?.ut_assigndate;
+      if (!value) return "-";
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
+    },
+  },
+  {
+    field: "due_date",
+    headerName: "Due Date",
+    width: 150,
+    valueFormatter: (params) => {
+      const value = params?.value || params?.row?.due_date;
+      if (!value) return "-";
+      const date = new Date(value);
+      return isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
+    },
+  },
+  {
+    field: "ut_completedate",
+    headerName: "Completed",
+    width: 150,
+    valueFormatter: (params) => {
+      const value = params?.value || params?.row?.ut_completedate;
+      if (!value) return "-";
+      const date = new Date(value);
+      {console.log(value)}
+      return isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
+    },
+  },
+];
+
 
   return (
-    <div className="dashboardDesign">
-      <h1>MEMBER DASHBOARD</h1>
-      <h2>User ID: {userId}</h2>
-      <button className="tableButton" onClick={handleSaveAll}>
-        Save All Changes
-      </button>
-      {hasTraining ? (
-        Object.entries(data).map(([teamName, teamRows]) =>
-          teamRows.length > 0 ? (
-            <div key={teamName} className="team-table">
-              <h2>Team: {teamName}</h2>
-              <table className="dashboard-table">
-                <thead>
-                  <tr>
-                    <th>Training Title</th>
-                    <th>Description</th>
-                    <th>Link</th>
-                    <th>Status</th>
-                    <th>Assigned</th>
-                    <th>Due Date</th>
-                    <th>Completed</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {teamRows.map((row, index) => (
-                    <tr key={index}>
-                      <td>{row.training_title || "-"}</td>
-                      <td>{row.training_desc || "-"}</td>
-                      <td>{row.training_link || "-"}</td>
-                      <td>
-                        {row.ut_status ? (
-                          <>
-                            <select
-                              value={row.ut_status}
-                              onChange={(e) =>
-                                handleUpdate(teamName, index, "ut_status", e.target.value)
-                              }
-                            >
-                              <option value="Pending">Pending</option>
-                              <option value="Completed">Completed</option>
-                            </select>
-                          </>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-                      <td>
-                        {row.ut_assigndate
-                          ? new Date(row.ut_assigndate).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td>
-                        {row.due_date
-                          ? new Date(row.due_date).toLocaleDateString()
-                          : "-"}
-                      </td>
-                      <td>
-                        {row.ut_completedate
-                          ? new Date(row.ut_completedate).toLocaleDateString()
-                          : "-"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : null
-        )
-      ) : (
-        <p>No training data found.</p>
-      )}
+    <div className="user-dashboard-container">
+      {/* TOP HEADER */}
+      <div className="user-info-header">
+        <h1>Member Dashboard</h1>
+        <p>
+          <b>User ID:</b> {userId}
+        </p>
+      </div>
+
+      {/* PANELS */}
+      <div className="user-layout">
+        {/* LEFT PANEL */}
+        <div className="user-left">
+          <h2>My Teams</h2>
+          <DataGrid
+            rows={teamRows}
+            columns={teamColumns}
+            autoHeight
+            pageSize={10}
+            onRowClick={(params) => setSelectedTeam(params.row.team_name)}
+          />
+        </div>
+
+        {/* RIGHT PANEL */}
+        <div className="user-right">
+          {selectedTeam ? (
+            <>
+              {console.log("Selected team data:", data[selectedTeam])}
+              <h2>Trainings for: {selectedTeam}</h2>
+              <Button
+                variant="contained"
+                onClick={handleSaveAll}
+                style={{ marginBottom: "10px" }}
+              >
+                Save All Changes
+              </Button>
+
+              <DataGrid
+                rows={data[selectedTeam].map((t, i) => ({ ...t, id: i }))}
+                columns={trainingColumns}
+                autoHeight
+                pageSize={10}
+              />
+            </>
+          ) : (
+            <p>Please select a team from the left.</p>
+          )}
+        </div>
+      </div>
     </div>
   );
-};
-
-export default MemberDashboard;
+}

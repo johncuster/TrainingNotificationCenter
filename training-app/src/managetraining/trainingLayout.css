@@ -1,12 +1,10 @@
-/* teamsLayout.css */
-.teams-layout {
+/* trainingLayout.css */
+.trainings-layout {
   display: flex;
   gap: 24px;
   padding: 50px;
   height: 100%;
-  box-sizing: border-box;
 }
-
 .left-panel {
   flex: 1;
   min-width: 45%;
@@ -16,3 +14,4 @@
   flex: 1;
   min-width: 45%;
 }
+    

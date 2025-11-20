@@ -1,4 +1,3 @@
-// MemberTable.jsx
 import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Stack } from "@mui/material";
@@ -6,11 +5,11 @@ import AddMemberModal from "./AddMemberModal";
 
 export default function MemberTable({ team }) {
   const [members, setMembers] = useState([]);
-  const [selected, setSelected] = useState([]);
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [openAdd, setOpenAdd] = useState(false);
 
   useEffect(() => {
-    setSelected([]);
+    setSelectedMemberId(null);
     if (!team) {
       setMembers([]);
       return;
@@ -32,31 +31,31 @@ export default function MemberTable({ team }) {
   }, [team]);
 
   const handleDelete = async () => {
-    if (!team || !selected.length) return;
-    if (!window.confirm(`Remove ${selected.length} member(s) from ${team.team_name}?`))
-      return;
+    if (!team || !selectedMemberId) return;
+    if (!window.confirm(`Remove this member from ${team.team_name}?`)) return;
+
     try {
-      // Using your earlier style: delete endpoint user_team/:teamId/:userId
-      await Promise.all(
-        selected.map((userId) =>
-          fetch(`http://localhost:8081/user_team/${team.team_id}/${userId}`, {
-            method: "DELETE",
-          })
-        )
+      const res = await fetch(
+        `http://localhost:8081/user_team/${team.team_id}/${selectedMemberId}`,
+        { method: "DELETE" }
       );
-      // refresh members
-      const res = await fetch(`http://localhost:8081/team/${team.team_id}/members`);
-      const data = await res.json();
-      setMembers(Array.isArray(data) ? data : []);
-      setSelected([]);
+      if (!res.ok) throw new Error("Delete failed");
+
+      // Refresh members list
+      const refreshed = await fetch(
+        `http://localhost:8081/team/${team.team_id}/members`
+      ).then((r) => r.json());
+      setMembers(Array.isArray(refreshed) ? refreshed : []);
+      setSelectedMemberId(null);
+      alert("Member removed successfully");
     } catch (err) {
       console.error(err);
-      alert("Failed to remove member(s)");
+      alert("Failed to remove member");
     }
   };
 
   return (
-    <div style={{ width: "100%", height: 520 }}>
+    <div style={{ width: "100%", height: 500 }}>
       <h2>{team ? `Members of ${team.team_name}` : "Select a team to view members"}</h2>
 
       {team && (
@@ -65,29 +64,28 @@ export default function MemberTable({ team }) {
             <Button variant="contained" onClick={() => setOpenAdd(true)}>
               Add Member
             </Button>
-            <Button variant="contained" color="error" disabled={selected.length === 0} onClick={handleDelete}>
+            <Button
+              variant="contained"
+              color="error"
+              disabled={!selectedMemberId}
+              onClick={handleDelete}
+            >
               Remove Member
             </Button>
           </Stack>
 
           <DataGrid
-            rows={members}
+            rows={members.map((m) => ({ ...m, id: m.user_id }))}
             columns={[
               { field: "user_id", headerName: "ID", width: 120 },
               { field: "user_ln", headerName: "Last Name", flex: 1 },
               { field: "user_fn", headerName: "First Name", flex: 1 },
             ]}
-            getRowId={(r) => r.user_id}
-            checkboxSelection
-            onRowSelectionModelChange={(sel) => setSelected(sel)}
             pageSize={10}
             rowsPerPageOptions={[5, 10, 20]}
-            sx={{
-              "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: "#f0f0f0",
-                fontWeight: "600",
-              },
-            }}
+            getRowId={(row) => row.id}
+            onRowClick={(params) => setSelectedMemberId(params.id)}
+            hideFooterSelectedRowCount
           />
 
           <AddMemberModal
@@ -96,9 +94,10 @@ export default function MemberTable({ team }) {
             teamId={team.team_id}
             onAdded={async () => {
               setOpenAdd(false);
-              const res = await fetch(`http://localhost:8081/team/${team.team_id}/members`);
-              const data = await res.json();
-              setMembers(Array.isArray(data) ? data : []);
+              const refreshed = await fetch(
+                `http://localhost:8081/team/${team.team_id}/members`
+              ).then((r) => r.json());
+              setMembers(Array.isArray(refreshed) ? refreshed : []);
             }}
           />
         </>
