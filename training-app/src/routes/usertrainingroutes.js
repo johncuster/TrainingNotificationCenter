@@ -7,5 +7,7 @@ router.put('/update/:usertraining_id', userTrainingController.updateTraining);
 router.get('/progress/:training_id', userTrainingController.getTrainingProgress); 
 //router.post('/', userTeamController.addMemberToTeam);
 //router.delete("/:team_id/:user_id", userTeamController.deleteMemberFromTeam);
+router.put("/due_date/:training_id/:team_id", userTrainingController.updateDueDate);
+
 
 module.exports = router;

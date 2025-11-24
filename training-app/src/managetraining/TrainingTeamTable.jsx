@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Stack, Dialog, DialogTitle, DialogContent, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Button, Stack, Dialog, DialogTitle, DialogContent, TextField } from "@mui/material";
 import AssignTeamModal from "./AssignTeamModal.jsx";
 
 export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [], refreshTeams }) {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [openAssign, setOpenAssign] = useState(false);
-
   const [openMembers, setOpenMembers] = useState(false);
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedTeamName, setSelectedTeamName] = useState("");
+
+  const [dueDates, setDueDates] = useState({}); // new: { team_id: "YYYY-MM-DD" }
 
   const handleDelete = async () => {
     if (!selectedTeamId) return alert("Select a team to remove");
@@ -27,16 +28,12 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
 
   // Double-click handler to show members
   const handleRowDoubleClick = async (params) => {
-    //alert("DOUBLE CLICK");
     const teamId = params.row.team_id;
     const teamName = params.row.team_name;
     try {
       const res = await fetch(`http://localhost:8081/training/${trainingId}/members`);
       const data = await res.json();
-
-      // Filter members by selected team
       const membersForTeam = data.filter(m => m.team_id === teamId);
-
       setTeamMembers(membersForTeam);
       setSelectedTeamName(teamName);
       setOpenMembers(true);
@@ -46,10 +43,67 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
     }
   };
 
+  // New: handle date change
+  const handleDateChange = (teamId, date) => {
+    setDueDates(prev => ({ ...prev, [teamId]: date }));
+  };
+
+  // New: save due date
+  const saveDueDate = async (teamId) => {
+    const selectedDate = dueDates[teamId];
+    if (!selectedDate) return alert("Select a due date first");
+
+    try {
+      // Update team_training
+      await fetch(`http://localhost:8081/team_training/due_date/${trainingId}/${teamId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ due_date: selectedDate })
+      });
+
+      // Update user_training
+      await fetch(`http://localhost:8081/user_training/due_date/${trainingId}/${teamId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ due_date: selectedDate })
+      });
+
+      alert("Due date updated successfully!");
+      refreshTeams();
+    } catch (err) {
+      console.error("Failed to update due date:", err);
+      alert("Failed to update due date");
+    }
+  };
+
   const columns = [
     { field: "team_id", headerName: "ID", width: 100 },
     { field: "team_name", headerName: "Team Name", flex: 1 },
-    { field: "completion_percentage", headerName: "Progress", width: 120 }
+    { field: "completion_percentage", headerName: "Progress", width: 120 },
+
+    // NEW: Due Date column
+    {
+      field: "due_date",
+      headerName: "Due Date",
+      flex: 3,
+      renderCell: (params) => (
+        <TextField
+          type="date"
+          value={dueDates[params.row.team_id] || params.row.due_date || ""}
+          onChange={(e) => handleDateChange(params.row.team_id, e.target.value)}
+          size="small"
+        />
+      )
+    },
+    // NEW: Save button column
+    {
+      field: "save",
+      headerName: "Save",
+      flex:1,
+      renderCell: (params) => (
+        <Button variant="contained" onClick={() => saveDueDate(params.row.team_id)}>Save</Button>
+      )
+    }
   ];
 
   return (
@@ -67,7 +121,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
         pageSize={10}
         rowsPerPageOptions={[5, 10, 20]}
         onRowClick={(params) => setSelectedTeamId(params.row.team_id)}
-        onRowDoubleClick={handleRowDoubleClick} // double-click opens members modal
+        onRowDoubleClick={handleRowDoubleClick}
         hideFooterSelectedRowCount
       />
 
@@ -82,30 +136,22 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
         availableTeams={allTeams.filter(t => !teams.some(a => a.team_id === t.team_id))}
       />
 
-      {/* Modal to show members of selected team */}
       <Dialog open={openMembers} onClose={() => setOpenMembers(false)} maxWidth="md" fullWidth>
         <DialogTitle>Members of {selectedTeamName}</DialogTitle>
         <DialogContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Last Name</TableCell>
-                <TableCell>First Name</TableCell>
-                <TableCell>Completed</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {teamMembers.map(member => (
-                <TableRow key={member.user_id}>
-                  <TableCell>{member.user_id}</TableCell>
-                  <TableCell>{member.user_ln}</TableCell>
-                  <TableCell>{member.user_fn}</TableCell>
-                  <TableCell>{member.ut_status}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div style={{ height: 400, width: "100%" }}>
+            <DataGrid
+              rows={teamMembers.map((m, index) => ({ ...m, id: index }))}
+              columns={[
+                { field: "user_id", headerName: "ID", width: 100 },
+                { field: "user_ln", headerName: "Last Name", flex: 1 },
+                { field: "user_fn", headerName: "First Name", flex: 1 },
+                { field: "ut_status", headerName: "Status", width: 150 },
+              ]}
+              pageSize={5}
+              autoHeight
+            />
+          </div>
         </DialogContent>
       </Dialog>
     </div>

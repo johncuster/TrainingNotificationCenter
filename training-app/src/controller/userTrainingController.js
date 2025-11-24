@@ -97,6 +97,31 @@ getTrainingProgress: (req, res) => {
     res.json(progress);
   });
 },
+// controller/userTrainingController.js
+
+updateDueDate: (req, res) => {
+  const { training_id, team_id } = req.params;
+  const { due_date } = req.body;
+
+  if (!training_id || !team_id || !due_date) {
+    return res.status(400).json({ error: "Missing training_id, team_id, or due_date" });
+  }
+
+  const sql = `
+    UPDATE user_training
+    SET due_date = ?
+    WHERE training_id = ? AND team_id = ?
+  `;
+
+  db.query(sql, [due_date, training_id, team_id], (err, result) => {
+    if (err) {
+      console.error("Error updating user_training due_date:", err);
+      return res.status(500).json({ error: "Failed to update user_training due_date" });
+    }
+
+    res.json({ message: "User training due_date updated successfully" });
+  });
+},
 
 };
 

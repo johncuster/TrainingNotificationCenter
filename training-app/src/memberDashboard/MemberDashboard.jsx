@@ -59,36 +59,33 @@ export default function MemberDashboard() {
   }));
 
   // Formatter for dates
-  const safeDateFormatter = (params) => {
-    const value = params?.value;
-    if (!value) return "-";
+const cleanDate = (value) => {
+  if (!value) return "-";
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? "-" : d.toLocaleDateString("en-CA"); 
+  // en-CA = yyyy-mm-dd
+};
 
-    const d = new Date(value);
-    if (isNaN(d.getTime())) return "-";
-
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  };
 const trainingColumns = [
   { field: "training_title", headerName: "Training Title", flex: 1 },
   { field: "training_desc", headerName: "Description", flex: 1 },
   { field: "training_link", headerName: "Link", flex: 1 },
+
   {
     field: "ut_status",
     headerName: "Status",
     width: 150,
     renderCell: (params) => (
       <select
-        value={params?.row?.ut_status || "Pending"}
+        value={params.row.ut_status || "Pending"}
         onChange={(e) => {
           const newData = { ...data };
           const teamName = selectedTeam;
+
           const rowIndex = newData[teamName].findIndex(
             (r) => r.training_id === params.row.training_id
           );
+
           newData[teamName][rowIndex].ut_status = e.target.value;
           setData(newData);
         }}
@@ -98,42 +95,25 @@ const trainingColumns = [
       </select>
     ),
   },
-  {
+
+    {
     field: "ut_assigndate",
     headerName: "Assigned",
     width: 150,
-    valueFormatter: (params) => {
-      const value = params?.value || params?.row?.ut_assigndate;
-      if (!value) return "-";
-      const date = new Date(value);
-      return isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
-    },
   },
+
   {
     field: "due_date",
     headerName: "Due Date",
     width: 150,
-    valueFormatter: (params) => {
-      const value = params?.value || params?.row?.due_date;
-      if (!value) return "-";
-      const date = new Date(value);
-      return isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
-    },
   },
+
   {
     field: "ut_completedate",
     headerName: "Completed",
     width: 150,
-    valueFormatter: (params) => {
-      const value = params?.value || params?.row?.ut_completedate;
-      if (!value) return "-";
-      const date = new Date(value);
-      {console.log(value)}
-      return isNaN(date.getTime()) ? "-" : date.toLocaleDateString();
-    },
   },
 ];
-
 
   return (
     <div className="user-dashboard-container">

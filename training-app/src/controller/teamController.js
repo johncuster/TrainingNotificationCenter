@@ -97,7 +97,28 @@ const teamController = {
     console.log("Team members fetched successfully");
     res.json(results);
   });
-  }
+  },
+
+  // GET: all teams a user belongs to
+getTeamsForUser: (req, res) => {
+  const { user_id } = req.params;
+
+  const sql = `
+    SELECT t.team_id, t.team_name
+    FROM user_team ut
+    JOIN team t ON ut.team_id = t.team_id
+    WHERE ut.user_id = ?
+  `;
+
+  db.query(sql, [user_id], (err, rows) => {
+    if (err) {
+      console.error("Error fetching user teams:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(rows);
+  });
+},
+
 };
 
 module.exports = teamController; 

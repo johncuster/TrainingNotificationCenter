@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 //import "../adminView/adminGlobal.css";  
 
 const MemberContainer = ({data, onSelectMember}) => {
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);s
   const [rowsPerPage, setRowsPerPage] = useState(40);    
   const [selectedRows, setSelectedRows] = useState([]);
 

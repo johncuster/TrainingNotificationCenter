@@ -228,12 +228,11 @@ getLeadTeamTraining: (req, res) => {
       u.user_ln,
       ut.usertraining_id,
       ut.ut_status,
-      ut.ut_assigndate,
-      ut.ut_completedate,
-      tr.training_title,
+      DATE_FORMAT(ut.ut_assigndate, '%Y-%m-%d') AS ut_assigndate,
+      DATE_FORMAT(ut.ut_completedate, '%Y-%m-%d') AS ut_completedate,
       tr.training_desc,
       tr.training_link,
-      ut.due_date AS training_due_date,
+      DATE_FORMAT(ut.due_date, '%Y-%m-%d') AS due_date,
       t.team_id,
       t.team_name
   FROM team_lead tl
@@ -290,6 +289,47 @@ getLeadTeams: (req, res) => {
         res.json(results);
     });
 },
+// controller/teamTrainingController.js
+
+updateTeamTrainingDueDate: (req, res) => {
+  const { training_id, team_id } = req.params;
+  const { due_date } = req.body;
+
+  if (!training_id || !team_id || !due_date) {
+    return res.status(400).json({ error: "Missing training_id, team_id, or due_date" });
+  }
+
+  // 1️⃣ Update team_training
+  const sqlUpdateTeamTraining = `
+    UPDATE team_training
+    SET due_date = ?
+    WHERE training_id = ? AND team_id = ?
+  `;
+
+  db.query(sqlUpdateTeamTraining, [due_date, training_id, team_id], (err, result) => {
+    if (err) {
+      console.error("Error updating team_training due_date:", err);
+      return res.status(500).json({ error: "Failed to update team_training" });
+    }
+
+    // 2️⃣ Update user_training for all users in the team
+    const sqlUpdateUserTraining = `
+      UPDATE user_training
+      SET due_date = ?
+      WHERE training_id = ? AND team_id = ?
+    `;
+
+    db.query(sqlUpdateUserTraining, [due_date, training_id, team_id], (err2, result2) => {
+      if (err2) {
+        console.error("Error updating user_training due_date:", err2);
+        return res.status(500).json({ error: "Failed to update user_training" });
+      }
+
+      res.json({ message: "Due date updated for team and all users successfully" });
+    });
+  });
+},
+
 
 };
 

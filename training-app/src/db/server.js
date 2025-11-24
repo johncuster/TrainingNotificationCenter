@@ -8,6 +8,7 @@ const memberRoutes = require('../routes/memberroutes.js');
 const userTeamRoutes = require('../routes/userteamroutes.js');
 const authRoutes = require('../routes/authroutes.js');
 const userTrainingRoutes = require('../routes/usertrainingroutes.js');
+const teamLeadRoutes = require('../routes/teamleadroutes.js');
 
 const app = express();  
 app.use(cors());
@@ -22,8 +23,9 @@ app.use('/training', trainingRoutes);
 app.use('/team', teamRoutes);
 app.use('/team_training', teamTrainingRoutes);
 app.use('/member', memberRoutes);
-app.use('/user_team', userTeamRoutes)
-app.use('/user_training', userTrainingRoutes)
+app.use('/user_team', userTeamRoutes);
+app.use('/user_training', userTrainingRoutes);
+app.use('/team_lead', teamLeadRoutes);
 
 app.listen(8081, () => {
     console.log("listening");

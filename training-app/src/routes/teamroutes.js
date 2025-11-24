@@ -10,5 +10,6 @@ router.get('/', teamController.getAllTeams);
 router.post('/', teamController.createTeam);
 router.put('/:team_id', teamController.updateTeam);
 router.get('/:team_id/members', teamController.getTeamMembers);
+router.get("/user/:user_id", teamController.getTeamsForUser);
 
 module.exports = router;

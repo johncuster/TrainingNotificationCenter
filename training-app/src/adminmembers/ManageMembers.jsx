@@ -3,8 +3,8 @@ import MemberContainer from "../managemembers/MemberContainer.jsx";
 import MemberAction from "../component/MemberAction.jsx";
 import '../adminView/adminGlobal.css';
 
-import CreateMemberModal from "./CreateMember.jsx"
-import UpdateMemberModal from "./UpdateMember.jsx"
+import CreateMemberModal from "../managemembers/CreateMember.jsx"
+import UpdateMemberModal from "../managemembers/UpdateMember.jsx"
 
 const ManageMembers = () => {
     const [showModal, setShowModal] = useState(false);

@@ -28,3 +28,124 @@ input[type="text"].text-input {
   padding: 14px 16px;
   box-sizing: border-box;
 }
+
+/* Table styling */
+.member-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.member-list th,
+.member-list td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.member-list th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.member-list tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+.member-list tr.selected {
+  background-color: #cce5ff;
+}
+
+/* Buttons */
+button, .MuiButton-root {
+  padding: 6px 12px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover, .MuiButton-root:hover {
+  opacity: 0.85;
+}
+
+button:disabled, .MuiButton-root.Mui-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* UserTeams table in right panel */
+.user-teams-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.user-teams-table th,
+.user-teams-table td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.user-teams-table th {
+  background-color: #f0f0f0;
+}
+
+.user-teams-table td button {
+  margin-left: 5px;
+}
+.user-teams-container {
+  margin-top: 20px;
+}
+
+.user-teams-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.user-teams-table th,
+.user-teams-table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+.user-teams-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.user-teams-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.assign-lead-btn,
+.remove-lead-btn {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.assign-lead-btn {
+  background-color: #28a745;
+  color: white;
+}
+
+.assign-lead-btn:hover {
+  background-color: #218838;
+}
+
+.remove-lead-btn {
+  background-color: #dc3545;
+  color: white;
+}
+
+.remove-lead-btn:hover {
+  background-color: #c82333;
+}
