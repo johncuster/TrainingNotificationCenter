@@ -163,11 +163,12 @@ export default function MemberPage() {
       {/* Teams the user belongs to */}
       <UserTeams
         userId={selectedMember.user_id}
+        userRole={selectedMember.user_role}
         onLeadUpdate={(updatedLeadTeams) => handleEditSubmit(selectedMember, updatedLeadTeams)}
       />
     </>
   ) : (
-    <p>Select a member to see details</p>
+    <h2>Select a member to see details</h2>
   )}
 </div>
 

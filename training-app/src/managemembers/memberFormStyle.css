@@ -1,125 +1,99 @@
-/* modal overlay */
+/* Modal overlay (background) */
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5); 
+  background-color: rgba(0, 0, 0, 0.5); /* semi-transparent black */
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  overflow: hidden; 
 }
 
-/* modal content */
+/* Modal content box */
 .modal-content {
-  background: #fff;
-  padding: 40px 35px;
+  background-color: #fff;
+  padding: 30px 25px;
   border-radius: 12px;
-  width: 500px; /* wider box */
-  height: 600px;
+  width: 400px;
   max-width: 90%;
-  max-height: 90%; /* prevent overflow */
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
   position: relative;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  overflow-y: auto; /* allow internal scroll if needed without page scrollbar */
-  -webkit-overflow-scrolling: touch;
+  animation: slideDown 0.3s ease-out;
 }
 
-/* Close button */
+/* Close button (top-right) */
 .close-btn {
   position: absolute;
   top: 12px;
   right: 15px;
   border: none;
-  background: transparent;
-  font-size: 26px;
-  font-weight: bold;
+  background: none;
+  font-size: 24px;
   cursor: pointer;
-  color: #333;
+  color: #888;
   transition: color 0.2s;
 }
 
 .close-btn:hover {
-  color: #ff4d4f;
+  color: #000;
 }
 
-/* Title */
-h2 {
-  font-size: 20px;
-  color: #000000;
+/* Modal heading */
+.modal-content h2 {
+  margin-bottom: 20px;
+  font-size: 22px;
+  color: #333;
   text-align: center;
-  font-weight: 600;
-  padding-bottom: 8px;
 }
 
-/* Form labels */
+/* Form styles */
 .create-form label {
   display: block;
   margin-bottom: 15px;
   font-weight: 500;
-  color: #333;
-  font-size: 15px;
+  color: #444;
 }
 
-/* Inputs and dropdowns */
 .text-input {
   width: 100%;
-  padding: 14px 16px;  /* bigger padding */
-  font-size: 15px;      /* larger text */
+  padding: 10px 12px;
+  margin-top: 5px;
   border: 1px solid #ccc;
-  border-radius: 6px;
-  outline: none;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
-input[type="email"].text-input {
-  font-size: 15px;
-  padding: 14px 16px;
-  box-sizing: border-box;
-}
-
 
 .text-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  border-color: #1976d2; /* MUI primary color */
+  box-shadow: 0 0 5px rgba(25, 118, 210, 0.3);
   outline: none;
 }
 
-/* Submit button */
+/* Modal buttons container */
 .modal-buttons {
   display: flex;
   justify-content: center;
-  margin-top: 25px;
+  margin-top: 20px;
 }
 
+/* Create button */
 .create-btn {
-  background-color: #007bff;
+  background-color: #1976d2; /* MUI primary */
   color: #fff;
-  padding: 12px 28px;
-  font-size: 16px;
-  font-weight: 600;
   border: none;
+  padding: 10px 25px;
   border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background-color 0.2s, transform 0.1s;
+  transition: background 0.2s;
 }
 
 .create-btn:hover {
-  background-color: #0056b3;
-  transform: translateY(-1px);
+  background-color: #1565c0;
 }
 
-/* Dropdown arrow */
-select.text-input {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-color: #fff;
-  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'6'%20viewBox%3D'0%200%2010%206'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%206%205-6z'%20fill%3D'%23333'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  background-size: 10px 6px;
-}

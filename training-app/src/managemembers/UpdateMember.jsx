@@ -99,27 +99,6 @@ const UpdateMember = ({ isOpen, onClose, onSubmit, initialData }) => {
             </select>
           </label>
 
-          {/* Show team selection only if role is lead */}
-          {formData.user_role === "lead" && (
-            <label>
-              Team to Lead:<br />
-              <select
-                className="text-input"
-                name="lead_team"
-                value={formData.lead_team}
-                onChange={handleChange}
-                required
-              >
-                <option value="">-- Select Team --</option>
-                {availableTeams.map((team) => (
-                  <option key={team.team_id} value={team.team_id}>
-                    {team.team_name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-
           <label>
             Email:<br />
             <input

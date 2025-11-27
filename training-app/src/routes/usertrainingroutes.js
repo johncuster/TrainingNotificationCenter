@@ -8,6 +8,8 @@ router.get('/progress/:training_id', userTrainingController.getTrainingProgress)
 //router.post('/', userTeamController.addMemberToTeam);
 //router.delete("/:team_id/:user_id", userTeamController.deleteMemberFromTeam);
 router.put("/due_date/:training_id/:team_id", userTrainingController.updateDueDate);
+router.get("/kpi/:userId", userTrainingController.getKpi);
+
 
 
 module.exports = router;

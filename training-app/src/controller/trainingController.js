@@ -77,7 +77,7 @@ getTrainingTeams: (req, res) => {
     const trainingId = req.params.training_id;
 
     const sql = `
-      SELECT tt.team_id, t.team_name
+      SELECT tt.team_id, t.team_name, DATE_FORMAT(tt.due_date, '%Y-%m-%d') AS due_date
       FROM team_training tt
       JOIN team t ON tt.team_id = t.team_id
       WHERE tt.training_id = ?

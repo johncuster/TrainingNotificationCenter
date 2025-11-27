@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Stack, Dialog, DialogTitle, DialogContent, TextField } from "@mui/material";
 import AssignTeamModal from "./AssignTeamModal.jsx";
@@ -11,6 +11,10 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
   const [selectedTeamName, setSelectedTeamName] = useState("");
 
   const [dueDates, setDueDates] = useState({}); // new: { team_id: "YYYY-MM-DD" }
+
+    useEffect(() => {
+    setSelectedTeamId(null); // reset selection when training changes
+  }, [trainingId, teams]);
 
   const handleDelete = async () => {
     if (!selectedTeamId) return alert("Select a team to remove");
@@ -76,12 +80,14 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
     }
   };
 
+console.log("Teams for DataGrid:", teams);
+
   const columns = [
+    
     { field: "team_id", headerName: "ID", width: 100 },
     { field: "team_name", headerName: "Team Name", flex: 1 },
     { field: "completion_percentage", headerName: "Progress", width: 120 },
-
-    // NEW: Due Date column
+    
     {
       field: "due_date",
       headerName: "Due Date",
@@ -95,7 +101,6 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
         />
       )
     },
-    // NEW: Save button column
     {
       field: "save",
       headerName: "Save",
@@ -104,19 +109,21 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
         <Button variant="contained" onClick={() => saveDueDate(params.row.team_id)}>Save</Button>
       )
     }
+    
   ];
 
   return (
     <div style={{ width: "100%", height: 500 }}>
+      
       <h2>Assigned Teams</h2>
 
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
-        <Button variant="contained" onClick={() => setOpenAssign(true)}>Add Team</Button>
+        <Button variant="contained" disabled={!trainingId} onClick={() => setOpenAssign(true)}>Add Team</Button>
         <Button variant="contained" color="error" disabled={!selectedTeamId} onClick={handleDelete}>Remove</Button>
       </Stack>
 
       <DataGrid
-        rows={teams.map(t => ({ ...t, id: t.team_id }))}
+        rows={(teams || []).map(t => ({ ...t, id: t.team_id }))}
         columns={columns}
         pageSize={10}
         rowsPerPageOptions={[5, 10, 20]}

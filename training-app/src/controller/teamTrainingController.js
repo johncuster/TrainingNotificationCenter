@@ -230,6 +230,7 @@ getLeadTeamTraining: (req, res) => {
       ut.ut_status,
       DATE_FORMAT(ut.ut_assigndate, '%Y-%m-%d') AS ut_assigndate,
       DATE_FORMAT(ut.ut_completedate, '%Y-%m-%d') AS ut_completedate,
+      tr.training_title,
       tr.training_desc,
       tr.training_link,
       DATE_FORMAT(ut.due_date, '%Y-%m-%d') AS due_date,
@@ -289,7 +290,6 @@ getLeadTeams: (req, res) => {
         res.json(results);
     });
 },
-// controller/teamTrainingController.js
 
 updateTeamTrainingDueDate: (req, res) => {
   const { training_id, team_id } = req.params;

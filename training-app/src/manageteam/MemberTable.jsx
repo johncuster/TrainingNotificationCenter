@@ -54,53 +54,57 @@ export default function MemberTable({ team }) {
     }
   };
 
-  return (
+ return (
     <div style={{ width: "100%", height: 500 }}>
-      <h2>{team ? `Members of ${team.team_name}` : "Select a team to view members"}</h2>
+      <h2>{team ? `Members of ${team.team_name}` : "Team Members"}</h2>
+
+      <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
+        <Button
+          variant="contained"
+          onClick={() => setOpenAdd(true)}
+          disabled={!team}
+        >
+          Add Member
+        </Button>
+        <Button
+          variant="contained"
+          color="error"
+          disabled={!team || !selectedMemberId}
+          onClick={handleDelete}
+        >
+          Remove Member
+        </Button>
+      </Stack>
+
+      <DataGrid
+        rows={members.map((m) => ({ ...m, id: m.user_id }))}
+        columns={[
+          { field: "user_id", headerName: "ID", width: 120 },
+          { field: "user_ln", headerName: "Last Name", flex: 1 },
+          { field: "user_fn", headerName: "First Name", flex: 1 },
+        ]}
+        pageSize={10}
+        rowsPerPageOptions={[5, 10, 20]}
+        getRowId={(row) => row.id}
+        onRowClick={(params) => setSelectedMemberId(params.id)}
+        hideFooterSelectedRowCount
+        autoHeight={false} // ensures the grid height stays fixed
+        localeText={{ noRowsLabel: team ? "No members" : "Select a team" }}
+      />
 
       {team && (
-        <>
-          <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
-            <Button variant="contained" onClick={() => setOpenAdd(true)}>
-              Add Member
-            </Button>
-            <Button
-              variant="contained"
-              color="error"
-              disabled={!selectedMemberId}
-              onClick={handleDelete}
-            >
-              Remove Member
-            </Button>
-          </Stack>
-
-          <DataGrid
-            rows={members.map((m) => ({ ...m, id: m.user_id }))}
-            columns={[
-              { field: "user_id", headerName: "ID", width: 120 },
-              { field: "user_ln", headerName: "Last Name", flex: 1 },
-              { field: "user_fn", headerName: "First Name", flex: 1 },
-            ]}
-            pageSize={10}
-            rowsPerPageOptions={[5, 10, 20]}
-            getRowId={(row) => row.id}
-            onRowClick={(params) => setSelectedMemberId(params.id)}
-            hideFooterSelectedRowCount
-          />
-
-          <AddMemberModal
-            open={openAdd}
-            onClose={() => setOpenAdd(false)}
-            teamId={team.team_id}
-            onAdded={async () => {
-              setOpenAdd(false);
-              const refreshed = await fetch(
-                `http://localhost:8081/team/${team.team_id}/members`
-              ).then((r) => r.json());
-              setMembers(Array.isArray(refreshed) ? refreshed : []);
-            }}
-          />
-        </>
+        <AddMemberModal
+          open={openAdd}
+          onClose={() => setOpenAdd(false)}
+          teamId={team.team_id}
+          onAdded={async () => {
+            setOpenAdd(false);
+            const refreshed = await fetch(
+              `http://localhost:8081/team/${team.team_id}/members`
+            ).then((r) => r.json());
+            setMembers(Array.isArray(refreshed) ? refreshed : []);
+          }}
+        />
       )}
     </div>
   );

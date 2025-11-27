@@ -5,7 +5,7 @@ import CreateTrainingModal from "./CreateTrainingModal";
 import EditTrainingModal from "./EditTrainingModal";
 
 export default function TrainingTable({ trainings = [], onSelectTraining, refreshTrainings }) {
-  const [selectedId, setSelectedId] = useState(null);
+  const [selectedId, setSelectedId] = useState();
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -43,7 +43,7 @@ export default function TrainingTable({ trainings = [], onSelectTraining, refres
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
         <Button variant="contained" onClick={() => setOpenCreate(true)}>Add</Button>
         <Button variant="outlined" disabled={!selectedTraining} onClick={() => setOpenEdit(true)}>Edit</Button>
-        <Button variant="contained" color="error" disabled={!selectedTraining} onClick={handleDelete}>Delete</Button>
+        <Button type="button" variant="contained" color="error" disabled={!selectedTraining} onClick={handleDelete}>Delete</Button>
       </Stack>
 
       <DataGrid

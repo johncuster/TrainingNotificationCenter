@@ -3,16 +3,28 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button, MenuItem, Select } from "@mui/material";
 import "./leadLayout.css";
 
-export default function LeadDashboard() {
+export default function LeadTeam() {
   const [data, setData] = useState({});
   const [selectedTeam, setSelectedTeam] = useState("ALL");
+  const [teams, setTeams] = useState([]);
+
   const userId = localStorage.getItem("user_id");
   const userFirstName = localStorage.getItem("user_fn") || "FirstName";
   const userLastName = localStorage.getItem("user_ln") || "LastName";
 
-  // Fetch data and group by team
+  // 1️⃣ Fetch Teams the Lead Manages
   useEffect(() => {
-    fetch(`http://localhost:8081/member/${userId}`)
+    fetch(`http://localhost:8081/team_lead/${userId}`)
+      .then((res) => res.json())
+      .then((rows) => {
+        setTeams(rows);
+      })
+      .catch((err) => console.error("Error fetching lead teams:", err));
+  }, [userId]);
+
+  // 2️⃣ Fetch Training Data for Teams the Lead Manages
+  useEffect(() => {
+    fetch(`http://localhost:8081/team_training/lead/${userId}/members`)
       .then((res) => res.json())
       .then((rows) => {
         const grouped = {};
@@ -22,9 +34,10 @@ export default function LeadDashboard() {
         });
         setData(grouped);
       })
-      .catch((err) => console.error("Error fetching member data:", err));
+      .catch((err) => console.error("Error fetching team training data:", err));
   }, [userId]);
 
+  // Save update for a single row
   const saveUpdate = (row) => {
     return fetch(
       `http://localhost:8081/user_training/update/${row.usertraining_id}`,
@@ -39,6 +52,7 @@ export default function LeadDashboard() {
     ).then((res) => res.json());
   };
 
+  // Save all rows
   const handleSaveAll = async () => {
     try {
       const allRows = Object.values(data).flat();
@@ -50,6 +64,7 @@ export default function LeadDashboard() {
     }
   };
 
+  // KPI Calculations
   const getKPIs = () => {
     const rows =
       selectedTeam === "ALL"
@@ -74,35 +89,15 @@ export default function LeadDashboard() {
   const KPIs = getKPIs();
 
   const trainingColumns = [
-    { field: "team_name", headerName: "Team", width: 150 },
-    { field: "training_title", headerName: "Training Title", flex: 1 },
-    { field: "training_desc", headerName: "Description", flex: 1 },
-    { field: "training_link", headerName: "Link", flex: 1 },
-    {
-      field: "ut_status",
-      headerName: "Status",
-      width: 150,
-      renderCell: (params) => (
-        <select
-          value={params.row.ut_status || "Pending"}
-          onChange={(e) => {
-            const newData = { ...data };
-            const teamName = params.row.team_name;
-            const rowIndex = newData[teamName].findIndex(
-              (r) => r.training_id === params.row.training_id
-            );
-            newData[teamName][rowIndex].ut_status = e.target.value;
-            setData(newData);
-          }}
-        >
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
-      ),
-    },
-    { field: "ut_assigndate", headerName: "Assigned", width: 150 },
-    { field: "due_date", headerName: "Due Date", width: 150 },
-    { field: "ut_completedate", headerName: "Completed", width: 150 },
+    { field: "user_fn", headerName: "First Name", flex: 2 },
+    { field: "user_ln", headerName: "Last Name", flex: 2 },
+    { field: "training_title", headerName: "Training Title", flex: 2 },
+    { field: "training_desc", headerName: "Description", flex: 2 },
+    { field: "training_link", headerName: "Link", flex: 3 },
+    { field: "ut_status", headerName: "Status", width: 100 },
+    { field: "due_date", headerName: "Due Date", width: 100 },
+    { field: "ut_assigndate", headerName: "Assigned", width: 100 },
+    { field: "ut_completedate", headerName: "Completed", width: 100 },
   ];
 
   const rows =
@@ -114,22 +109,33 @@ export default function LeadDashboard() {
 
   return (
     <div className="dashboard-container">
-
+      {/* KPI PANEL */}
       <div className="kpi-container">
-        <div className="kpi-card" style={{ background: '#f796a5ff',  }}>Overdue: {KPIs.overdue}</div>
-        <div className="kpi-card" style={{ background: '#9bf8c5ff', }}>Completed: {KPIs.completed}</div>
-        <div className="kpi-card" style={{ background: '#eff7b8ff', }}>Pending: {KPIs.pending}</div>
+        <div className="kpi-card" style={{ background: "#f796a5ff" }}>
+          Overdue: {KPIs.overdue}
+        </div>
+        <div className="kpi-card" style={{ background: "#9bf8c5ff" }}>
+          Completed: {KPIs.completed}
+        </div>
+        <div className="kpi-card" style={{ background: "#eff7b8ff" }}>
+          Pending: {KPIs.pending}
+        </div>
         <div className="kpi-card">Total Trainings: {KPIs.total}</div>
       </div>
 
       <div className="user-layout">
+        {/* LEFT PANEL */}
         <div className="user-left">
-          <div className="user-info-box" style={{ marginBottom: "15px", padding: "10px", borderRadius: "8px" }}>
-            <h3 style={{ margin: 0 }}>Member Dashboard</h3>
-            <p style={{ margin: "5px 0" }}><b>User ID:</b> {userId}</p>
-            <p style={{ margin: "5px 0" }}><b>First Name:</b> {userFirstName}</p>
-            <p style={{ margin: "5px 0" }}><b>Last Name:</b> {userLastName}</p>
+          <div
+            className="user-info-box"
+            style={{ marginBottom: "15px", padding: "10px", borderRadius: "8px" }}
+          >
+            <h3 style={{ margin: 0 }}>Lead Dashboard</h3>
+            <p><b>User ID:</b> {userId}</p>
+            <p><b>First Name:</b> {userFirstName}</p>
+            <p><b>Last Name:</b> {userLastName}</p>
           </div>
+
           <div className="user-select">
             <h3>Select Team</h3>
             <Select
@@ -138,22 +144,18 @@ export default function LeadDashboard() {
               onChange={(e) => setSelectedTeam(e.target.value)}
             >
               <MenuItem value="ALL">All Teams</MenuItem>
-              {Object.keys(data).map((team) => (
-                <MenuItem key={team} value={team}>
-                  {team}
+              {teams.map((team) => (
+                <MenuItem key={team.team_id} value={team.team_name}>
+                  {team.team_name}
                 </MenuItem>
               ))}
             </Select>
           </div>
         </div>
 
+        {/* RIGHT PANEL */}
         <div className="user-right">
-          <DataGrid
-            rows={rows}
-            columns={trainingColumns}
-            autoHeight
-            pageSize={10}
-          />
+          <DataGrid rows={rows} columns={trainingColumns} autoHeight pageSize={10} />
           <Button
             variant="contained"
             onClick={handleSaveAll}

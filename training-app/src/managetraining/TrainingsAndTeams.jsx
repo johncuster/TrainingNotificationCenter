@@ -4,7 +4,7 @@ import TrainingTeamTable from "./TrainingTeamTable";   // Right panel
 import "./trainingLayout.css";
 
 export default function TrainingsAndTeams({ trainings, allTeams, refreshTrainings }) {
-  const [selectedTraining, setSelectedTraining] = useState(null);
+  const [selectedTraining, setSelectedTraining] = useState(1);
   const [assignedTeams, setAssignedTeams] = useState([]);
 
   // Fetch assigned teams + progress whenever a training is selected
@@ -15,7 +15,7 @@ export default function TrainingsAndTeams({ trainings, allTeams, refreshTraining
 
       const merged = assigned.map(team => {
         const prog = progress.find(p => p.team_id === team.team_id);
-        return { ...team, completion_percentage: prog ? prog.completion_percentage : 0 };
+        return { ...team, completion_percentage: prog ? prog.completion_percentage : 0, due_date: team.due_date };
       });
 
       setAssignedTeams(merged);
@@ -44,16 +44,13 @@ export default function TrainingsAndTeams({ trainings, allTeams, refreshTraining
       </div>
 
       <div className="right-panel">
-        {selectedTraining ? (
           <TrainingTeamTable
-            trainingId={selectedTraining.training_id}
+            trainingId={selectedTraining.training_id || null}
             teams={assignedTeams}
             allTeams={allTeams}
             refreshTeams={() => fetchAssignedTeams(selectedTraining.training_id)}
           />
-        ) : (
-          <div>Select a training to see assigned teams</div>
-        )}
+        
       </div>
     </div>
   );

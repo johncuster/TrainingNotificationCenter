@@ -12,35 +12,40 @@
   import ManageTeam from "./adminteam/ManageTeam"; 
   import Login from "./adminuserlogin/Login.jsx";
   import LeadDashboard from "./leadDashboard/LeadDashboard.jsx";
+  import LeadTeam from "./leadDashboard/LeadTeam.jsx";
   //import SampleDashboard from "./TrainingTable.jsx";
   import TeamPage from "./manageteam/TeamPage.jsx";
   import TrainingPage from "./managetraining/TrainingPage.jsx";
   import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
 
+  import { AuthProvider } from "./AuthContext";
+  import ProtectedRoute from "./ProtectedRoute";
+  
+
   function App() {
     return (
       <BrowserRouter>
+      <AuthProvider>
       
         <div style={{ textAlign: "center", }}>
           <IsNavBar>
            
             <AdminNavbar />
           </IsNavBar>
-
-        <div className="pages"></div>
+        </div>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/leadDashboard" element={<LeadDashboard />}/>
-            <Route path="/memberDashboard" element={<MemberDashboard />}/>
-            <Route path="/managetraining" element={<ManageTraining />} />
-            <Route path="/manageteam" element={<ManageTeam />} />
-            <Route path="/managemember" element={<ManageMember />} />
-            {/* <Route path="/" element={<SampleDashboard />}/> */}
-            <Route path="/trainings" element={<TrainingPage />} />
-            <Route path="/teams" element={<TeamPage />} />
-
+            <Route path="/leadDashboard" element={<ProtectedRoute allowedRoles={["lead"]}><LeadDashboard /></ProtectedRoute>}/>
+            <Route path="/leadTeam" element={<ProtectedRoute allowedRoles={["lead"]}><LeadDashboard /></ProtectedRoute>}/>
+            <Route path="/memberDashboard" element={<ProtectedRoute allowedRoles={["member"]}><MemberDashboard /></ProtectedRoute>}/>
+            {/* <Route path="/managetraining" element={<ManageTraining />} />
+            <Route path="/manageteam" element={<ManageTeam />} /> */}
+            <Route path="/managemember" element={<ProtectedRoute allowedRoles={["admin"]}><ManageMember /></ProtectedRoute>} />
+            <Route path="/" element={<Login />}/>
+            <Route path="/trainings" element={<ProtectedRoute allowedRoles={["admin"]}><TrainingPage /></ProtectedRoute>} />
+            <Route path="/teams" element={<ProtectedRoute allowedRoles={["admin"]}><TeamPage /></ProtectedRoute>} />
           </Routes>
-        </div>
+      </AuthProvider>
       </BrowserRouter>
     );
   }

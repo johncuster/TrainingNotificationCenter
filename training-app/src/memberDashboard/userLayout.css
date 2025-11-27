@@ -1,49 +1,125 @@
 /* Container for the whole dashboard */
-.user-dashboard-container {
+.dashboard-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns = KPI reference */
+  gap: 20px; 
+  row-gap: 20px; /* space between KPI and panels */
   padding: 20px;
   box-sizing: border-box;
-  min-height: 100vh; /* ensure it doesn't overlap navbar */
-  background: #f0f2f5; /* optional page background */
+  min-height: 100vh;
+  align-items: start;  
+  background: #f5f7fa;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  grid-auto-rows: max-content; /* prevents rows from stretching */
 }
 
-/* TOP HEADER */
-.user-info-header {
-  margin-bottom: 20px;
-  padding: 15px;
-  background: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-/* Main layout for left/right panels */
-.user-layout {
-  display: flex;
+/* KPI cards at top */
+.kpi-container {
+  grid-column: 1 / -1;      /* span all columns */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  flex-wrap: wrap; /* responsive stacking on small screens */
+  margin-bottom: 0;         /* remove unnecessary gap */
+}
+
+.kpi-card {
+  background: #ffffff;
+  padding: 20px 15px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+/* Layout wrapper for panels */
+.user-layout {
+  display: contents; /* allows children to follow grid columns directly */
 }
 
 /* LEFT PANEL */
 .user-left {
-  flex: 1;
-  min-width: 300px; /* responsive */
-  background: #ffffff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  grid-column: 1 / 2; /* aligns with first KPI card */
+  min-width: 280px;
+  max-height: fit-content;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+}
+
+.user-select {
+  background-color: white;
+  padding: 10px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  font-size: 15px;
+  max-height: fit-content;
+}
+
+/* USER INFO BOX inside left panel */
+.user-info-box {
+  background-color: #ffffff;
+  padding: 15px 20px;
+  border-radius: 12px;
+  text-align: left;
+  gap: 5px;
+  font-size: 15px;
+}
+
+.user-info-box h3 {
+  margin: 0 0 10px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.user-info-box p {
+  margin: 4px 0;
+  color: #555;
 }
 
 /* RIGHT PANEL */
 .user-right {
-  flex: 2;
-  min-width: 400px; /* wider than left panel */
+  grid-column: 2 / 5; /* aligns with last 3 KPI cards */
   background: #ffffff;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
 }
 
-/* Optional: margin for DataGrid inside panels */
+/* TEAM SELECT DROPDOWN */
+.user-left .MuiSelect-root {
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+/* SAVE BUTTON */
+.user-right .MuiButton-root {
+  display: flex;
+  margin-top: 15px;
+  margin-left: auto;
+  justify-content: flex-end;
+}
+
+/* DataGrid styling */
 .user-left .MuiDataGrid-root,
 .user-right .MuiDataGrid-root {
   margin-top: 10px;
+  border-radius: 10px;
+}
+
+/* Hover highlight for rows in DataGrid */
+.MuiDataGrid-row:hover {
+  background-color: rgba(0, 123, 255, 0.05);
+}
+
+/* Optional: nicer scrollbars */
+.MuiDataGrid-virtualScroller::-webkit-scrollbar {
+  width: 6px;
+}
+
+.MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb {
+  background-color: rgba(0,0,0,0.2);
+  border-radius: 3px;
 }

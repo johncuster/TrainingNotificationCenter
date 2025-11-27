@@ -89,6 +89,8 @@ getTrainingTeams: (req, res) => {
     const sql = `
     SELECT 
       ut.usertraining_id,
+      u.user_ln,
+      u.user_fn,
       t.team_name AS team_name,
       tr.training_title,
       tr.training_desc,
@@ -101,6 +103,7 @@ getTrainingTeams: (req, res) => {
     JOIN team t ON t.team_id = utm.team_id
     LEFT JOIN user_training ut ON ut.user_id = utm.user_id AND ut.team_id = t.team_id
     LEFT JOIN training tr ON tr.training_id = ut.training_id
+    LEFT JOIN user_member u ON utm.user_id = u.user_id
     WHERE utm.user_id = ?
 
     `;

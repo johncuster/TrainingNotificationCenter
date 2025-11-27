@@ -1,4 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../AuthContext";
+
 import "./login.css";
 
 const Login = () => {
@@ -6,6 +9,16 @@ const Login = () => {
   //const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const { login, user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+    if (user.user_role === "admin") navigate("/trainings");
+    else if (user.user_role === "lead") navigate("/leadDashboard");
+    else if (user.user_role === "member") navigate("/memberDashboard");
+  }, [user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -23,15 +36,17 @@ const Login = () => {
       setLoading(false);
 
       if (res.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user_role", data.user_role);
-        localStorage.setItem("user_ln", data.user_ln);
-        localStorage.setItem("user_id", data.user_id);
+        login(data);
+        // localStorage.setItem("token", data.token);
+        // localStorage.setItem("user_role", data.user_role);
+        // localStorage.setItem("user_fn", data.user_fn);
+        // localStorage.setItem("user_ln", data.user_ln);
+        // localStorage.setItem("user_id", data.user_id);
 
         // redirect based on role
         if (data.user_role === "admin") {
            alert("admin");
-          window.location.href = "/admin";
+          window.location.href = "/trainings";
         } else if (data.user_role === 'lead')
         {
             alert("lead");

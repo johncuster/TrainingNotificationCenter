@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-export default function UserTeams({ userId, onLeadUpdate }) {
+export default function UserTeams({ userId, userRole, onLeadUpdate }) {
   const [teams, setTeams] = useState([]);
   const [leadTeams, setLeadTeams] = useState([]);
 
@@ -48,8 +48,8 @@ export default function UserTeams({ userId, onLeadUpdate }) {
           <thead>
             <tr>
               <th>Team Name</th>
-              <th>Lead Status</th>
-              <th>Action</th>
+              <th>Role</th>
+              {userRole === "lead" && <th>Action</th>} {/* Only show Action column for leads */}
             </tr>
           </thead>
           <tbody>
@@ -59,23 +59,25 @@ export default function UserTeams({ userId, onLeadUpdate }) {
                 <tr key={team.team_id}>
                   <td>{team.team_name}</td>
                   <td>{isLead ? "Lead" : "Member"}</td>
-                  <td>
-                    {isLead ? (
-                      <button
-                        className="remove-lead-btn"
-                        onClick={() => handleRemoveLead(team.team_id)}
-                      >
-                        Remove as Lead
-                      </button>
-                    ) : (
-                      <button
-                        className="assign-lead-btn"
-                        onClick={() => handleAddLead(team.team_id)}
-                      >
-                        Assign as Lead
-                      </button>
-                    )}
-                  </td>
+                  {userRole === "lead" && (
+                    <td>
+                      {isLead ? (
+                        <button
+                          className="remove-lead-btn"
+                          onClick={() => handleRemoveLead(team.team_id)}
+                        >
+                          Remove as Lead
+                        </button>
+                      ) : (
+                        <button
+                          className="assign-lead-btn"
+                          onClick={() => handleAddLead(team.team_id)}
+                        >
+                          Assign as Lead
+                        </button>
+                      )}
+                    </td>
+                  )}
                 </tr>
               );
             })}

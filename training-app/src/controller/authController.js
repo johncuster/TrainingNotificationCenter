@@ -40,6 +40,8 @@ const authController = {
          res.json({
            message: "Login successful",
            token,
+           user_ln: user.user_ln,
+           user_fn: user.user_fn,
            user_role: user.user_role,
            user_id: user.user_id,
          });

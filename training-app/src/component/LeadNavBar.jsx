@@ -1,10 +1,10 @@
-import { useMatch, useResolvedPath, Link, useNavigate } from 'react-router-dom';
+import { useMatch, useResolvedPath, Link, useNavigate  } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAuth } from '../AuthContext';
 
 import './AdminNavbar.css';
 
-const AdminNavbar = () => {
+const LeadNavBar = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
 
@@ -16,17 +16,17 @@ const AdminNavbar = () => {
         <header>
             <nav className="navbar">
                 <ul className="navbar">
-                    <CustomLink to="/trainings">Manage Trainings</CustomLink>
-                    <CustomLink to="/teams">Manage Teams</CustomLink>
-                    <CustomLink to="/managemember">Manage Users</CustomLink>
+                    <CustomLink to="/leadDashboard">Manage Trainings</CustomLink>
+                    <CustomLink to="/leadTeam">Manage Team</CustomLink>
                 </ul>
             </nav>
             <div className="buttonDesign" >
-                <Link to="/login">
+                <Link to="/login" className="">
                     <button onClick={handleLogout}>
                         Log Out
                     </button>
                 </Link>
+                
             </div>
             
         </header>
@@ -51,4 +51,4 @@ CustomLink.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export default AdminNavbar;
+export default LeadNavBar;
