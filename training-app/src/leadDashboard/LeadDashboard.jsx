@@ -85,6 +85,7 @@ export default function LeadDashboard() {
       renderCell: (params) => (
         <select
           value={params.row.ut_status || "Pending"}
+          disabled={params.row.ut_status === "Completed"}
           onChange={(e) => {
             const newData = { ...data };
             const teamName = params.row.team_name;

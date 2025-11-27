@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { DataGrid } from "@mui/x-data-grid";
+import  { useState, useEffect } from "react";
+import { DataGrid, GridToolbar  } from "@mui/x-data-grid";
 import { Button, Stack, Dialog, DialogTitle, DialogContent, TextField } from "@mui/material";
 import AssignTeamModal from "./AssignTeamModal.jsx";
 
@@ -129,6 +129,7 @@ console.log("Teams for DataGrid:", teams);
         rowsPerPageOptions={[5, 10, 20]}
         onRowClick={(params) => setSelectedTeamId(params.row.team_id)}
         onRowDoubleClick={handleRowDoubleClick}
+        components={{ Toolbar: GridToolbar }} 
         hideFooterSelectedRowCount
       />
 
