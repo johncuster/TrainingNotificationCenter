@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import TrainingTable from "./TrainingTable";           // Left panel
 import TrainingTeamTable from "./TrainingTeamTable";   // Right panel
-import "./trainingLayout.css";
+import "../view/splitlayout.css";
 
 export default function TrainingsAndTeams({ trainings, allTeams, refreshTrainings }) {
   const [selectedTraining, setSelectedTraining] = useState(1);
   const [assignedTeams, setAssignedTeams] = useState([]);
 
-  // Fetch assigned teams + progress whenever a training is selected
   const fetchAssignedTeams = async (trainingId) => {
     try {
       const assigned = await fetch(`http://localhost:8081/training/${trainingId}/teams`).then(res => res.json());
@@ -34,7 +33,7 @@ export default function TrainingsAndTeams({ trainings, allTeams, refreshTraining
   }, [selectedTraining]);
 
   return (
-    <div className="trainings-layout">
+    <div className="container-layout">
       <div className="left-panel">
         <TrainingTable
           trainings={trainings}
@@ -50,7 +49,6 @@ export default function TrainingsAndTeams({ trainings, allTeams, refreshTraining
             allTeams={allTeams}
             refreshTeams={() => fetchAssignedTeams(selectedTraining.training_id)}
           />
-        
       </div>
     </div>
   );

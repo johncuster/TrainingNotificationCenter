@@ -24,7 +24,6 @@ const userteamController = {
     db.beginTransaction(err => {
       if (err) return res.status(500).json({ error: "Database transaction error" });
 
-      // 1️⃣ Add member to user_team
       const sqlInsertUserTeam = `INSERT INTO user_team (team_id, user_id) VALUES (?, ?)`;
       db.query(sqlInsertUserTeam, [team_id, user_id], (err) => {
         if (err) {
@@ -34,7 +33,6 @@ const userteamController = {
           return db.rollback(() => res.status(500).json({ error: "Database error adding user to team" }));
         }
 
-        // 2️⃣ Get all trainings assigned to the team
         const sqlTeamTrainings = `SELECT training_id FROM team_training WHERE team_id = ?`;
         db.query(sqlTeamTrainings, [team_id], (err, trainings) => {
           if (err) return db.rollback(() => res.status(500).json({ error: "Database error fetching team trainings" }));
@@ -65,7 +63,6 @@ const userteamController = {
               });
             }
 
-            // 3️⃣ Insert new trainings for this user
             const now = new Date();
             const mysqlDate = now.toISOString().slice(0, 19).replace("T", " ");
             const insertValues = newTrainings.map(tid => [user_id, tid, 'Pending', mysqlDate, null, team_id]);

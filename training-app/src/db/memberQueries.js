@@ -4,8 +4,8 @@ const memberQueries = {
         `SELECT * FROM user_member`,
 
     createMember:
-        `INSERT INTO user_member (user_ln, user_fn, user_role, user_email)
-        VALUES (?, ?, ?, ?)`,
+        `INSERT INTO user_member (user_ln, user_fn, user_role, user_email, password)
+        VALUES (?, ?, ?, ?, SHA2(?, 256))`,
 
     updateMember:
         `UPDATE user_member

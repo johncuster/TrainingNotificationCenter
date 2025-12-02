@@ -35,7 +35,7 @@ const authController = {
             { expiresIn: "2h" }
          );
 
-         console.log(`✅ User ${user.user_role} logged in successfully.`);
+         console.log(`User ${user.user_role} logged in successfully.`);
 
          res.json({
            message: "Login successful",

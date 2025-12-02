@@ -10,7 +10,7 @@ export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
   const [openEdit, setOpenEdit] = useState(false);
 
   const columns = [
-    { field: "team_id", headerName: "ID", width: 90 },
+    // { field: "team_id", headerName: "ID", width: 90 },
     { field: "team_name", headerName: "Team Name", flex: 1 },
   ];
 
@@ -38,7 +38,7 @@ export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
   };
 
   return (
-    <div style={{ width: "100%", height: 500 }}>
+    <div>
       <h2>Teams</h2>
 
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>

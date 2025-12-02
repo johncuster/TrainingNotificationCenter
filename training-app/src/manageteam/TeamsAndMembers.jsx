@@ -2,13 +2,13 @@
 import React, { useState } from "react";
 import TeamTable from "./TeamTable";
 import MemberTable from "./MemberTable";
-import "./teamsLayout.css";
+import "../view/splitlayout.css";
 
 export default function TeamsAndMembers({ teams, refreshTeams }) {
   const [selectedTeam, setSelectedTeam] = useState(null);
 
   return (
-    <div className="teams-layout">
+    <div className="container-layout">
       <div className="left-panel">
         <TeamTable
           teams={teams}

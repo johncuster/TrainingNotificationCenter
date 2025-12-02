@@ -27,7 +27,7 @@ const teamController = {
           
     console.log("Created Team2");
       if (err) {
-        console.error("DB Error:", err.sqlMessage || err); // show what failed
+        console.error("DB Error:", err.sqlMessage || err);
         return res.status(500).json({ error: err });
       }
           
@@ -86,7 +86,7 @@ const teamController = {
     FROM user_member u
     JOIN user_team ut ON u.user_id = ut.user_id
     WHERE ut.team_id = ?
-    ORDER BY u.user_id ASC;
+    ORDER BY u.user_role ASC, u.user_ln ASC;
   `;
 
   db.query(sql, [teamId], (err, results) => {

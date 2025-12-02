@@ -30,14 +30,14 @@ export default function TrainingTable({ trainings = [], onSelectTraining, refres
   };
 
   const columns = [
-    { field: "training_id", headerName: "ID", width: 90 },
+    // { field: "training_id", headerName: "ID", width: 90 },
     { field: "training_title", headerName: "Title", flex: 1 },
     { field: "training_desc", headerName: "Description", flex: 1 },
     { field: "training_link", headerName: "Link", flex: 1 }
   ];
 
   return (
-    <div style={{ width: "100%", height: 500 }}>
+    <div>
       <h2>Trainings</h2>
 
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>

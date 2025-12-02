@@ -4,11 +4,12 @@
   grid-template-columns: repeat(4, 1fr); /* 4 equal columns = KPI reference */
   gap: 20px; 
   row-gap: 20px; /* space between KPI and panels */
-  padding: 20px;
+  padding-top: 20px;
+  padding-left: 50px;
+  padding-right: 50px;
   box-sizing: border-box;
   min-height: 100vh;
   align-items: start;  
-  background: #f5f7fa;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   grid-auto-rows: max-content; /* prevents rows from stretching */
 }

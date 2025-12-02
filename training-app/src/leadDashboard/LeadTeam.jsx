@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, MenuItem, Select } from "@mui/material";
-import "./leadLayout.css";
+import "../view/userlayout.css";
 
 export default function LeadTeam() {
   const [data, setData] = useState({});
@@ -110,7 +110,7 @@ export default function LeadTeam() {
   return (
     <div className="dashboard-container">
       {/* KPI PANEL */}
-      <div className="kpi-container">
+      {/* <div className="kpi-container">
         <div className="kpi-card" style={{ background: "#f796a5ff" }}>
           Overdue: {KPIs.overdue}
         </div>
@@ -121,6 +121,12 @@ export default function LeadTeam() {
           Pending: {KPIs.pending}
         </div>
         <div className="kpi-card">Total Trainings: {KPIs.total}</div>
+      </div> */}
+      <div className="kpi-container">
+        <div className="kpi-card">Total Trainings: {KPIs.total}</div>
+        <div className="kpi-card" style={{ background: '#f796a5ff',  }}>Overdue: {KPIs.overdue}</div>
+        <div className="kpi-card" style={{ background: '#9bf8c5ff', }}>Completed: {KPIs.completed}</div>
+        <div className="kpi-card" style={{ background: '#eff7b8ff', }}>Pending: {KPIs.pending}</div>
       </div>
 
       <div className="user-layout">

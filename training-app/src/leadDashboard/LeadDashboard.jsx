@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, MenuItem, Select } from "@mui/material";
-import "./leadLayout.css";
+import "../view/userlayout.css";
 
 export default function LeadDashboard() {
   const [data, setData] = useState({});
@@ -42,8 +42,24 @@ export default function LeadDashboard() {
   const handleSaveAll = async () => {
     try {
       const allRows = Object.values(data).flat();
+
+      // Save all rows in parallel
       await Promise.all(allRows.map((row) => saveUpdate(row)));
-      alert("Saved successfully!");
+
+      // Re-fetch latest data from the server
+      fetch(`http://localhost:8081/member/${userId}`)
+        .then((res) => res.json())
+        .then((rows) => {
+          const grouped = {};
+          rows.forEach((row) => {
+            if (!grouped[row.team_name]) grouped[row.team_name] = [];
+            grouped[row.team_name].push(row);
+          });
+          setData(grouped); // Update state to refresh DataGrid
+        })
+        .catch((err) => console.error("Error fetching member data:", err));
+
+      alert("Saved successfully and DataGrid refreshed!");
     } catch (err) {
       console.error(err);
       alert("Failed to save.");
@@ -78,28 +94,43 @@ export default function LeadDashboard() {
     { field: "training_title", headerName: "Training Title", flex: 1 },
     { field: "training_desc", headerName: "Description", flex: 1 },
     { field: "training_link", headerName: "Link", flex: 1 },
+    
     {
       field: "ut_status",
       headerName: "Status",
       width: 150,
-      renderCell: (params) => (
-        <select
-          value={params.row.ut_status || "Pending"}
-          disabled={params.row.ut_status === "Completed"}
-          onChange={(e) => {
-            const newData = { ...data };
-            const teamName = params.row.team_name;
-            const rowIndex = newData[teamName].findIndex(
-              (r) => r.training_id === params.row.training_id
-            );
-            newData[teamName][rowIndex].ut_status = e.target.value;
-            setData(newData);
-          }}
-        >
-          <option value="Pending">Pending</option>
-          <option value="Completed">Completed</option>
-        </select>
-      ),
+      editable: true,   // <-- REQUIRED
+      renderCell: (params) => {
+        return (
+          <Select
+            value={params.row.ut_status || "Pending"}
+            disabled={params.row.ut_completedate != null}
+            autoFocus
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            onChange={(e) => {
+              const teamName = params.row.team_name;
+
+              setData((prevData) => {
+                // Deep copy the team rows
+                const updatedTeamRows = prevData[teamName].map((row) =>
+                  row.training_id === params.row.training_id
+                    ? { ...row, ut_status: e.target.value } // updated row
+                    : { ...row } // copy of other rows
+                );
+
+                // Return new data object with updated team
+                return { ...prevData, [teamName]: updatedTeamRows };
+              });
+            }}
+
+            size="small"
+          >
+            <MenuItem value="Pending">Pending</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+          </Select>
+        );
+      },
     },
     { field: "ut_assigndate", headerName: "Assigned", width: 150 },
     { field: "due_date", headerName: "Due Date", width: 150 },
@@ -117,10 +148,10 @@ export default function LeadDashboard() {
     <div className="dashboard-container">
 
       <div className="kpi-container">
+        <div className="kpi-card">Total Trainings: {KPIs.total}</div>
         <div className="kpi-card" style={{ background: '#f796a5ff',  }}>Overdue: {KPIs.overdue}</div>
         <div className="kpi-card" style={{ background: '#9bf8c5ff', }}>Completed: {KPIs.completed}</div>
         <div className="kpi-card" style={{ background: '#eff7b8ff', }}>Pending: {KPIs.pending}</div>
-        <div className="kpi-card">Total Trainings: {KPIs.total}</div>
       </div>
 
       <div className="user-layout">

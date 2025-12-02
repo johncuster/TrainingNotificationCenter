@@ -57,9 +57,6 @@ const syncController = {
     });
   },
 
-  // -----------------------------------------------------------------------
-  // 2) SYNC WHEN NEW MEMBER JOINS TEAM
-  // -----------------------------------------------------------------------
   syncUserToTeamTrainings: (req, res) => {
     const { user_id, team_id } = req.body;
 
@@ -67,7 +64,6 @@ const syncController = {
       return res.status(400).json({ error: "Missing user_id or team_id" });
     }
 
-    // Get all trainings assigned to this team
     const getTeamTrainings = `
       SELECT training_id FROM team_training
       WHERE team_id = ?
@@ -107,9 +103,6 @@ const syncController = {
     });
   },
 
-  // -----------------------------------------------------------------------
-  // 3) REMOVE TEAM FROM TRAINING + CLEAN USER_TRAINING
-  // -----------------------------------------------------------------------
   removeTeamFromTraining: (req, res) => {
     const { team_id, training_id } = req.params;
 
@@ -142,9 +135,6 @@ const syncController = {
     });
   },
 
-  // -----------------------------------------------------------------------
-  // 4) USER REMOVED FROM TEAM → REMOVE TRAININGS ONLY FOR THAT TEAM
-  // -----------------------------------------------------------------------
   removeUserFromTeam: (req, res) => {
     const { user_id, team_id } = req.params;
 

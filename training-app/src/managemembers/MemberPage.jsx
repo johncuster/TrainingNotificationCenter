@@ -5,6 +5,7 @@ import CreateMember from "./CreateMember";
 import UpdateMember from "./UpdateMember";
 import UserTeams from "./UserTeams";
 
+import "../view/splitlayout.css";
 import "./memberLayout.css";
 
 export default function MemberPage() {
@@ -111,7 +112,7 @@ export default function MemberPage() {
   };
 
   const columns = [
-    { field: "user_id", headerName: "ID", width: 90 },
+    // { field: "user_id", headerName: "ID", width: 90 },
     { field: "user_ln", headerName: "Last Name", flex: 1 },
     { field: "user_fn", headerName: "First Name", flex: 1 },
     { field: "user_role", headerName: "Role", flex: 1 },
@@ -128,7 +129,7 @@ export default function MemberPage() {
   };
 
   return (
-    <div className="members-layout">
+    <div className="container-layout">
 
       {/* LEFT PANEL */}
       <div className="left-panel">
@@ -148,30 +149,29 @@ export default function MemberPage() {
           autoHeight
         />
       </div>
-{/* RIGHT PANEL */}
-<div className="right-panel">
-  {selectedMember ? (
-    <>
-      <h3>Selected Member</h3>
-      <p><b>Last Name:</b> {selectedMember.user_ln}</p>
-      <p><b>First Name:</b> {selectedMember.user_fn}</p>
-      <p><b>Role:</b> {selectedMember.user_role}</p>
-      <p><b>Email:</b> {selectedMember.user_email}</p>
+      {/* RIGHT PANEL */}
+      <div className="right-panel">
+        {selectedMember ? (
+          <>
+            <h3>Selected Member</h3>
+            <p><b>Last Name:</b> {selectedMember.user_ln}</p>
+            <p><b>First Name:</b> {selectedMember.user_fn}</p>
+            <p><b>Role:</b> {selectedMember.user_role}</p>
+            <p><b>Email:</b> {selectedMember.user_email}</p>
 
-      <hr />
+            <hr />
 
-      {/* Teams the user belongs to */}
-      <UserTeams
-        userId={selectedMember.user_id}
-        userRole={selectedMember.user_role}
-        onLeadUpdate={(updatedLeadTeams) => handleEditSubmit(selectedMember, updatedLeadTeams)}
-      />
-    </>
-  ) : (
-    <h2>Select a member to see details</h2>
-  )}
-</div>
-
+            {/* Teams the user belongs to */}
+            <UserTeams
+              userId={selectedMember.user_id}
+              userRole={selectedMember.user_role}
+              onLeadUpdate={(updatedLeadTeams) => handleEditSubmit(selectedMember, updatedLeadTeams)}
+            />
+          </>
+        ) : (
+          <h2>Select a member to see details</h2>
+        )}
+      </div>
 
       {/* MODALS */}
       <CreateMember

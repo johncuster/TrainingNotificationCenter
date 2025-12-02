@@ -83,15 +83,14 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
 console.log("Teams for DataGrid:", teams);
 
   const columns = [
-    
-    { field: "team_id", headerName: "ID", width: 100 },
+    // { field: "team_id", headerName: "ID", width: 100 },
     { field: "team_name", headerName: "Team Name", flex: 1 },
-    { field: "completion_percentage", headerName: "Progress", width: 120 },
+    { field: "completion_percentage", headerName: "Progress (%)", width: 120, renderCell: (params) => `${params.value} %` },
     
     {
       field: "due_date",
       headerName: "Due Date",
-      flex: 3,
+      flex: 1,
       renderCell: (params) => (
         <TextField
           type="date"
@@ -103,8 +102,8 @@ console.log("Teams for DataGrid:", teams);
     },
     {
       field: "save",
-      headerName: "Save",
-      flex:1,
+      headerName: "",
+      width: 100,
       renderCell: (params) => (
         <Button variant="contained" onClick={() => saveDueDate(params.row.team_id)}>Save</Button>
       )
@@ -113,7 +112,7 @@ console.log("Teams for DataGrid:", teams);
   ];
 
   return (
-    <div style={{ width: "100%", height: 500 }}>
+    <div>
       
       <h2>Assigned Teams</h2>
 

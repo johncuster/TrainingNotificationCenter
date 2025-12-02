@@ -1,14 +1,13 @@
-header {
+.navbar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 8rem;
+  height: 80px;
   width: 100%;
-  flex-shrink: 0; 
   background-color: #22313B;
 }
 
-.buttonDesign{
+.navbar-button{
   border: none;
   display: flex;
   padding-right: 50px;
@@ -16,9 +15,9 @@ header {
   gap: 20px;
 }
 
-button{
+.navbar-button button{
 	background: none;
-	color: #ffffff;
+	color: white;
 	border: none;
 	padding: 0;
 	font: inherit;
@@ -27,21 +26,20 @@ button{
   font-size: 15px;
 }
 
-nav.navbar {
+.navbar-header nav.navbar {
   height: 100%;
   width: auto;
   padding-left: 50px;
   text-align: left;
-  
 }
 
-nav.navbar a:hover{
+.navbar-header nav.navbar a:hover{
   text-decoration: underline solid #ffffff;
   text-underline-offset: 5px;
   text-decoration-thickness: 2px;
 }
 
-ul.navbar {
+.navbar-header ul.navbar {
   height: 100%;
   list-style: none;
   display: flex;
@@ -50,7 +48,7 @@ ul.navbar {
   gap: 10px;
 }
 
-ul.navbar li {
+.navbar-header ul.navbar li {
   height: 100%;
   display: flex;
   justify-content: left;
@@ -62,7 +60,7 @@ ul.navbar li {
   width: 250px;
 }
 
-.active {
+.navbar-header .active {
   /* background: rgba(255, 255, 255, 0.75); */
   text-decoration: underline solid #ffffff;
   text-underline-offset: 5px;
@@ -70,7 +68,7 @@ ul.navbar li {
   /* box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.1);*/
 }
 
-nav.navbar a {
+.navbar-header nav.navbar a {
   color: #ffffff;
   font-family: "Pridi", "Roboto", sans-serif;
   font-size: 15px;
@@ -80,13 +78,3 @@ nav.navbar a {
 
 }
 
-.adminHeader {
-  color: #ffffff;
-  font-family: "Pridi", "Roboto", sans-serif;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  padding-left: 20px;
-  width: 1%;
-}

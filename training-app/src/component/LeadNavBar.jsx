@@ -2,7 +2,7 @@ import { useMatch, useResolvedPath, Link, useNavigate  } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { useAuth } from '../AuthContext';
 
-import './AdminNavbar.css';
+import '../view/navbar.css';
 
 const LeadNavBar = () => {
     const { logout } = useAuth();
@@ -13,20 +13,19 @@ const LeadNavBar = () => {
         navigate('/login'); // Redirect to login page
     };
     return (
-        <header>
+        <header className='navbar-header'>
             <nav className="navbar">
                 <ul className="navbar">
                     <CustomLink to="/leadDashboard">Manage Trainings</CustomLink>
                     <CustomLink to="/leadTeam">Manage Team</CustomLink>
                 </ul>
             </nav>
-            <div className="buttonDesign" >
+            <div className="navbar-button" >
                 <Link to="/login" className="">
                     <button onClick={handleLogout}>
                         Log Out
                     </button>
                 </Link>
-                
             </div>
             
         </header>

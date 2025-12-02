@@ -1,7 +1,7 @@
 const db = require("../db/db.js");
 
 const teamLeadController = {
-  // GET: all teams a user leads
+  //get all teams that a user leads
   getLeadTeamsByUser: (req, res) => {
     const { user_id } = req.params;
 
@@ -21,10 +21,10 @@ const teamLeadController = {
     });
   },
 
-  // PUT: update teams the user leads
+  // update teams that user leads
   updateLeadTeams: (req, res) => {
     const { user_id } = req.params;
-    const { lead_teams } = req.body; // array of team_ids
+    const { lead_teams } = req.body;
 
     if (!Array.isArray(lead_teams)) {
       return res.status(400).json({ error: "lead_teams must be an array" });
@@ -61,7 +61,6 @@ const teamLeadController = {
     });
   },
 
-  // GET: all teams user belongs to (user_team table)
   getTeamsForUser: (req, res) => {
     const { user_id } = req.params;
     const sql = `

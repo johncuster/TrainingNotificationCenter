@@ -69,23 +69,6 @@ const CreateMember = ({ isOpen, onClose, onSubmit }) => {
               <option value="lead">lead</option>
             </select>
           </label>
-
-          {/* Show team selection only if role is lead */}
-          {formData.user_role === "lead" && (
-            <label>
-              Team to Lead:<br />
-              <input
-                className="text-input"
-                type="text"
-                name="lead_team"
-                value={formData.lead_team}
-                onChange={handleChange}
-                placeholder="Enter team name"
-                required
-              />
-            </label>
-          )}
-
           <label>
             User Email:<br />
             <input

@@ -36,7 +36,7 @@
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/leadDashboard" element={<ProtectedRoute allowedRoles={["lead"]}><LeadDashboard /></ProtectedRoute>}/>
-            <Route path="/leadTeam" element={<ProtectedRoute allowedRoles={["lead"]}><LeadDashboard /></ProtectedRoute>}/>
+            <Route path="/leadTeam" element={<ProtectedRoute allowedRoles={["lead"]}><LeadTeam /></ProtectedRoute>}/>
             <Route path="/memberDashboard" element={<ProtectedRoute allowedRoles={["member"]}><MemberDashboard /></ProtectedRoute>}/>
             {/* <Route path="/managetraining" element={<ManageTraining />} />
             <Route path="/manageteam" element={<ManageTeam />} /> */}

@@ -55,7 +55,7 @@ export default function MemberTable({ team }) {
   };
 
  return (
-    <div style={{ width: "100%", height: 500 }}>
+    <div>
       <h2>{team ? `Members of ${team.team_name}` : "Team Members"}</h2>
 
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
@@ -79,9 +79,10 @@ export default function MemberTable({ team }) {
       <DataGrid
         rows={members.map((m) => ({ ...m, id: m.user_id }))}
         columns={[
-          { field: "user_id", headerName: "ID", width: 120 },
+          // { field: "user_id", headerName: "ID", width: 120 },
           { field: "user_ln", headerName: "Last Name", flex: 1 },
           { field: "user_fn", headerName: "First Name", flex: 1 },
+          { field: "user_role", headerName: "Role", flex: 1 },
         ]}
         pageSize={10}
         rowsPerPageOptions={[5, 10, 20]}

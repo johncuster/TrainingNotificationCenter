@@ -32,7 +32,6 @@ const teamTrainingController = {
     teamTrainings.forEach(tt => {
       const { training_id, team_id } = tt;
 
-      // 1️⃣ Get all users in the team
       const sqlUsers = `SELECT user_id FROM user_team WHERE team_id = ?`;
       db.query(sqlUsers, [team_id], (err, users) => {
         if (err) {
@@ -41,12 +40,11 @@ const teamTrainingController = {
         }
 
         if (users.length === 0) {
-          return checkDone(); // no users → nothing to sync
+          return checkDone(); 
         }
 
         const userIds = users.map(u => u.user_id);
 
-        // 2️⃣ Get user_training entries for this training and team
         const placeholders = userIds.map(() => '?').join(',');
         const sqlUserTraining = `
           SELECT user_id FROM user_training
@@ -66,7 +64,6 @@ const teamTrainingController = {
             return checkDone(); // all users already have training
           }
 
-          // 3️⃣ Insert missing user_training rows
           const now = new Date().toISOString().slice(0, 19).replace("T", " ");
           const insertValues = missingUsers.map(uid => [
             uid,
@@ -87,7 +84,7 @@ const teamTrainingController = {
             if (err2) {
               console.error("Error inserting missing user_training:", err2);
             }
-            checkDone(); // continue regardless
+            checkDone();
           });
         });
       });
@@ -123,7 +120,6 @@ const teamTrainingController = {
     }
     console.log("ADDTEAMTOTRAINING4");
 
-    // 1️⃣ Get all users in the team
     const sqlGetUsers = `SELECT user_id FROM user_team WHERE team_id = ?`;
     db.query(sqlGetUsers, [team_id], (err, users) => {
       if (err) {
@@ -136,7 +132,6 @@ const teamTrainingController = {
         return res.status(201).json({ message: "Team assigned, but no users found" });
       }
 
-      // 2️⃣ Get existing user_training for this training & team
       const userIds = users.map(u => u.user_id);
       const placeholders = userIds.map(() => '?').join(',');
       const sqlCheckExisting = `
@@ -152,7 +147,6 @@ const teamTrainingController = {
 
         const existingUserIds = existingRows.map(r => r.user_id);
 
-        // 3️⃣ Filter users who don't already have the training
         const newUsers = users.filter(u => !existingUserIds.includes(u.user_id));
 
         if (newUsers.length === 0) {
@@ -160,7 +154,6 @@ const teamTrainingController = {
           return res.status(201).json({ message: "Training already assigned to all users" });
         }
 
-        // 4️⃣ Insert only for new users
         const now = new Date();
         const mysqlDate = now.toISOString().slice(0, 19).replace("T", " ");
 
@@ -221,7 +214,7 @@ const teamTrainingController = {
 getLeadTeamTraining: (req, res) => {
   const leadId = req.params.user_id;
 
-    const sql = `
+  const sql = `
       SELECT 
       u.user_id,
       u.user_fn,
@@ -236,16 +229,16 @@ getLeadTeamTraining: (req, res) => {
       DATE_FORMAT(ut.due_date, '%Y-%m-%d') AS due_date,
       t.team_id,
       t.team_name
-  FROM team_lead tl
-  JOIN team t ON t.team_id = tl.team_id
-  JOIN user_team utm ON utm.team_id = t.team_id
-  JOIN user_member u ON u.user_id = utm.user_id
-  LEFT JOIN user_training ut 
-      ON ut.user_id = u.user_id AND ut.team_id = t.team_id
-  LEFT JOIN training tr 
-      ON tr.training_id = ut.training_id
-  WHERE tl.user_id = ?;
-  `;
+    FROM team_lead tl
+    JOIN team t ON t.team_id = tl.team_id
+    JOIN user_team utm ON utm.team_id = t.team_id
+    JOIN user_member u ON u.user_id = utm.user_id
+    LEFT JOIN user_training ut 
+        ON ut.user_id = u.user_id AND ut.team_id = t.team_id
+    LEFT JOIN training tr 
+        ON tr.training_id = ut.training_id
+    WHERE tl.user_id = ?;
+    `;
 
     db.query(sql, [leadId], (err, results) => {
         if (err) {
@@ -299,7 +292,6 @@ updateTeamTrainingDueDate: (req, res) => {
     return res.status(400).json({ error: "Missing training_id, team_id, or due_date" });
   }
 
-  // 1️⃣ Update team_training
   const sqlUpdateTeamTraining = `
     UPDATE team_training
     SET due_date = ?
@@ -312,7 +304,6 @@ updateTeamTrainingDueDate: (req, res) => {
       return res.status(500).json({ error: "Failed to update team_training" });
     }
 
-    // 2️⃣ Update user_training for all users in the team
     const sqlUpdateUserTraining = `
       UPDATE user_training
       SET due_date = ?

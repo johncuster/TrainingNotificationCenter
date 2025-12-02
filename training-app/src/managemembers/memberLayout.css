@@ -1,24 +1,3 @@
-/* teamsLayout.css */
-.members-layout {
-  display: flex;
-  gap: 24px;
-  padding-right: 50px;
-  padding-left: 50px;
-  height: 100%;
-  box-sizing: border-box;
-  
-}
-
-.left-panel {
-  flex: 1;
-  min-width: 45%;
-}
-
-.right-panel {
-  flex: 1;
-  min-width: 45%;
-}
-
 input[type="email"].text-input {
   font-size: 15px;
   padding: 14px 16px;

@@ -14,8 +14,9 @@ const memberController = {
 
   createMember: (req, res) => {
     console.log("Create member");
+    const password = '@Analytics123';
     const {user_ln, user_fn, user_role, user_email} = req.body;
-    db.query(memberQueries.createMember, [user_ln, user_fn, user_role, user_email], (err, result) => {
+    db.query(memberQueries.createMember, [user_ln, user_fn, user_role, user_email, password], (err, result) => {
       console.log("SQL :", user_ln, user_fn, user_role, user_email);
       if (err) {
         console.error("DB Error:", err.sqlMessage || err); // show what failed
