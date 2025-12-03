@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import CreateTrainingModal from "../admintraining/CreateTraining.jsx"
-import UpdateTrainingModal from "../admintraining/UpdateTraining.jsx"
-import TrainingContainer from "../admintraining/TrainingContainer.jsx"; 
-import TrainingAction from "../component/TrainingAction.jsx";   
-import '../adminView/adminGlobal.css';
+import CreateTrainingModal from "../archive/admintraining/CreateTraining.jsx"
+import UpdateTrainingModal from "../archive/admintraining/UpdateTraining.jsx"
+import TrainingContainer from "../archive/admintraining/TrainingContainer.jsx"; 
+import TrainingAction from "../archive/TrainingAction.jsx";   
+import '../archive/adminView/adminGlobal.css';
 
 const ManageTraining = () => {
   const [showModal, setShowModal] = useState(false);

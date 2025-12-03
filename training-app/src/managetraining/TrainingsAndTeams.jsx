@@ -4,7 +4,7 @@ import TrainingTeamTable from "./TrainingTeamTable";   // Right panel
 import "../view/splitlayout.css";
 
 export default function TrainingsAndTeams({ trainings, allTeams, refreshTrainings }) {
-  const [selectedTraining, setSelectedTraining] = useState(1);
+  const [selectedTraining, setSelectedTraining] = useState();
   const [assignedTeams, setAssignedTeams] = useState([]);
 
   const fetchAssignedTeams = async (trainingId) => {
@@ -43,12 +43,12 @@ export default function TrainingsAndTeams({ trainings, allTeams, refreshTraining
       </div>
 
       <div className="right-panel">
-          <TrainingTeamTable
-            trainingId={selectedTraining.training_id || null}
-            teams={assignedTeams}
-            allTeams={allTeams}
-            refreshTeams={() => fetchAssignedTeams(selectedTraining.training_id)}
-          />
+        <TrainingTeamTable
+          trainingId={selectedTraining?.training_id || null}  // can be null
+          teams={assignedTeams}
+          allTeams={allTeams}
+          refreshTeams={() => fetchAssignedTeams(selectedTraining?.training_id)}
+        />
       </div>
     </div>
   );

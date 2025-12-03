@@ -62,21 +62,37 @@ const teamController = {
   },
 
   deleteTeam: (req, res) => {
-    const values = [req.params.team_id];
-    console.log(values);
-    console.log("DELETE TEAM1");
-    const sql = `DELETE FROM team WHERE team_id = ?`;
-    db.query(sql, values, (err, result) => {
-      console.log(sql);
+  const teamId = req.params.team_id;
+  console.log("Deleting team with ID:", teamId);
+
+  // Queries in order: delete children first, then parent
+  const queries = [
+    "DELETE FROM team_training WHERE team_id = ?",
+    "DELETE FROM team_lead WHERE team_id = ?",
+    "DELETE FROM user_team WHERE team_id = ?",
+    "DELETE FROM team WHERE team_id = ?"
+  ];
+
+  // Function to run queries sequentially
+  const runQuery = (index) => {
+    if (index >= queries.length) {
+      console.log("All deletions complete");
+      return res.json({ message: "Team and related data deleted" });
+    }
+
+    db.query(queries[index], [teamId], (err, result) => {
       if (err) {
-        console.error("DB Error:", err.sqlMessage || err); 
+        console.error("DB Error:", err);
         return res.status(500).json({ error: err });
       }
-      res.json({ message: "Team deleted" });
-      console.log("DELETE TRAINING2");
+      console.log(`Deleted from table ${index + 1}`);
+      runQuery(index + 1);
     });
-    
-  },
+  };
+
+  runQuery(0);
+},
+
 
   getTeamMembers: (req, res) => {
     const teamId = req.params.team_id;

@@ -10,6 +10,7 @@ router.get('/', memberController.getAllMembers);
 router.post('/', memberController.createMember);
 router.put('/:user_id', memberController.updateMember);
 router.get('/:user_id', memberController.getUser);
+router.post('/change_password', memberController.changePassword);
 
 
 module.exports = router;

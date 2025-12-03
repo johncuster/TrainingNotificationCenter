@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, MenuItem, Select } from "@mui/material";
 import "../view/userlayout.css";
-
+import { showAlert } from "../component/alert"; 
 export default function LeadDashboard() {
   const [data, setData] = useState({});
   const [selectedTeam, setSelectedTeam] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL"); // New state
+
   const userId = localStorage.getItem("user_id");
   const userFirstName = localStorage.getItem("user_fn") || "FirstName";
   const userLastName = localStorage.getItem("user_ln") || "LastName";
@@ -42,11 +44,9 @@ export default function LeadDashboard() {
   const handleSaveAll = async () => {
     try {
       const allRows = Object.values(data).flat();
-
-      // Save all rows in parallel
       await Promise.all(allRows.map((row) => saveUpdate(row)));
 
-      // Re-fetch latest data from the server
+      // Re-fetch latest data
       fetch(`http://localhost:8081/member/${userId}`)
         .then((res) => res.json())
         .then((rows) => {
@@ -55,14 +55,13 @@ export default function LeadDashboard() {
             if (!grouped[row.team_name]) grouped[row.team_name] = [];
             grouped[row.team_name].push(row);
           });
-          setData(grouped); // Update state to refresh DataGrid
-        })
-        .catch((err) => console.error("Error fetching member data:", err));
+          setData(grouped);
+        });
 
-      alert("Saved successfully and DataGrid refreshed!");
+      showAlert("Saved Successfully!", "success")
     } catch (err) {
       console.error(err);
-      alert("Failed to save.");
+      showAlert("Failed to save", "error")
     }
   };
 
@@ -94,64 +93,88 @@ export default function LeadDashboard() {
     { field: "training_title", headerName: "Training Title", flex: 1 },
     { field: "training_desc", headerName: "Description", flex: 1 },
     { field: "training_link", headerName: "Link", flex: 1 },
-    
     {
       field: "ut_status",
       headerName: "Status",
       width: 150,
-      editable: true,   // <-- REQUIRED
-      renderCell: (params) => {
-        return (
-          <Select
-            value={params.row.ut_status || "Pending"}
-            disabled={params.row.ut_completedate != null}
-            autoFocus
-            onClick={(e) => e.stopPropagation()}
-            onMouseDown={(e) => e.stopPropagation()}
-            onChange={(e) => {
-              const teamName = params.row.team_name;
-
-              setData((prevData) => {
-                // Deep copy the team rows
-                const updatedTeamRows = prevData[teamName].map((row) =>
-                  row.training_id === params.row.training_id
-                    ? { ...row, ut_status: e.target.value } // updated row
-                    : { ...row } // copy of other rows
-                );
-
-                // Return new data object with updated team
-                return { ...prevData, [teamName]: updatedTeamRows };
-              });
-            }}
-
-            size="small"
-          >
-            <MenuItem value="Pending">Pending</MenuItem>
-            <MenuItem value="Completed">Completed</MenuItem>
-          </Select>
-        );
-      },
+      editable: true,
+      renderCell: (params) => (
+        <Select
+          value={params.row.ut_status || "Pending"}
+          disabled={params.row.ut_completedate != null}
+          autoFocus
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+          onChange={(e) => {
+            const teamName = params.row.team_name;
+            setData((prevData) => {
+              const updatedTeamRows = prevData[teamName].map((row) =>
+                row.training_id === params.row.training_id
+                  ? { ...row, ut_status: e.target.value }
+                  : { ...row }
+              );
+              return { ...prevData, [teamName]: updatedTeamRows };
+            });
+          }}
+          size="small"
+        >
+          <MenuItem value="Pending">Pending</MenuItem>
+          <MenuItem value="Completed">Completed</MenuItem>
+        </Select>
+      ),
     },
     { field: "ut_assigndate", headerName: "Assigned", width: 150 },
     { field: "due_date", headerName: "Due Date", width: 150 },
     { field: "ut_completedate", headerName: "Completed", width: 150 },
   ];
 
-  const rows =
+  // Filter rows based on selected team and statusFilter
+  let rows =
     selectedTeam === "ALL"
-      ? Object.values(data)
-          .flat()
-          .map((row, i) => ({ ...row, id: i }))
-      : (data[selectedTeam] || []).map((row, i) => ({ ...row, id: i }));
+      ? Object.values(data).flat()
+      : data[selectedTeam] || [];
+
+  const today = new Date();
+  if (statusFilter === "Overdue") {
+    rows = rows.filter(
+      (r) => r.due_date && new Date(r.due_date) < today && r.ut_status !== "Completed"
+    );
+  } else if (statusFilter === "Pending") {
+    rows = rows.filter((r) => r.ut_status === "Pending");
+  } else if (statusFilter === "Completed") {
+    rows = rows.filter((r) => r.ut_status === "Completed");
+  }
+
+  rows = rows.map((row, i) => ({ ...row, id: i }));
 
   return (
     <div className="dashboard-container">
-
+      {/* KPI CARDS */}
       <div className="kpi-container">
-        <div className="kpi-card">Total Trainings: {KPIs.total}</div>
-        <div className="kpi-card" style={{ background: '#f796a5ff',  }}>Overdue: {KPIs.overdue}</div>
-        <div className="kpi-card" style={{ background: '#9bf8c5ff', }}>Completed: {KPIs.completed}</div>
-        <div className="kpi-card" style={{ background: '#eff7b8ff', }}>Pending: {KPIs.pending}</div>
+        <div className="kpi-card" onClick={() => setStatusFilter("ALL")} style={{ cursor: "pointer" }}>
+          Total Trainings: {KPIs.total}
+        </div>
+        <div
+          className="kpi-card"
+          style={{ background: "#f796a5ff", cursor: "pointer" }}
+          onClick={() => setStatusFilter("Overdue")}
+        >
+          Overdue: {KPIs.overdue}
+        </div>
+        <div
+          className="kpi-card"
+          style={{ background: "#9bf8c5ff", cursor: "pointer" }}
+          onClick={() => setStatusFilter("Completed")}
+        >
+          Completed: {KPIs.completed}
+        </div>
+        <div
+          className="kpi-card"
+          style={{ background: "#eff7b8ff", cursor: "pointer" }}
+          onClick={() => setStatusFilter("Pending")}
+        >
+          Pending: {KPIs.pending}
+        </div>
       </div>
 
       <div className="user-layout">
@@ -185,6 +208,23 @@ export default function LeadDashboard() {
             columns={trainingColumns}
             autoHeight
             pageSize={10}
+            getRowClassName={(params) => {
+              const due = params.row.due_date ? new Date(params.row.due_date) : null;
+
+              if (due && !isNaN(due.getTime()) && params.row.ut_status !== "Completed" && due < today)
+                return "row-overdue";
+
+              if (params.row.ut_status === "Pending") return "row-pending";
+              
+              if (params.row.ut_status === "Completed") return "row-completed";
+
+              return "";
+            }}
+            sx={{
+              "& .row-overdue": { backgroundColor: "#ffcccc !important" },
+              "& .row-pending": { backgroundColor: "#fff3cd !important" },
+              "& .row-completed": { backgroundColor: "#d4edda !important" },
+            }}
           />
           <Button
             variant="contained"

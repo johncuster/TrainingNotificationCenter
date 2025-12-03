@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useMatch, useResolvedPath, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import CreateTrainingModal from "../admintraining/CreateTraining.jsx";
-import UpdateTrainingModal from "../admintraining/UpdateTraining.jsx";
-import "./actionHeader.css";
+import CreateTrainingModal from "./admintraining/CreateTraining.jsx";
+import UpdateTrainingModal from "./admintraining/UpdateTraining.jsx";
+//import "./actionHeader.css";
 
 const TrainingAction = ({onCreate, onEdit, selectedTraining, onDelete }) => {  
     return (

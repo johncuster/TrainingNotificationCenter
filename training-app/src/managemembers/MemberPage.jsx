@@ -7,6 +7,7 @@ import UserTeams from "./UserTeams";
 
 import "../view/splitlayout.css";
 import "./memberLayout.css";
+import { Alignment } from "react-data-table-component";
 
 export default function MemberPage() {
   const [members, setMembers] = useState([]);
@@ -136,8 +137,8 @@ export default function MemberPage() {
         <h2>Members</h2>
         <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
           <Button variant="contained" onClick={() => setOpenCreate(true)}>Add Member</Button>
-          <Button variant="outlined" disabled={!selectedMember} onClick={() => setOpenEdit(true)}>Edit</Button>
-          <Button variant="contained" color="error" disabled={!selectedMember} onClick={handleDelete}>Delete</Button>
+          <Button variant="contained" disabled={!selectedMember} onClick={() => setOpenEdit(true)}>Update Member</Button>
+          <Button variant="contained" color="error" disabled={!selectedMember} onClick={handleDelete}>Remove Member</Button>
         </Stack>
 
         <DataGrid
@@ -153,25 +154,30 @@ export default function MemberPage() {
       <div className="right-panel">
         {selectedMember ? (
           <>
-            <h3>Selected Member</h3>
+          <h2>Select a Member</h2>
+          <div className="member-details">
+          <div className="member-info">
             <p><b>Last Name:</b> {selectedMember.user_ln}</p>
             <p><b>First Name:</b> {selectedMember.user_fn}</p>
             <p><b>Role:</b> {selectedMember.user_role}</p>
             <p><b>Email:</b> {selectedMember.user_email}</p>
+          </div>
 
-            <hr />
+          <UserTeams
+            userId={selectedMember.user_id}
+            userRole={selectedMember.user_role}
+            onLeadUpdate={(updatedLeadTeams) => handleEditSubmit(selectedMember, updatedLeadTeams)}
+          />
+        </div>
 
-            {/* Teams the user belongs to */}
-            <UserTeams
-              userId={selectedMember.user_id}
-              userRole={selectedMember.user_role}
-              onLeadUpdate={(updatedLeadTeams) => handleEditSubmit(selectedMember, updatedLeadTeams)}
-            />
           </>
         ) : (
-          <h2>Select a member to see details</h2>
+          <div className="no-selection">
+            <h2>Select a Member</h2>
+          </div>
         )}
       </div>
+
 
       {/* MODALS */}
       <CreateMember

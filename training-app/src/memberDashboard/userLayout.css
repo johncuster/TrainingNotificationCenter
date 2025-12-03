@@ -125,3 +125,32 @@
   background-color: rgba(0,0,0,0.2);
   border-radius: 3px;
 }
+
+/* Overdue - red */
+.MuiDataGrid-row.row-overdue {
+  background-color: #f796a5 !important;
+}
+
+/* Completed - green */
+.MuiDataGrid-row.row-completed {
+  background-color: #9bf8c5 !important;
+}
+
+/* Pending - yellow */
+.MuiDataGrid-row.row-pending {
+  background-color: #fff176 !important;
+}
+
+.MuiDataGrid-root .MuiDataGrid-row.row-overdue {
+  background-color: #f796a5ff !important;
+}
+
+.MuiDataGrid-root .MuiDataGrid-row.row-pending {
+  background-color: #eff7b8ff !important;
+}
+
+.MuiDataGrid-root .MuiDataGrid-row.row-completed {
+  background-color: #9bf8c5ff !important;
+}
+
+

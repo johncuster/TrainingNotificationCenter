@@ -46,13 +46,8 @@ export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
           Add Team
         </Button>
 
-        <Button
-          variant="outlined"
-          disabled={selection.length !== 1}
-          onClick={() => setOpenEdit(true)}
-        >
-          Edit
-        </Button>
+        <Button variant="outlined" disabled={selection.length !== 1} onClick={() => setOpenEdit(true)}>
+        Update Team</Button>
 
         <Button
           variant="contained"
@@ -60,7 +55,7 @@ export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
           disabled={selection.length === 0}
           onClick={handleDelete}
         >
-          Delete
+          Remove Team
         </Button>
       </Stack>
 

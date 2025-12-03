@@ -5,13 +5,31 @@
   height: 80px;
   width: 100%;
   background-color: #22313B;
+  
 }
 
-.navbar-button{
-  border: none;
+.navbar-header .brand {
   display: flex;
-  padding-right: 50px;
-  font-size: 10px;
+  align-items: center;
+  gap: 10px;
+  padding-left: 50px;
+}
+
+.navbar-header .logo{
+  height: 40px; 
+  width: auto;
+  object-fit: contain
+
+}
+.navbar-header .navbar-left{
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.navbar-header .navbar{
+  display: flex;
+  align-items: center;
   gap: 20px;
 }
 
@@ -19,17 +37,24 @@
 	background: none;
 	color: white;
 	border: none;
-	padding: 0;
+	padding-right: 50px;
 	font: inherit;
 	cursor: pointer;
 	outline: inherit;
   font-size: 15px;
+  gap:10px;
+  transition: none;
+}
+.navbar-button button:hover{
+  text-decoration: underline solid #ffffff;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 2px;
+  color: white !important;
 }
 
 .navbar-header nav.navbar {
   height: 100%;
-  width: auto;
-  padding-left: 50px;
+  padding-left: 0px;
   text-align: left;
 }
 
@@ -44,8 +69,8 @@
   list-style: none;
   display: flex;
   padding: 0;
-  margin: 0;
-  gap: 10px;
+  margin: 0px;
+  gap: 5px;
 }
 
 .navbar-header ul.navbar li {
@@ -57,7 +82,7 @@
   font-style: normal;
   font-weight: 400;
   line-height: normal;
-  width: 250px;
+  width: 150px;
 }
 
 .navbar-header .active {
@@ -76,5 +101,81 @@
   line-height: normal;
   text-decoration: none;
 
+}
+
+/* Modal backdrop to darken the background */
+.modal-backdrop {
+    position: fixed;          /* Sit on top of everything */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically */
+    z-index: 1000;            /* High value to appear above everything */
+}
+
+/* Modal box */
+.modal-backdrop .modal {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1001;            /* Ensure it’s above the backdrop */
+    animation: popIn 0.2s ease-out; /* Optional pop animation */
+}
+
+/* Pop-in animation */
+@keyframes popIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Inputs and buttons inside modal */
+.modal-backdrop .modal label {
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.modal-backdrop .modal input {
+    width: 100%;
+    padding: 0.5rem;
+    margin-top: 0.25rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.modal-backdrop .modal-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.modal-backdrop .modal-buttons button {
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-backdrop .modal-buttons button[type="button"] {
+    background: #ccc;
+}
+
+.modal-backdrop .modal-buttons button[type="submit"] {
+    background: #007bff;
+    color: white;
 }
 

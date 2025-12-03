@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "../adminView/updateTraining.css";
+import "../archive/adminView/updateTraining.css";
 
 const UpdateTeam = ({ isOpen, onClose, onSubmit, initialData}) => {
     const [formData, setFormData] = useState({

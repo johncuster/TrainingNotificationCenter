@@ -93,97 +93,115 @@ const teamTrainingController = {
 },
 
 
- addTeamToTraining: (req, res) => {
-  console.log("ADDTEAMTOTRAINING1");
-  const { training_id, team_id } = req.body;
+addTeamToTraining: (req, res) => {
+  console.log("ADDTEAMTOTRAINING START");
 
-  if (!training_id || !team_id) {
-    return res.status(400).json({ error: "Missing training_id or team_id" });
+  const { training_id, team_id, due_date } = req.body;
+
+  if (!training_id || !team_id || !due_date) {
+    return res.status(400).json({ error: "Missing training_id, team_id, or due_date" });
   }
-  console.log("ADDTEAMTOTRAINING2");
 
-  const sqlTeamTraining = `
-    INSERT INTO team_training (training_id, team_id)
-    VALUES (?, ?)
+  const sqlInsertTeamTraining = `
+    INSERT INTO team_training (training_id, team_id, due_date)
+    VALUES (?, ?, ?)
+    ON DUPLICATE KEY UPDATE due_date = VALUES(due_date)
   `;
 
-  console.log("ADDTEAMTOTRAINING3");
-
-  db.query(sqlTeamTraining, [training_id, team_id], (err, result) => {
+  db.query(sqlInsertTeamTraining, [training_id, team_id, due_date], (err, result) => {
     if (err) {
-      if (err.code === "ER_DUP_ENTRY") {
-        console.log("Team already assigned to this training (team_training)");
-      } else {
-        console.error("Error adding team to training:", err);
-        return res.status(500).json({ error: "Database error" });
-      }
+      console.error("Error inserting team_training:", err);
+      return res.status(500).json({ error: "Database error inserting team_training" });
     }
-    console.log("ADDTEAMTOTRAINING4");
 
+    console.log("team_training inserted/updated");
+
+    // Get all users in that team
     const sqlGetUsers = `SELECT user_id FROM user_team WHERE team_id = ?`;
+
     db.query(sqlGetUsers, [team_id], (err, users) => {
       if (err) {
-        console.error("Error fetching users in team:", err);
-        return res.status(500).json({ error: "Database error" });
+        console.error("Error fetching team users:", err);
+        return res.status(500).json({ error: "Database error fetching team users" });
       }
 
       if (users.length === 0) {
-        console.log("ADDTEAMTOTRAINING5: No users in team");
-        return res.status(201).json({ message: "Team assigned, but no users found" });
+        return res.status(201).json({ message: "Team assigned, but no users in this team" });
       }
 
       const userIds = users.map(u => u.user_id);
       const placeholders = userIds.map(() => '?').join(',');
+
+      // Check existing user_training entries
       const sqlCheckExisting = `
-        SELECT user_id FROM user_training 
+        SELECT user_id FROM user_training
         WHERE training_id = ? AND team_id = ? AND user_id IN (${placeholders})
       `;
 
       db.query(sqlCheckExisting, [training_id, team_id, ...userIds], (err, existingRows) => {
         if (err) {
           console.error("Error checking existing user_training:", err);
-          return res.status(500).json({ error: "Database error" });
+          return res.status(500).json({ error: "Database error checking user_training" });
         }
 
         const existingUserIds = existingRows.map(r => r.user_id);
 
-        const newUsers = users.filter(u => !existingUserIds.includes(u.user_id));
+        const newUsers = userIds.filter(uid => !existingUserIds.includes(uid));
 
-        if (newUsers.length === 0) {
-          console.log("ADDTEAMTOTRAINING5: All users already assigned");
-          return res.status(201).json({ message: "Training already assigned to all users" });
+        const now = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+        // Insert missing user_training rows
+        if (newUsers.length > 0) {
+          const insertValues = newUsers.map(uid => [
+            uid,
+            training_id,
+            'Pending',   
+            now,         // ut_assigndate
+            null,        // ut_completedate
+            team_id,
+            due_date     // NEW — assign same due_date to users
+          ]);
+
+          const sqlInsertUserTraining = `
+            INSERT INTO user_training
+            (user_id, training_id, ut_status, ut_assigndate, ut_completedate, team_id, due_date)
+            VALUES ?
+          `;
+
+          db.query(sqlInsertUserTraining, [insertValues], (err2) => {
+            if (err2) {
+              console.error("Error inserting into user_training:", err2);
+              return res.status(500).json({ error: "Database error inserting user_training" });
+            }
+
+            console.log("Inserted new user_training rows");
+          });
         }
 
-        const now = new Date();
-        const mysqlDate = now.toISOString().slice(0, 19).replace("T", " ");
-
-        const insertValues = newUsers.map(u => [
-          u.user_id,
-          training_id,
-          'Pending', // default ut_status
-          mysqlDate,
-          null,
-          team_id
-        ]);
-
-        const sqlInsertUserTraining = `
-          INSERT INTO user_training (user_id, training_id, ut_status, ut_assigndate, ut_completedate, team_id)
-          VALUES ?
+        // Update due_date for all existing user_training rows
+        const sqlUpdateExisting = `
+          UPDATE user_training
+          SET due_date = ?
+          WHERE training_id = ? AND team_id = ?
         `;
 
-        db.query(sqlInsertUserTraining, [insertValues], (err2, result2) => {
-          if (err2) {
-            console.error("Error assigning training to users:", err2);
-            return res.status(500).json({ error: "Database error" });
+        db.query(sqlUpdateExisting, [due_date, training_id, team_id], (err3) => {
+          if (err3) {
+            console.error("Error updating user_training due dates:", err3);
+            return res.status(500).json({ error: "Database error updating due_date for users" });
           }
 
-          console.log("ADDTEAMTOTRAINING5: Training assigned to new users successfully");
-          res.status(201).json({ message: "Team and all users assigned successfully" });
+          console.log("Updated due_date for existing user_training rows");
+
+          return res.status(201).json({
+            message: "Team assigned and all user_training due_dates updated successfully"
+          });
         });
       });
     });
   });
 },
+
 
   deleteTeamFromTraining: (req, res) => {
     const { training_id, team_id } = req.params;

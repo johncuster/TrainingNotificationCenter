@@ -1,5 +1,6 @@
 const db = require('../db/db.js');
 const memberQueries = require('../db/memberQueries.js');
+const bcrypt = require("bcrypt");
 
 const memberController = {
   getAllMembers: (req, res) => {
@@ -12,58 +13,105 @@ const memberController = {
     });
   },
 
-  createMember: (req, res) => {
-    console.log("Create member");
-    const password = '@Analytics123';
-    const {user_ln, user_fn, user_role, user_email} = req.body;
-    db.query(memberQueries.createMember, [user_ln, user_fn, user_role, user_email, password], (err, result) => {
-      console.log("SQL :", user_ln, user_fn, user_role, user_email);
-      if (err) {
-        console.error("DB Error:", err.sqlMessage || err); // show what failed
-        return res.status(500).json({ error: err });
-      }
-      console.log("Created Member4");
-      res.json({ user_id: result.insertId, ...req.body });
-    });
-  },
+  createMember: async (req, res) => {
+  console.log("Create member request received");
 
-  updateMember: (req, res) => {
-    const values =
-    [
-      req.body.user_ln, 
-      req.body.user_fn, 
-      req.body.user_role,        
-      req.body.user_email,
-      req.body.user_id
-    ];
-      
-    console.log("HELLOWORLDUPDATED1");
-  
-    db.query(memberQueries.updateMember, values, (err, result) => {
-      if (err) {
-        console.error("DB Error:", err.sqlMessage || err); 
-        return res.status(500).json({ error: err });
+  // Default password
+  const defaultPassword = '@Analytics123';
+  const { user_ln, user_fn, user_role, user_email } = req.body;
+
+  try {
+    // 1️⃣ Hash the default password
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
+
+    // 2️⃣ Insert the new member into the database
+    const insertQuery = `
+      INSERT INTO user_member 
+      (user_ln, user_fn, user_role, user_email, user_password)
+      VALUES (?, ?, ?, ?, ?)
+    `;
+
+    db.query(
+      insertQuery,
+      [user_ln, user_fn, user_role, user_email, hashedPassword],
+      (err, result) => {
+        console.log("SQL Insert:", user_ln, user_fn, user_role, user_email);
+
+        if (err) {
+          console.error("DB Error:", err.sqlMessage || err);
+          return res.status(500).json({ error: err.sqlMessage || err });
+        }
+
+        console.log("Member created successfully");
+        res.json({ 
+          user_id: result.insertId,
+          user_ln,
+          user_fn,
+          user_role,
+          user_email
+        });
       }
-      res.json({ message: "Member updated successfully" });
-      console.log("HELLOWORLDUPDATED3");      
-    })
+    );
+  } catch (hashErr) {
+    console.error("Password hashing error:", hashErr);
+    res.status(500).json({ error: "Failed to hash password" });
+  }
+},
+
+    updateMember: (req, res) => {
+      const values =
+      [
+        req.body.user_ln, 
+        req.body.user_fn, 
+        req.body.user_role,        
+        req.body.user_email,
+        req.body.user_id
+      ];
+        
+      console.log("HELLOWORLDUPDATED1");
+    
+      db.query(memberQueries.updateMember, values, (err, result) => {
+        if (err) {
+          console.error("DB Error:", err.sqlMessage || err); 
+          return res.status(500).json({ error: err });
+        }
+        res.json({ message: "Member updated successfully" });
+        console.log("HELLOWORLDUPDATED3");      
+      })
   },
 
   deleteMember: (req, res) => {
-    const values = [req.params.user_id];
-    console.log(values);
-    console.log("DELETE TRAINING1");
-    const sql = `DELETE FROM user_member WHERE user_id = ?`;
-    db.query(sql, values, (err, result) => {
-      console.log(sql);
+  const userId = req.params.user_id;
+  console.log("Deleting user with ID:", userId);
+
+  // Array of deletion queries
+  const queries = [
+  "DELETE FROM team_lead WHERE user_id = ?",
+  "DELETE FROM user_training WHERE user_id = ?",
+  "DELETE FROM user_team WHERE user_id = ?",
+  "DELETE FROM user_member WHERE user_id = ?"
+];
+
+  // Function to run queries sequentially
+  const runQuery = (index) => {
+    if (index >= queries.length) {
+      console.log("All deletions complete");
+      return res.json({ message: "Member and related data deleted" });
+    }
+
+    db.query(queries[index], [userId], (err, result) => {
       if (err) {
-        console.error("DB Error:", err.sqlMessage || err); 
+        console.error("DB Error:", err);
         return res.status(500).json({ error: err });
       }
-      res.json({ message: "Member deleted" });
-      console.log("DELETE TRAINING2");
+      console.log(`Deleted from table ${index + 1}`);
+      runQuery(index + 1);
     });
-  },
+  };
+
+  runQuery(0);
+},
+
 
 getTrainingTeams: (req, res) => {
     const trainingId = req.params.training_id;
@@ -117,6 +165,93 @@ getTrainingTeams: (req, res) => {
       res.json(result);
     });
   },
+  /*
+  changePassword: async (req, res) => {
+    const { user_id, currentPassword, newPassword } = req.body;
+
+    if (!user_id || !currentPassword || !newPassword) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+
+    try {
+      // 1️⃣ Get existing password from DB
+      const sql = `SELECT user_password FROM user_member WHERE user_id = ?`;
+      db.query(sql, [user_id], async (err, result) => {
+        if (err) {
+          console.error("DB Error:", err);
+          return res.status(500).json({ error: "Database error" });
+        }
+
+        if (result.length === 0) {
+          return res.status(404).json({ error: "User not found" });
+        }
+
+        const hashedPassword = result[0].user_password;
+
+        // 2️⃣ Verify current password
+        const isMatch = await bcrypt.compare(currentPassword, hashedPassword);
+        if (!isMatch) {
+          return res.status(401).json({ error: "Current password is incorrect" });
+        }
+
+        // 3️⃣ Hash new password
+        const newHashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // 4️⃣ Update password in DB
+        const updateSql = `UPDATE user_member SET user_password = ? WHERE user_id = ?`;
+        db.query(updateSql, [newHashedPassword, user_id], (updateErr) => {
+          if (updateErr) {
+            console.error("DB Update Error:", updateErr);
+            return res.status(500).json({ error: "Failed to update password" });
+          }
+
+          res.json({ message: "Password updated successfully" });
+        });
+      });
+    } catch (error) {
+      console.error("Error in changePassword:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  },
+*/
+changePassword: async (req, res) => {
+  const { user_id, currentPassword, newPassword } = req.body;
+
+  if (!user_id || !newPassword) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  try {
+    const sql = `SELECT user_password FROM user_member WHERE user_id = ?`;
+    db.query(sql, [user_id], async (err, result) => {
+      if (err) return res.status(500).json({ error: "Database error" });
+      if (result.length === 0) return res.status(404).json({ error: "User not found" });
+
+      const hashedPassword = result[0].user_password;
+
+      // If current password is NULL in DB, skip verification
+      if (hashedPassword && currentPassword) {
+        const isMatch = await bcrypt.compare(currentPassword, hashedPassword);
+        if (!isMatch) {
+          return res.status(401).json({ error: "Current password is incorrect" });
+        }
+      }
+
+      // Hash new password
+      const newHashedPassword = await bcrypt.hash(newPassword, 10);
+      const updateSql = `UPDATE user_member SET user_password = ? WHERE user_id = ?`;
+
+      db.query(updateSql, [newHashedPassword, user_id], (updateErr) => {
+        if (updateErr) return res.status(500).json({ error: "Failed to update password" });
+        res.json({ message: "Password updated successfully" });
+      });
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 };
 
 module.exports = memberController; 

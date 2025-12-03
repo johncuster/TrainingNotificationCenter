@@ -1,5 +1,5 @@
-// CreateTrainingModal.jsx
 import React, { useState } from "react";
+import { showAlert } from "../component/alert"; 
 import {
   Dialog,
   DialogTitle,
@@ -21,7 +21,7 @@ export default function CreateTrainingModal({ isOpen, onClose, onSubmit }) {
 
   const handleCreate = async () => {
     if (!form.training_title.trim() || !form.training_desc.trim()) {
-      alert("Title and description are required");
+      showAlert("Title and Description Required", "info")
       return;
     }
     // call parent onSubmit (which will handle fetch & reload)

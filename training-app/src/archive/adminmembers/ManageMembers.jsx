@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
-import MemberContainer from "../managemembers/MemberContainer.jsx";   
-import MemberAction from "../component/MemberAction.jsx";
+import MemberContainer from "../../managemembers/MemberContainer.jsx";   
+import MemberAction from "../MemberAction.jsx";
 import '../adminView/adminGlobal.css';
 
-import CreateMemberModal from "../managemembers/CreateMember.jsx"
-import UpdateMemberModal from "../managemembers/UpdateMember.jsx"
+import CreateMemberModal from "../../managemembers/CreateMember.jsx"
+import UpdateMemberModal from "../../managemembers/UpdateMember.jsx"
 
 const ManageMembers = () => {
     const [showModal, setShowModal] = useState(false);

@@ -40,7 +40,7 @@ export default function UserTeams({ userId, userRole, onLeadUpdate }) {
 
   return (
     <div className="user-teams-container">
-      <h4>Teams the user belongs to</h4>
+      <h4>Teams:</h4>
       {teams.length === 0 ? (
         <p>User is not part of any team.</p>
       ) : (

@@ -1,6 +1,9 @@
 import { useMatch, useResolvedPath, Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAuth } from '../AuthContext';
+import ChangePasswordModal from './ChangePasswordModal';
+import { useState } from 'react';
+import logo from "../resources/infor-bgless.png";
 
 //import './AdminNavbar.css';
 import '../view/navbar.css';  
@@ -8,6 +11,7 @@ import '../view/navbar.css';
 const AdminNavbar = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleLogout = () => {
         logout();        // Clear localStorage & auth state
@@ -15,20 +19,31 @@ const AdminNavbar = () => {
     };
     return (
         <header className="navbar-header">
-            <nav className="navbar">
-                <ul className="navbar">
-                    <CustomLink to="/trainings">Manage Trainings</CustomLink>
-                    <CustomLink to="/teams">Manage Teams</CustomLink>
-                    <CustomLink to="/managemember">Manage Users</CustomLink>
-                </ul>
-            </nav>
+            <div className="navbar-left">
+                <div className="brand">
+                    <img src={logo} alt="Logo" className="logo" />
+                </div>
+                <nav className="navbar">
+                    <ul className="navbar">
+                        <CustomLink to="/trainings">Manage Trainings</CustomLink>
+                        <CustomLink to="/teams">Manage Teams</CustomLink>
+                        <CustomLink to="/managemember">Manage Users</CustomLink>
+                    </ul>
+                </nav>
+            </div>
             <div className="navbar-button" >
+                <button onClick={() => setIsModalOpen(true)}>
+                    Change Password
+                </button>
                 <Link to="/login">
                     <button onClick={handleLogout}>
                         Log Out
                     </button>
                 </Link>
             </div>
+            {isModalOpen && (
+                <ChangePasswordModal onClose={() => setIsModalOpen(false)} />
+            )}
         </header>
     );
 };

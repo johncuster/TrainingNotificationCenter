@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useMatch, useResolvedPath, Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import "./actionHeader.css";
+//import "./actionHeader.css";
 
 const TeamAction = ({onCreate, onEdit, selectedTeam, onDelete}) => {  
     const [showModal, setShowModal] = useState(false);

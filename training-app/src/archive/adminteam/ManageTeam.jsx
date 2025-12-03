@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import TeamContainer from "./TeamContainer.jsx";   
 import TeamAction from "../component/TeamAction.jsx";
-import '../adminView/adminGlobal.css';
+import '../archive/adminView/adminGlobal.css';
 
 import CreateTeamModal from "../adminteam/CreateTeam.jsx"
 import UpdateTeamModal from "../adminteam/UpdateTeam.jsx"

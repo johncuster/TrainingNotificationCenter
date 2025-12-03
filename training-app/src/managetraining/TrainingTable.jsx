@@ -3,6 +3,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import { Button, Stack } from "@mui/material";
 import CreateTrainingModal from "./CreateTrainingModal";
 import EditTrainingModal from "./EditTrainingModal";
+import { showAlert } from "../component/alert"; 
 
 export default function TrainingTable({ trainings = [], onSelectTraining, refreshTrainings }) {
   const [selectedId, setSelectedId] = useState();
@@ -22,10 +23,11 @@ export default function TrainingTable({ trainings = [], onSelectTraining, refres
       setSelectedId(null);
       onSelectTraining(null);
       await refreshTrainings();
-      alert("Training deleted successfully");
-    } catch (err) {
+      showAlert("Training Deleted Successfully", "success")
+    } 
+    catch (err) {
       console.error(err);
-      alert("Failed to delete training");
+      showAlert("Failed to Delete Training", "error")
     }
   };
 
@@ -41,9 +43,9 @@ export default function TrainingTable({ trainings = [], onSelectTraining, refres
       <h2>Trainings</h2>
 
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
-        <Button variant="contained" onClick={() => setOpenCreate(true)}>Add</Button>
-        <Button variant="outlined" disabled={!selectedTraining} onClick={() => setOpenEdit(true)}>Edit</Button>
-        <Button type="button" variant="contained" color="error" disabled={!selectedTraining} onClick={handleDelete}>Delete</Button>
+        <Button variant="contained" onClick={() => setOpenCreate(true)}>Add Training</Button>
+        <Button variant="outlined" disabled={!selectedTraining} onClick={() => setOpenEdit(true)}>Update Training</Button>
+        <Button type="button" variant="contained" color="error" disabled={!selectedTraining} onClick={handleDelete}>Remove Training</Button>
       </Stack>
 
       <DataGrid

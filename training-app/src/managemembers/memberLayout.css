@@ -13,7 +13,7 @@ input[type="text"].text-input {
 .member-list table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .member-list th,
@@ -59,7 +59,7 @@ button:disabled, .MuiButton-root.Mui-disabled {
 .user-teams-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: 0px;
 }
 
 .user-teams-table th,
@@ -74,16 +74,16 @@ button:disabled, .MuiButton-root.Mui-disabled {
 }
 
 .user-teams-table td button {
-  margin-left: 5px;
+  margin-left: 0px;
 }
 .user-teams-container {
-  margin-top: 20px;
+  margin-top: 0px;
 }
 
 .user-teams-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .user-teams-table th,
@@ -128,4 +128,55 @@ button:disabled, .MuiButton-root.Mui-disabled {
 
 .remove-lead-btn:hover {
   background-color: #c82333;
+}
+
+.member-details {
+  background-color: #ffffff; /* card-like background */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.right-panel{
+  background-color: white;
+}
+
+/* Member info styling */
+.member-details .member-info p {
+  margin: 6px 0;
+  font-size: 15px;
+  color: black;
+  line-height: 1.5;
+}
+
+.member-details .member-info b {
+  color: black; /* emphasize label */
+}
+
+/* UserTeams container */
+.member-details .user-teams-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+}
+
+/* Optional: style individual team cards in UserTeams */
+.member-details .user-teams-container .team-card {
+  background-color: #f8f9fa;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member-details .user-teams-container .team-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1);
 }

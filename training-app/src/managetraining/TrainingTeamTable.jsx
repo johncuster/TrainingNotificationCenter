@@ -10,8 +10,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
   const [teamMembers, setTeamMembers] = useState([]);
   const [selectedTeamName, setSelectedTeamName] = useState("");
 
-  const [dueDates, setDueDates] = useState({}); // new: { team_id: "YYYY-MM-DD" }
-
+  const [dueDates, setDueDates] = useState({}); 
     useEffect(() => {
     setSelectedTeamId(null); // reset selection when training changes
   }, [trainingId, teams]);
@@ -118,7 +117,7 @@ console.log("Teams for DataGrid:", teams);
 
       <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
         <Button variant="contained" disabled={!trainingId} onClick={() => setOpenAssign(true)}>Add Team</Button>
-        <Button variant="contained" color="error" disabled={!selectedTeamId} onClick={handleDelete}>Remove</Button>
+        <Button variant="contained" color="error" disabled={!selectedTeamId} onClick={handleDelete}>Remove Team</Button>
       </Stack>
 
       <DataGrid

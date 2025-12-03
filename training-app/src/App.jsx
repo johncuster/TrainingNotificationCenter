@@ -7,10 +7,8 @@
   import IsNavBar from "./component/IsNavBar.jsx";
 
   //pages
-  import ManageTraining from "./admintraining/ManageTraining.jsx";  
-  import ManageMember from "./managemembers/MemberPage.jsx";
-  import ManageTeam from "./adminteam/ManageTeam"; 
-  import Login from "./adminuserlogin/Login.jsx";
+  import MemberPage from "./managemembers/MemberPage.jsx";
+  import Login from "./login/Login.jsx";
   import LeadDashboard from "./leadDashboard/LeadDashboard.jsx";
   import LeadTeam from "./leadDashboard/LeadTeam.jsx";
   //import SampleDashboard from "./TrainingTable.jsx";
@@ -35,13 +33,11 @@
         </div>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Login />}/>
             <Route path="/leadDashboard" element={<ProtectedRoute allowedRoles={["lead"]}><LeadDashboard /></ProtectedRoute>}/>
             <Route path="/leadTeam" element={<ProtectedRoute allowedRoles={["lead"]}><LeadTeam /></ProtectedRoute>}/>
             <Route path="/memberDashboard" element={<ProtectedRoute allowedRoles={["member"]}><MemberDashboard /></ProtectedRoute>}/>
-            {/* <Route path="/managetraining" element={<ManageTraining />} />
-            <Route path="/manageteam" element={<ManageTeam />} /> */}
-            <Route path="/managemember" element={<ProtectedRoute allowedRoles={["admin"]}><ManageMember /></ProtectedRoute>} />
-            <Route path="/" element={<Login />}/>
+            <Route path="/managemember" element={<ProtectedRoute allowedRoles={["admin"]}><MemberPage /></ProtectedRoute>} />
             <Route path="/trainings" element={<ProtectedRoute allowedRoles={["admin"]}><TrainingPage /></ProtectedRoute>} />
             <Route path="/teams" element={<ProtectedRoute allowedRoles={["admin"]}><TeamPage /></ProtectedRoute>} />
           </Routes>
