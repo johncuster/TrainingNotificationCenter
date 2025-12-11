@@ -41,7 +41,7 @@ const teamController = {
     const values =
     [
       req.body.team_name,
-      req.body.team_id
+      req.params.team_id
     ];
       
     console.log("TEAMUPDATED1");
@@ -56,8 +56,9 @@ const teamController = {
         console.error("DB Error:", err.sqlMessage || err); 
         return res.status(500).json({ error: err });
       }
+      console.log("TEAMUPDATED3");
       res.json({ message: "Team updated successfully" });
-      console.log("TEAMUPDATED3");      
+      
     })
   },
 
@@ -93,7 +94,7 @@ const teamController = {
   runQuery(0);
 },
 
-
+      
   getTeamMembers: (req, res) => {
     const teamId = req.params.team_id;
     console.log("TEAM MEMBERS !");

@@ -1,3 +1,6 @@
+body{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 /* Container for the whole dashboard */
 .dashboard-container {
   display: grid;
@@ -11,7 +14,6 @@
   min-height: 100vh;
   align-items: start;  
   background: #f5f7fa;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   grid-auto-rows: max-content; /* prevents rows from stretching */
 }
 

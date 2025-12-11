@@ -1,4 +1,15 @@
 import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Button,
+  Typography,
+} from "@mui/material";
 
 export default function UserTeams({ userId, userRole, onLeadUpdate }) {
   const [teams, setTeams] = useState([]);
@@ -7,13 +18,13 @@ export default function UserTeams({ userId, userRole, onLeadUpdate }) {
   useEffect(() => {
     if (!userId) return;
 
-    // Fetch all teams the user belongs to
+    // Fetch teams the user belongs to
     fetch(`http://localhost:8081/team/user/${userId}`)
       .then((res) => res.json())
       .then((data) => setTeams(Array.isArray(data) ? data : []))
       .catch(console.error);
 
-    // Fetch all teams the user leads
+    // Fetch teams the user leads
     fetch(`http://localhost:8081/team_lead/${userId}`)
       .then((res) => res.json())
       .then((data) =>
@@ -24,66 +35,90 @@ export default function UserTeams({ userId, userRole, onLeadUpdate }) {
 
   const handleAddLead = (teamId) => {
     if (!leadTeams.includes(teamId)) {
-      const updatedLeads = [...leadTeams, teamId];
-      setLeadTeams(updatedLeads);
-      onLeadUpdate(updatedLeads);
+      const updated = [...leadTeams, teamId];
+      setLeadTeams(updated);
+      onLeadUpdate(updated);
     }
   };
 
   const handleRemoveLead = (teamId) => {
     if (leadTeams.includes(teamId)) {
-      const updatedLeads = leadTeams.filter((id) => id !== teamId);
-      setLeadTeams(updatedLeads);
-      onLeadUpdate(updatedLeads);
+      const updated = leadTeams.filter((id) => id !== teamId);
+      setLeadTeams(updated);
+      onLeadUpdate(updated);
     }
   };
 
   return (
-    <div className="user-teams-container">
-      <h4>Teams:</h4>
+    <Box>
+      <Typography variant="body1" sx={{ fontWeight: 600, mb: 1 }}>
+        Teams
+      </Typography>
+
+      {/* No Teams */}
       {teams.length === 0 ? (
-        <p>User is not part of any team.</p>
+        <Typography variant="body2" color="text.secondary">
+          This user is not assigned to any teams.
+        </Typography>
       ) : (
-        <table className="user-teams-table">
-          <thead>
-            <tr>
-              <th>Team Name</th>
-              <th>Role</th>
-              {userRole === "lead" && <th>Action</th>} {/* Only show Action column for leads */}
-            </tr>
-          </thead>
-          <tbody>
-            {teams.map((team) => {
-              const isLead = leadTeams.includes(team.team_id);
-              return (
-                <tr key={team.team_id}>
-                  <td>{team.team_name}</td>
-                  <td>{isLead ? "Lead" : "Member"}</td>
-                  {userRole === "lead" && (
-                    <td>
-                      {isLead ? (
-                        <button
-                          className="remove-lead-btn"
-                          onClick={() => handleRemoveLead(team.team_id)}
-                        >
-                          Remove as Lead
-                        </button>
-                      ) : (
-                        <button
-                          className="assign-lead-btn"
-                          onClick={() => handleAddLead(team.team_id)}
-                        >
-                          Assign as Lead
-                        </button>
-                      )}
-                    </td>
-                  )}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <Paper
+          elevation={1}
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden",
+            border: "1px solid #ddd",
+          }}
+        >
+          <Table size="small">
+            <TableHead>
+              <TableRow sx={{ backgroundColor: "grey.100" }}>
+                <TableCell sx={{ fontWeight: 600 }}>Team Name</TableCell>
+                <TableCell sx={{ fontWeight: 600 }}>Role</TableCell>
+                {userRole === "lead" && (
+                  <TableCell sx={{ fontWeight: 600 }}>Action</TableCell>
+                )}
+              </TableRow>
+            </TableHead>
+
+            <TableBody>
+              {teams.map((team) => {
+                const isLead = leadTeams.includes(team.team_id);
+
+                return (
+                  <TableRow key={team.team_id}>
+                    <TableCell>{team.team_name}</TableCell>
+                    <TableCell>{isLead ? "Lead" : "Member"}</TableCell>
+
+                    {userRole === "lead" && (
+                      <TableCell>
+                        {isLead ? (
+                          <Button
+                            variant="contained"
+                            color="error"
+                            size="small"
+                            onClick={() => handleRemoveLead(team.team_id)}
+                          >
+                            Remove as Lead
+                          </Button>
+                        ) : (
+                          <Button
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            onClick={() => handleAddLead(team.team_id)}
+                          >
+                            Assign as Lead
+                          </Button>
+                        )}
+                      </TableCell>
+                    )}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Paper>
       )}
-    </div>
+    </Box>
   );
 }

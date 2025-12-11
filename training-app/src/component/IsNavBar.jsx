@@ -33,9 +33,15 @@ const IsNavBar = (props) => {
             setMemberNavBar(false);
             setLeadNavBar(true);
         }
-        else {
+        else if(location.pathname === '/members' || location.pathname === '/teams' || location.pathname === '/trainings')
+        {
             setMemberNavBar(false);
             setShowNavBar(true);
+            setLeadNavBar(false);
+        }
+        else {
+            setMemberNavBar(false);
+            setShowNavBar(false);
             setLeadNavBar(false);
         }
 

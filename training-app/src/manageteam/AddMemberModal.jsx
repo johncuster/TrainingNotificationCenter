@@ -1,7 +1,7 @@
 // AddMemberModal.jsx
 import React, { useEffect, useState } from "react";
 import { Modal, Box, Button, FormControl, Select, MenuItem } from "@mui/material";
-
+import { showAlert } from "../component/alert"; 
 const modalStyle = {
   position: "absolute",
   top: "50%",
@@ -43,7 +43,7 @@ export default function AddMemberModal({ open, onClose, teamId, onAdded }) {
   );
 
   const handleAdd = async () => {
-    if (!selected) return alert("Choose a member");
+    if (!selected) return showAlert("Please select a member to add", "info");
     try {
       const res = await fetch("http://localhost:8081/user_team", {
         method: "POST",
@@ -54,7 +54,7 @@ export default function AddMemberModal({ open, onClose, teamId, onAdded }) {
       onAdded?.();
     } catch (err) {
       console.error(err);
-      alert("Failed to add member");
+      showAlert("Failed to add member to team", "error");
     }
   };
 
@@ -68,10 +68,12 @@ export default function AddMemberModal({ open, onClose, teamId, onAdded }) {
             <MenuItem value="">
               <em>Select member</em>
             </MenuItem>
-            {available.map((m) => (
-              <MenuItem key={m.user_id} value={m.user_id}>
-                {m.user_ln} {m.user_fn ? `, ${m.user_fn}` : ""}
-              </MenuItem>
+            {available
+              .filter((m) => m.user_role !== "admin")
+              .map((m) => (
+                <MenuItem key={m.user_id} value={m.user_id}>
+                  {m.user_ln} {m.user_fn ? `, ${m.user_fn}` : ""}
+                </MenuItem>
             ))}
           </Select>
         </FormControl>

@@ -1,3 +1,6 @@
+body{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 input[type="email"].text-input {
   font-size: 15px;
   padding: 14px 16px;
@@ -138,7 +141,6 @@ button:disabled, .MuiButton-root.Mui-disabled {
   display: flex;
   flex-direction: column;
   gap: 0px;
-  font-family: 'Roboto', sans-serif;
 }
 
 .right-panel{

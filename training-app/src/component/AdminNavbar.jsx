@@ -27,7 +27,7 @@ const AdminNavbar = () => {
                     <ul className="navbar">
                         <CustomLink to="/trainings">Manage Trainings</CustomLink>
                         <CustomLink to="/teams">Manage Teams</CustomLink>
-                        <CustomLink to="/managemember">Manage Users</CustomLink>
+                        <CustomLink to="/members">Manage Users</CustomLink>
                     </ul>
                 </nav>
             </div>

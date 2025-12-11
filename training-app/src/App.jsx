@@ -18,6 +18,7 @@
 
   import { AuthProvider } from "./AuthContext";
   import ProtectedRoute from "./ProtectedRoute";
+  import Signup from "./login/SignUp.jsx";
   
 
   function App() {
@@ -33,11 +34,12 @@
         </div>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/" element={<Login />}/>
             <Route path="/leadDashboard" element={<ProtectedRoute allowedRoles={["lead"]}><LeadDashboard /></ProtectedRoute>}/>
             <Route path="/leadTeam" element={<ProtectedRoute allowedRoles={["lead"]}><LeadTeam /></ProtectedRoute>}/>
             <Route path="/memberDashboard" element={<ProtectedRoute allowedRoles={["member"]}><MemberDashboard /></ProtectedRoute>}/>
-            <Route path="/managemember" element={<ProtectedRoute allowedRoles={["admin"]}><MemberPage /></ProtectedRoute>} />
+            <Route path="/members" element={<ProtectedRoute allowedRoles={["admin"]}><MemberPage /></ProtectedRoute>} />
             <Route path="/trainings" element={<ProtectedRoute allowedRoles={["admin"]}><TrainingPage /></ProtectedRoute>} />
             <Route path="/teams" element={<ProtectedRoute allowedRoles={["admin"]}><TeamPage /></ProtectedRoute>} />
           </Routes>

@@ -1,7 +1,7 @@
 // EditTeamModal.jsx
 import React, { useEffect, useState } from "react";
 import { Modal, Box, Button, TextField } from "@mui/material";
-
+import { showAlert } from "../component/alert"; 
 const modalStyle = {
   position: "absolute",
   top: "50%",
@@ -32,9 +32,14 @@ export default function EditTeamModal({ open, onClose, team, onUpdated }) {
       });
       if (!res.ok) throw new Error("Update failed");
       onUpdated?.();
+      showAlert("Team updated successfully", "success");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (err) {
       console.error(err);
-      alert("Failed to update team");
+      showAlert("Failed to update team", "error");
     }
   };
 

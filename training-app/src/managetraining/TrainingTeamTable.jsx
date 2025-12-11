@@ -2,6 +2,7 @@ import  { useState, useEffect } from "react";
 import { DataGrid, GridToolbar  } from "@mui/x-data-grid";
 import { Button, Stack, Dialog, DialogTitle, DialogContent, TextField } from "@mui/material";
 import AssignTeamModal from "./AssignTeamModal.jsx";
+import { showAlert } from "../component/alert"; 
 
 export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [], refreshTeams }) {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
@@ -16,7 +17,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
   }, [trainingId, teams]);
 
   const handleDelete = async () => {
-    if (!selectedTeamId) return alert("Select a team to remove");
+    if (!selectedTeamId) return showAlert("No team selected", "info");
     if (!window.confirm("Are you sure you want to remove the selected team?")) return;
 
     try {
@@ -25,7 +26,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
       await refreshTeams();
     } catch (err) {
       console.error(err);
-      alert("Failed to remove team");
+      showAlert("Failed to remove team from training", "error");
     }
   };
 
@@ -42,7 +43,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
       setOpenMembers(true);
     } catch (err) {
       console.error("Failed to load team members:", err);
-      alert("Failed to load members");
+      showAlert("Failed to load team members", "error");
     }
   };
 
@@ -54,7 +55,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
   // New: save due date
   const saveDueDate = async (teamId) => {
     const selectedDate = dueDates[teamId];
-    if (!selectedDate) return alert("Select a due date first");
+    if (!selectedDate) return showAlert("Please select a due date", "info");
 
     try {
       // Update team_training
@@ -71,11 +72,11 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
         body: JSON.stringify({ due_date: selectedDate })
       });
 
-      alert("Due date updated successfully!");
+      showAlert ("Due date updated successfully", "success");
       refreshTeams();
     } catch (err) {
       console.error("Failed to update due date:", err);
-      alert("Failed to update due date");
+      showAlert("Failed to update due date", "error");
     }
   };
 

@@ -1,23 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Stack, Checkbox, FormControlLabel } from "@mui/material";
+import { Button, Stack, TextField, Box, Typography } from "@mui/material";
 import CreateMember from "./CreateMember";
 import UpdateMember from "./UpdateMember";
 import UserTeams from "./UserTeams";
-
+import { showAlert } from "../component/alert"; 
 import "../view/splitlayout.css";
 import "./memberLayout.css";
-import { Alignment } from "react-data-table-component";
 
 export default function MemberPage() {
   const [members, setMembers] = useState([]);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  const [memberTeams, setMemberTeams] = useState([]);       // ⭐ teams user is in
-  const [leadTeams, setLeadTeams] = useState([]);           // ⭐ teams user leads
+  const [memberTeams, setMemberTeams] = useState([]);
+  const [leadTeams, setLeadTeams] = useState([]);
 
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+
+  // ⭐ SEARCH TEXT
+  const [searchText, setSearchText] = useState("");
 
   const loadMembers = async () => {
     try {
@@ -34,24 +36,20 @@ export default function MemberPage() {
     loadMembers();
   }, []);
 
-  // 🔹 When selecting a member, load their teams + lead assignments
   const handleRowClick = async (member) => {
     setSelectedMember(member);
 
     if (!member) return;
 
-    // fetch teams they are part of
     const teamRes = await fetch(`http://localhost:8081/team/user/${member.user_id}`);
     const teamData = await teamRes.json();
     setMemberTeams(teamData);
 
-    // fetch teams they lead
     const leadRes = await fetch(`http://localhost:8081/team_lead/${member.user_id}`);
     const leadData = await leadRes.json();
-    setLeadTeams(leadData.map(t => t.team_id)); // just IDs
+    setLeadTeams(leadData.map(t => t.team_id));
   };
 
-  // CREATE
   const handleCreateSubmit = async (formData) => {
     try {
       const res = await fetch("http://localhost:8081/member", {
@@ -63,23 +61,20 @@ export default function MemberPage() {
       await loadMembers();
     } catch (err) {
       console.error(err);
-      alert("Failed to create member");
+      showAlert("Failed to create member", "error");
     }
   };
 
-  // UPDATE MEMBER + TEAM LEADS
   const handleEditSubmit = async (formData, updatedLeadTeams) => {
     if (!selectedMember) return;
 
     try {
-      // update member details
       await fetch(`http://localhost:8081/member/${selectedMember.user_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      // update lead assignments
       await fetch(`http://localhost:8081/team_lead/update/${selectedMember.user_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -90,11 +85,10 @@ export default function MemberPage() {
       setSelectedMember(null);
     } catch (err) {
       console.error(err);
-      alert("Failed to update member");
+      showAlert("Failed to update member", "error");
     }
   };
 
-  // DELETE
   const handleDelete = async () => {
     if (!selectedMember) return;
     if (!window.confirm(`Delete ${selectedMember.user_fn} ${selectedMember.user_ln}?`)) return;
@@ -108,26 +102,24 @@ export default function MemberPage() {
       await loadMembers();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete member");
+      showAlert("Failed to delete member", "error");
     }
   };
 
   const columns = [
-    // { field: "user_id", headerName: "ID", width: 90 },
-    { field: "user_ln", headerName: "Last Name", flex: 1 },
     { field: "user_fn", headerName: "First Name", flex: 1 },
+    { field: "user_ln", headerName: "Last Name", flex: 1 },
     { field: "user_role", headerName: "Role", flex: 1 },
     { field: "user_email", headerName: "Email", flex: 1 },
   ];
 
-  // Toggle lead assignment from right panel
-  const toggleLeadTeam = (teamId) => {
-    setLeadTeams(prev =>
-      prev.includes(teamId)
-        ? prev.filter(id => id !== teamId)
-        : [...prev, teamId]
-    );
-  };
+  // ⭐ FILTER MEMBERS ACCORDING TO SEARCH
+  const filteredMembers = members.filter((m) =>
+    [m.user_fn, m.user_ln, m.user_email, m.user_role]
+      .join(" ")
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+  );
 
   return (
     <div className="container-layout">
@@ -135,14 +127,50 @@ export default function MemberPage() {
       {/* LEFT PANEL */}
       <div className="left-panel">
         <h2>Members</h2>
-        <Stack direction="row" spacing={2} sx={{ mb: 1 }}>
-          <Button variant="contained" onClick={() => setOpenCreate(true)}>Add Member</Button>
-          <Button variant="contained" disabled={!selectedMember} onClick={() => setOpenEdit(true)}>Update Member</Button>
-          <Button variant="contained" color="error" disabled={!selectedMember} onClick={handleDelete}>Remove Member</Button>
+
+        {/* ⭐ BUTTONS LEFT + SEARCH RIGHT (same style as your example) */}
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          sx={{ mb: 1 }}
+        >
+          {/* Buttons on the left */}
+          <Stack direction="row" spacing={2}>
+            <Button variant="contained" onClick={() => setOpenCreate(true)}>
+              Add Member
+            </Button>
+            <Button
+              variant="outlined"
+              disabled={!selectedMember}
+              onClick={() => setOpenEdit(true)}
+            >
+              Update Member
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              disabled={!selectedMember}
+              onClick={handleDelete}
+            >
+              Remove Member
+            </Button>
+          </Stack>
+
+          {/* Search on the right */}
+          <TextField
+            label="Search"
+            variant="outlined"
+            size="small"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            sx={{ width: 200 }}
+          />
         </Stack>
 
+        {/* DATA GRID */}
         <DataGrid
-          rows={members.map(m => ({ ...m, id: m.user_id }))}
+          rows={filteredMembers.map(m => ({ ...m, id: m.user_id }))}
           columns={columns}
           pageSize={10}
           rowsPerPageOptions={[5, 10, 20]}
@@ -150,33 +178,100 @@ export default function MemberPage() {
           autoHeight
         />
       </div>
+
       {/* RIGHT PANEL */}
       <div className="right-panel">
-        {selectedMember ? (
-          <>
-          <h2>Select a Member</h2>
-          <div className="member-details">
-          <div className="member-info">
-            <p><b>Last Name:</b> {selectedMember.user_ln}</p>
-            <p><b>First Name:</b> {selectedMember.user_fn}</p>
-            <p><b>Role:</b> {selectedMember.user_role}</p>
-            <p><b>Email:</b> {selectedMember.user_email}</p>
-          </div>
+  {selectedMember ? (
+    <Box
+      sx={{
+        p: 3,
+        bgcolor: "white",
+        borderRadius: 2,
+        boxShadow: 2,
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        gap: 2,
+      }}
+    >
+      {/* Header */}
+      <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+        Member Details
+      </Typography>
 
-          <UserTeams
-            userId={selectedMember.user_id}
-            userRole={selectedMember.user_role}
-            onLeadUpdate={(updatedLeadTeams) => handleEditSubmit(selectedMember, updatedLeadTeams)}
-          />
-        </div>
+      {/* Member Info Card */}
+      <Box
+        sx={{
+          p: 2,
+          bgcolor: "grey.100",
+          borderRadius: 2,
+          boxShadow: "inset 0 0 4px rgba(0,0,0,0.1)",
+        }}
+      >
+        <Stack spacing={1.2}>
+          <Typography
+            variant="h5"
+            sx={{ fontWeight: 600, mb: 1 }}
+          >
+            {selectedMember.user_fn} {selectedMember.user_ln}
+          </Typography>
 
-          </>
-        ) : (
-          <div className="no-selection">
-            <h2>Select a Member</h2>
-          </div>
-        )}
-      </div>
+          <Typography variant="body1">
+            <b>Role:</b> {selectedMember.user_role}
+          </Typography>
+
+          <Typography variant="body1">
+            <b>Email:</b> {selectedMember.user_email}
+          </Typography>
+        </Stack>
+      </Box>
+
+      {/* UserTeams Component */}
+      <Box
+        sx={{
+          mt: 1,
+          p: 2,
+          borderRadius: 2,
+          border: "1px solid #ddd",
+          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{ mb: 1.5, fontWeight: 600 }}
+        >
+          Team Assignments
+        </Typography>
+
+        <UserTeams
+          userId={selectedMember.user_id}
+          userRole={selectedMember.user_role}
+          onLeadUpdate={(updatedLeadTeams) =>
+            handleEditSubmit(selectedMember, updatedLeadTeams)
+          }
+        />
+      </Box>
+    </Box>
+  ) : (
+    /* When no member is selected */
+    <Box
+      sx={{
+        height: "100%",
+        p: 3,
+        bgcolor: "white",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 2,
+        boxShadow: 2,
+      }}
+    >
+      <Typography variant="h5" color="text.secondary">
+        Select a Member
+      </Typography>
+    </Box>
+  )}
+</div>
 
 
       {/* MODALS */}

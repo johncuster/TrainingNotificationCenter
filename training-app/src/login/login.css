@@ -1,10 +1,14 @@
+body{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
 /* Page layout */
 .login-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #0f172a 0%, #082032 50%, #0b3a53 100%);
+  background: #22313B;
   padding: 24px;
   box-sizing: border-box;
   
@@ -104,6 +108,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  margin-bottom: 0px;
 }
 .login-page .btn:active { transform: translateY(1px) scale(.998); }
 .login-page .btn[disabled] { opacity: 0.75; cursor: not-allowed; }
@@ -123,4 +128,31 @@
 @media (max-width: 480px) {
   .subtitle { font-size: 14px; }
   .logo { width: 60px; height: 60px; }
+}
+
+.signup-link {
+  text-align: center;
+  margin-top: 0px;
+  gap: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 12px;    
+}
+
+.signup-link .secondary-btn {
+  background-color: transparent;
+  color: #007bff;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0;   
+  line-height: 1;
+  font-size: 12px; 
+  margin: 0;
+  gap: 0px;
+}
+
+.signup-link .secondary-btn:hover {
+  text-decoration: underline;
 }

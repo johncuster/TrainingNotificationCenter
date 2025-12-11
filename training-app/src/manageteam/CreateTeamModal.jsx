@@ -1,6 +1,7 @@
 // CreateTeamModal.jsx
 import React, { useState } from "react";
 import { Modal, Box, Button, TextField } from "@mui/material";
+import { showAlert } from "../component/alert"; 
 
 const modalStyle = {
   position: "absolute",
@@ -19,7 +20,7 @@ export default function CreateTeamModal({ open, onClose, onCreated }) {
 
   const handleCreate = async () => {
     if (!teamName.trim()) {
-      alert("Team name required");
+      showAlert("Team name cannot be empty", "info");
       return;
     }
     try {
@@ -37,7 +38,7 @@ export default function CreateTeamModal({ open, onClose, onCreated }) {
       window.location.reload();
     } catch (err) {
       console.error(err);
-      alert("Failed to create team");
+      showAlert("Failed to create team", "error");
     }
   };
 

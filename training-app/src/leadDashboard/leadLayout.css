@@ -1,4 +1,6 @@
-/* Container for the whole dashboard */
+body{
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 .dashboard-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr); /* 4 equal columns = KPI reference */
@@ -10,7 +12,6 @@
   box-sizing: border-box;
   min-height: 100vh;
   align-items: start;  
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   grid-auto-rows: max-content; /* prevents rows from stretching */
 }
 

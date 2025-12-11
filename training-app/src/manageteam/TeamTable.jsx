@@ -1,14 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { Button, Stack } from "@mui/material";
 import CreateTeamModal from "./CreateTeamModal";
 import EditTeamModal from "./EditTeamModal";
-
+import { showAlert } from "../component/alert"; 
 export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
   const [selection, setSelection] = useState([]);
   const [openCreate, setOpenCreate] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
 
+
+  
   const columns = [
     // { field: "team_id", headerName: "ID", width: 90 },
     { field: "team_name", headerName: "Team Name", flex: 1 },
@@ -30,10 +32,10 @@ export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
       onSelectTeam(null);
       if (refreshTeams) await refreshTeams();
       window.location.reload();
-      alert("Team deleted successfully");
+      showAlert("Team deleted successfully", "success");
     } catch (err) {
       console.error(err);
-      alert("Failed to delete team");
+      showAlert("Failed to delete team", "error");
     }
   };
 

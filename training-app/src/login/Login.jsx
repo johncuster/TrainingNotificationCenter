@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext";
+import { showAlert } from "../component/alert"; 
 
 import "./login.css";
 import logo from "../resources/infor.png";
 
 const Login = () => {
-  const [user_ln, setEmail] = useState("");
+  const [user_email, setEmail] = useState("");
   const [user_password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
@@ -30,7 +31,7 @@ const Login = () => {
       const res = await fetch("http://localhost:8081/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_ln, user_password }),
+        body: JSON.stringify({ user_email, user_password }),
       });
 
       const data = await res.json();
@@ -42,7 +43,7 @@ const Login = () => {
         if (data.user_role === "admin") window.location.href = "/trainings";
         else if (data.user_role === "lead") window.location.href = "/leadDashboard";
         else if (data.user_role === "member") window.location.href = "/memberDashboard";
-        else alert("User role not recognized.");
+        else showAlert("Unknown user role", "error");
       } else {
         setMessage(data.error || "Invalid credentials");
       }
@@ -67,7 +68,7 @@ const Login = () => {
             <input
               type="text"
               placeholder="Email"
-              value={user_ln}
+              value={user_email}
               onChange={(e) => setEmail(e.target.value)}
               required
               className="input-field"
@@ -88,6 +89,16 @@ const Login = () => {
           <button className="btn" type="submit" disabled={loading}>
             Sign In
           </button>
+          <div className="signup-link">
+            <h4>Don't have an account?</h4>
+            <button 
+              type="button" 
+              className="btn secondary-btn"
+              onClick={() => navigate("/signup")}
+            >
+              Sign Up
+            </button>
+          </div>
 
           {message && <div className="error">{message}</div>}
         </form>
