@@ -45,7 +45,7 @@ export default function CreateTeamModal({ open, onClose, onCreated }) {
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
-        <h3>Create Team</h3>
+        <h3>Add Team</h3>
         <TextField
           label="Team Name"
           fullWidth

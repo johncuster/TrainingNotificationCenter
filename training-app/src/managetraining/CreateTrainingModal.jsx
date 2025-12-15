@@ -31,7 +31,7 @@ export default function CreateTrainingModal({ isOpen, onClose, onSubmit }) {
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
-      <DialogTitle>Create Training</DialogTitle>
+      <DialogTitle>Add Training</DialogTitle>
       <DialogContent>
         <Box mt={1}>
           <TextField label="Training Title" name="training_title" fullWidth required margin="dense" onChange={handleChange} />

@@ -24,7 +24,7 @@ export default function EditTrainingModal({ isOpen, onClose, initialData, onSubm
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
-      <DialogTitle>Edit Training</DialogTitle>
+      <DialogTitle>Update Training</DialogTitle>
       <DialogContent>
         <Box mt={1}>
           <TextField label="Title" name="training_title" fullWidth required margin="dense" value={form.training_title} onChange={handleChange}/>

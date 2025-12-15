@@ -48,7 +48,7 @@ export default function EditTeamModal({ open, onClose, team, onUpdated }) {
   return (
     <Modal open={open} onClose={onClose}>
       <Box sx={modalStyle}>
-        <h3>Edit Team</h3>
+        <h3>Update Team</h3>
         <TextField
           label="Team Name"
           fullWidth

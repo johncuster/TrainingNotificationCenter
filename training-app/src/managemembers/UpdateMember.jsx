@@ -65,7 +65,7 @@ const UpdateMember = ({ isOpen, onClose, onSubmit, initialData }) => {
 
   return (
      <Dialog open={isOpen} onClose={onClose} fullWidth>
-              <DialogTitle>Create Training</DialogTitle>
+              <DialogTitle>Update Member</DialogTitle>
               <DialogContent>
                 <Box mt={1}>
                   <TextField label="First Name" name="user_fn" fullWidth required margin="dense"  value={formData.user_fn} onChange={handleChange} />

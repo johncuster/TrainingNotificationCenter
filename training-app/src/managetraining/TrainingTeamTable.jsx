@@ -150,10 +150,35 @@ console.log("Teams for DataGrid:", teams);
             <DataGrid
               rows={teamMembers.map((m, index) => ({ ...m, id: index }))}
               columns={[
-                { field: "user_id", headerName: "ID", width: 100 },
+                // { field: "user_id", headerName: "ID", width: 100 },
                 { field: "user_ln", headerName: "Last Name", flex: 1 },
                 { field: "user_fn", headerName: "First Name", flex: 1 },
-                { field: "ut_status", headerName: "Status", width: 150 },
+                {
+                  field: "ut_status",
+                  headerName: "Status",
+                  width: 150,
+                  renderCell: (params) => (
+                    <span
+                      style={{
+                      fontWeight: 600,
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor:
+                        params.value === "Completed"
+                          ? "#c8e6c9"
+                          : params.value === "Pending"
+                          ? "#fff3cd"
+                          : "transparent",
+                      }}
+                    >
+                      {params.value}
+                    </span>
+                  ),
+                },
+                // { field: "ut_status", headerName: "Status", width: 150 },
               ]}
               pageSize={5}
               autoHeight

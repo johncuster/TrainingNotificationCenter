@@ -100,13 +100,13 @@ export default function LeadTeam() {
     let textColor = "#000";
 
     if (isOverdue) {
-      bgColor = "#ffcccc";  // overdue red
+      bgColor = "#f796a5ff";  // overdue red
       //textColor = "#a10000";
     } else if (status === "Pending") {
-      bgColor = "#fff3cd";  // yellow
+      bgColor = "#eff7b8ff";  // yellow
       //textColor = "#856404";
     } else if (status === "Completed") {
-      bgColor = "#d4edda";  // green
+      bgColor = "#9bf8c5ff";  // green
       //textColor = "#155724";
     }
 
@@ -119,7 +119,6 @@ export default function LeadTeam() {
           textAlign: "center",
           backgroundColor: bgColor,
           color: textColor,
-          fontWeight: "bold",
         }}
       >
         {status}

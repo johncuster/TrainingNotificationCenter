@@ -39,7 +39,7 @@ const CreateMember = ({ isOpen, onClose, onSubmit }) => {
 
   return (
     <Dialog open={isOpen} onClose={onClose} fullWidth>
-          <DialogTitle>Create Training</DialogTitle>
+          <DialogTitle>Add Member</DialogTitle>
           <DialogContent>
             <Box mt={1}>
               <TextField label="First Name" name="user_fn" fullWidth required margin="dense" onChange={handleChange} />
