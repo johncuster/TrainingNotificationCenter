@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { Button, Stack, Box, Typography, TextField } from "@mui/material";
+import {
+  Button,
+  Stack,
+  Box,
+  Typography,
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+} from "@mui/material";
 import AddMemberModal from "./AddMemberModal";
 import { showAlert } from "../component/alert";
 
@@ -9,6 +18,11 @@ export default function MemberTable({ team }) {
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [openAdd, setOpenAdd] = useState(false);
   const [searchText, setSearchText] = useState("");
+
+  // NEW STATES
+  const [openTrainings, setOpenTrainings] = useState(false);
+  const [memberTrainings, setMemberTrainings] = useState([]);
+  const [selectedMemberName, setSelectedMemberName] = useState("");
 
   // Function to load members and determine their display roles
   const loadMembers = async () => {
@@ -19,13 +33,11 @@ export default function MemberTable({ team }) {
     }
 
     try {
-      // Fetch team members
       const membersRes = await fetch(
         `http://localhost:8081/team/${team.team_id}/members`
       );
       const membersData = await membersRes.json();
 
-      // Fetch lead info for each member
       const leadDataPromises = membersData.map((m) =>
         fetch(`http://localhost:8081/team_lead/${m.user_id}`)
           .then((res) => res.json())
@@ -33,7 +45,6 @@ export default function MemberTable({ team }) {
       );
       const allLeadTeams = await Promise.all(leadDataPromises);
 
-      // Map display roles
       const processed = membersData.map((m, idx) => {
         const leadTeams = allLeadTeams[idx].map((t) => t.team_id);
         let role = "Member";
@@ -73,6 +84,26 @@ export default function MemberTable({ team }) {
     }
   };
 
+  // NEW: Double-click handler → show trainings
+  const handleRowDoubleClick = async (params) => {
+    const userId = params.row.user_id;
+    const name = `${params.row.user_fn} ${params.row.user_ln}`;
+
+    try {
+      const res = await fetch(
+        `http://localhost:8081/user_training/member/${selectedMemberId}`
+      );
+      const data = await res.json();
+
+      setMemberTrainings(data);
+      setSelectedMemberName(name);
+      setOpenTrainings(true);
+    } catch (err) {
+      console.error("Failed to load member trainings:", err);
+      showAlert("Failed to load member trainings", "error");
+    }
+  };
+
   // Filter members based on search text
   const filteredMembers = members.filter((m) =>
     [m.user_fn, m.user_ln, m.display_role]
@@ -83,47 +114,41 @@ export default function MemberTable({ team }) {
 
   return (
     <div>
-      {/* Header with KPI on far right */}
+      {/* Header */}
+      {!team && <h2>Members</h2>}
       {team && (
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
-          sx={{ mb: 2 }}
+          sx={{ mb: 0 }}
         >
-          <Typography variant="h5">Members of {team.team_name}</Typography>
-
+          {/* <Typography variant="h5">
+            Members of {team.team_name}
+          </Typography> */}
+          <h2>{team.team_name} Members</h2>
           <Box
             sx={{
               px: 2,
               py: 0.5,
               bgcolor: "grey.200",
               borderRadius: 1,
-              display: "inline-block",
             }}
           >
-            <Typography
-              variant="body2"
-              color="black"
-              sx={{ fontWeight: 500 }}
-            >
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
               Members Count: {members.length}
             </Typography>
           </Box>
+        </Stack>
+      )}
 
-          </Stack>
-        )}
-      
-
-      {/* Action buttons */}
-      {/* Action buttons + Search */}
+      {/* Actions + Search */}
       <Stack
         direction="row"
         alignItems="center"
         justifyContent="space-between"
         sx={{ mb: 1 }}
       >
-        {/* Buttons on the left */}
         <Stack direction="row" spacing={2}>
           <Button
             variant="contained"
@@ -142,7 +167,6 @@ export default function MemberTable({ team }) {
           </Button>
         </Stack>
 
-        {/* Search on the right */}
         <TextField
           label="Search"
           variant="outlined"
@@ -152,8 +176,7 @@ export default function MemberTable({ team }) {
         />
       </Stack>
 
-
-      {/* DataGrid */}
+      {/* Members DataGrid */}
       <DataGrid
         rows={filteredMembers.map((m) => ({ ...m, id: m.user_id }))}
         columns={[
@@ -163,10 +186,9 @@ export default function MemberTable({ team }) {
         ]}
         pageSize={10}
         rowsPerPageOptions={[5, 10, 20]}
-        getRowId={(row) => row.id}
         onRowClick={(params) => setSelectedMemberId(params.id)}
+        // onRowDoubleClick={handleRowDoubleClick}
         hideFooterSelectedRowCount
-        autoHeight={false}
         localeText={{ noRowsLabel: team ? "No members" : "Select a team" }}
       />
 
@@ -182,6 +204,37 @@ export default function MemberTable({ team }) {
           }}
         />
       )}
+
+      {/* Trainings Dialog */}
+      <Dialog
+        open={openTrainings}
+        onClose={() => setOpenTrainings(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>
+          Trainings for {selectedMemberName}
+        </DialogTitle>
+
+        <DialogContent>
+          <div style={{ height: 400, width: "100%" }}>
+            <DataGrid
+              rows={memberTrainings.map((t, index) => ({
+                ...t,
+                id: index,
+              }))}
+              columns={[
+                { field: "training_name", headerName: "Training", flex: 1 },
+                { field: "team_name", headerName: "Team", flex: 1 },
+                { field: "ut_status", headerName: "Status", width: 150 },
+                { field: "due_date", headerName: "Due Date", width: 150 },
+              ]}
+              pageSize={5}
+              autoHeight
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

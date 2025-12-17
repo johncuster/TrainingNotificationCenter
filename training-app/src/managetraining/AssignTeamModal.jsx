@@ -21,7 +21,10 @@ export default function AssignTeamModal({ open, onClose, trainingId, onAssigned 
   const [due_date, setDueDate] = useState("");
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+    setSelectedTeam("");
+    setDueDate("");
+  }
     const load = async () => {
       try {
         const [teamsRes, assignedRes] = await Promise.all([

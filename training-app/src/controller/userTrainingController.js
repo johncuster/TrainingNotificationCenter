@@ -173,6 +173,40 @@ const userTrainingController = {
     });
   },
 
+  getUserTrainingsWithTeams: (req, res) => {
+  const { user_id } = req.params;
+  console.log("Fetching trainings");
+
+  if (!user_id) {
+    return res.status(400).json({ error: "Missing user_id" });
+  }
+
+  const sql = `
+    SELECT 
+      ut.training_id,
+      tr.training_name,
+      ut.team_id,
+      t.team_name,
+      ut.ut_status,
+      DATE_FORMAT(ut.due_date, '%Y-%m-%d') AS due_date
+    FROM user_training ut
+    JOIN training tr ON ut.training_id = tr.training_id
+    JOIN team t ON ut.team_id = t.team_id
+    WHERE ut.user_id = ?
+    ORDER BY tr.training_name ASC
+  `;
+  console.log("Fetching trainings for user_id:", user_id);
+  db.query(sql, [user_id], (err, rows) => {
+    if (err) {
+      console.error("Error fetching user trainings:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+
+    res.json(rows);
+  });
+},
+
+
 };
 
 module.exports = userTrainingController; 

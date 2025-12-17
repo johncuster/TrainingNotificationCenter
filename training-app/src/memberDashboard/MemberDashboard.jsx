@@ -7,29 +7,45 @@ import { showAlert } from "../component/alert";
 export default function MemberDashboard() {
   const [data, setData] = useState({});
   const [selectedTeam, setSelectedTeam] = useState("ALL");
-  const [selectedTraining, setSelectedTraining] = useState("ALL"); // New state
+  const [selectedTraining, setSelectedTraining] = useState("ALL");
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [searchText, setSearchText] = useState(""); // Search state
+  const [searchText, setSearchText] = useState("");
+
   const userEmail = localStorage.getItem("user_email") || "Email";
   const userId = localStorage.getItem("user_id");
   const userFirstName = localStorage.getItem("user_fn") || "FirstName";
   const userLastName = localStorage.getItem("user_ln") || "LastName";
 
-  // Fetch data and group by team
+  // ================================
+  // FETCH DATA
+  // ================================
   useEffect(() => {
     fetch(`http://localhost:8081/member/${userId}`)
       .then((res) => res.json())
       .then((rows) => {
         const grouped = {};
-        rows.forEach((row) => {
-          if (!grouped[row.team_name]) grouped[row.team_name] = [];
-          grouped[row.team_name].push(row);
-        });
+
+        rows
+          // 🔴 CHANGE #1
+          // Filter out rows where no training is assigned
+          .filter(
+            (row) =>
+              row.usertraining_id != null &&
+              row.training_title != null
+          )
+          .forEach((row) => {
+            if (!grouped[row.team_name]) grouped[row.team_name] = [];
+            grouped[row.team_name].push(row);
+          });
+
         setData(grouped);
       })
       .catch((err) => console.error("Error fetching member data:", err));
   }, [userId]);
 
+  // ================================
+  // MARK COMPLETE
+  // ================================
   const markComplete = async (row) => {
     try {
       const res = await fetch(
@@ -37,16 +53,25 @@ export default function MemberDashboard() {
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ut_status: "Completed", usertraining_id: row.usertraining_id }),
+          body: JSON.stringify({
+            ut_status: "Completed",
+            usertraining_id: row.usertraining_id,
+          }),
         }
       );
+
       if (!res.ok) throw new Error("Failed to update");
 
       const teamName = row.team_name;
+
       setData((prevData) => {
         const updatedTeamRows = prevData[teamName].map((r) =>
           r.usertraining_id === row.usertraining_id
-            ? { ...r, ut_status: "Completed", ut_completedate: new Date().toISOString() }
+            ? {
+                ...r,
+                ut_status: "Completed",
+                ut_completedate: new Date().toISOString(),
+              }
             : r
         );
         return { ...prevData, [teamName]: updatedTeamRows };
@@ -59,6 +84,9 @@ export default function MemberDashboard() {
     }
   };
 
+  // ================================
+  // KPI CALCULATIONS
+  // ================================
   const getKPIs = () => {
     const rows =
       selectedTeam === "ALL"
@@ -82,96 +110,93 @@ export default function MemberDashboard() {
 
   const KPIs = getKPIs();
 
+  // ================================
+  // DATA GRID COLUMNS
+  // ================================
   const trainingColumns = [
     { field: "team_name", headerName: "Team", width: 150 },
     { field: "training_title", headerName: "Training Title", flex: 1 },
     { field: "training_desc", headerName: "Description", flex: 1 },
     { field: "training_link", headerName: "Link", flex: 1 },
     {
-  field: "ut_status",
-  headerName: "Status",
-  width: 150,
-  renderCell: (params) => {
-    const status = params.row.ut_status || "Pending";
-    const isOverdue =
-      params.row.due_date &&
-      new Date(params.row.due_date) < new Date() &&
-      status !== "Completed";
+      field: "ut_status",
+      headerName: "Status",
+      width: 150,
+      renderCell: (params) => {
+        const status = params.row.ut_status || "Pending";
+        const isOverdue =
+          params.row.due_date &&
+          new Date(params.row.due_date) < new Date() &&
+          status !== "Completed";
 
-    let bgColor = "transparent";
-    let textColor = "#000";
+        let bgColor = "transparent";
 
-    if (isOverdue) {
-      bgColor = "#f796a5ff"; // red
-      //textColor = "#a10000";
-    } else if (status === "Pending") {
-      bgColor = "#eff7b8ff"; // yellow
-      //textColor = "#856404";
-    } else if (status === "Completed") {
-      bgColor = "#9bf8c5ff"; // green
-      //textColor = "#155724";
-    }
+        if (isOverdue) bgColor = "#f796a5ff";
+        else if (status === "Pending") bgColor = "#eff7b8ff";
+        else if (status === "Completed") bgColor = "#9bf8c5ff";
 
-    return (
-      <div
-        style={{
-          width: "100%",
-          padding: "2px 4px",
-          borderRadius: "6px",
-          backgroundColor: bgColor,
-          color: textColor,
-        }}
-      >
-        <Select
-          value={status}
-          disabled={params.row.ut_completedate != null}
-          onClick={(e) => e.stopPropagation()}
-          onMouseDown={(e) => e.stopPropagation()}
-          fullWidth
-          size="small"
-          style={{
-            color: textColor,
-            backgroundColor: "transparent",
-          }}
-          onChange={(e) => {
-            const newValue = e.target.value;
-            if (newValue === "Completed") {
-              if (
-                window.confirm(
-                  `Mark "${params.row.training_title}" as Completed? This cannot be undone.`
-                )
-              )
-                markComplete(params.row);
-            } else {
-              const teamName = params.row.team_name;
-              setData((prevData) => {
-                const updatedTeamRows = prevData[teamName].map((row) =>
-                  row.usertraining_id === params.row.usertraining_id
-                    ? { ...row, ut_status: newValue }
-                    : row
-                );
-                return { ...prevData, [teamName]: updatedTeamRows };
-              });
-            }
-          }}
-        >
-          <MenuItem value="Pending">Pending</MenuItem>
-          <MenuItem value="Completed">Completed</MenuItem>
-        </Select>
-      </div>
-    );
-  },
-},
+        return (
+          <div
+            style={{
+              width: "100%",
+              padding: "2px 4px",
+              borderRadius: "6px",
+              backgroundColor: bgColor,
+            }}
+          >
+            <Select
+              value={status}
+              disabled={params.row.ut_completedate != null}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              fullWidth
+              size="small"
+              style={{ backgroundColor: "transparent" }}
+              onChange={(e) => {
+                const newValue = e.target.value;
+
+                if (newValue === "Completed") {
+                  if (
+                    window.confirm(
+                      `Mark "${params.row.training_title}" as Completed? This cannot be undone.`
+                    )
+                  ) {
+                    markComplete(params.row);
+                    window.location.reload();
+                  }
+                } else {
+                  const teamName = params.row.team_name;
+                  setData((prevData) => {
+                    const updatedTeamRows = prevData[teamName].map((row) =>
+                      row.usertraining_id === params.row.usertraining_id
+                        ? { ...row, ut_status: newValue }
+                        : row
+                    );
+                    return { ...prevData, [teamName]: updatedTeamRows };
+                  });
+                }
+              }}
+            >
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="Completed">Completed</MenuItem>
+            </Select>
+          </div>
+        );
+      },
+    },
     { field: "ut_assigndate", headerName: "Assigned", width: 150 },
     { field: "due_date", headerName: "Due Date", width: 150 },
     { field: "ut_completedate", headerName: "Completed", width: 150 },
   ];
 
-  // Prepare list of training titles for filter
+  // ================================
+  // FILTERING LOGIC
+  // ================================
   const allRows = Object.values(data).flat();
-  const trainingTitles = Array.from(new Set(allRows.map((r) => r.training_title)));
+  const trainingTitles = Array.from(
+    new Set(allRows.map((r) => r.training_title))
+  );
 
-  // Filter rows based on team, training, status, and search
   let rows =
     selectedTeam === "ALL"
       ? Object.values(data).flat()
@@ -182,9 +207,13 @@ export default function MemberDashboard() {
   }
 
   const today = new Date();
+
   if (statusFilter === "Overdue") {
     rows = rows.filter(
-      (r) => r.due_date && new Date(r.due_date) < today && r.ut_status !== "Completed"
+      (r) =>
+        r.due_date &&
+        new Date(r.due_date) < today &&
+        r.ut_status !== "Completed"
     );
   } else if (statusFilter === "Pending") {
     rows = rows.filter((r) => r.ut_status === "Pending");
@@ -201,36 +230,66 @@ export default function MemberDashboard() {
     );
   }
 
+  // 🔴 CHANGE #2
+  rows = rows.filter(
+    (r) => r.usertraining_id != null && r.training_title != null
+  );
+
   rows = rows.map((row, i) => ({ ...row, id: i }));
 
+  // ================================
+  // RENDER
+  // ================================
   return (
     <div className="dashboard-container">
-      {/* KPI CARDS */}
       <div className="kpi-container">
-        <div className="kpi-card" onClick={() => setStatusFilter("ALL")} style={{ cursor: "pointer" }}>
+        <div className="kpi-card" onClick={() => setStatusFilter("ALL")}>
           Total Trainings: {KPIs.total}
         </div>
-        <div className="kpi-card" style={{ background: "#f796a5ff", cursor: "pointer" }} onClick={() => setStatusFilter("Overdue")}>
+        <div
+          className="kpi-card"
+          style={{ background: "#f796a5ff" }}
+          onClick={() => setStatusFilter("Overdue")}
+        >
           Overdue: {KPIs.overdue}
         </div>
-        <div className="kpi-card" style={{ background: "#9bf8c5ff", cursor: "pointer" }} onClick={() => setStatusFilter("Completed")}>
+        <div
+          className="kpi-card"
+          style={{ background: "#9bf8c5ff" }}
+          onClick={() => setStatusFilter("Completed")}
+        >
           Completed: {KPIs.completed}
         </div>
-        <div className="kpi-card" style={{ background: "#eff7b8ff", cursor: "pointer" }} onClick={() => setStatusFilter("Pending")}>
+        <div
+          className="kpi-card"
+          style={{ background: "#eff7b8ff" }}
+          onClick={() => setStatusFilter("Pending")}
+        >
           Pending: {KPIs.pending}
         </div>
       </div>
 
       <div className="user-layout">
         <div className="user-left">
-          <div className="user-info-box" style={{ marginBottom: "15px", padding: "10px", borderRadius: "8px" }}>
-            <h3 style={{ margin: 0 }}>My Trainings</h3>
-            <p style={{ margin: "5px 0" }}><b>Email:</b> {userEmail}</p>
-            <p style={{ margin: "5px 0" }}><b>First Name:</b> {userFirstName}</p>
-            <p style={{ margin: "5px 0" }}><b>Last Name:</b> {userLastName}</p>
+          <div className="user-info-box">
+            <h3>My Trainings</h3>
+            <p><b>Email:</b> {userEmail}</p>
+            <p><b>First Name:</b> {userFirstName}</p>
+            <p><b>Last Name:</b> {userLastName}</p>
           </div>
 
-          {/* Team Filter */}
+          {/* 🔴 RESTORED SEARCH (nothing else changed) */}
+          <div className="user-select" style={{ marginBottom: "15px" }}>
+            <h3>Search</h3>
+            <TextField
+              fullWidth
+              size="small"
+              placeholder="Search"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </div>
+
           <div className="user-select">
             <h3>Select Team</h3>
             <Select
@@ -238,18 +297,21 @@ export default function MemberDashboard() {
               value={selectedTeam}
               onChange={(e) => {
                 setSelectedTeam(e.target.value);
-                setSelectedTraining("ALL"); // reset training filter
-                setStatusFilter("ALL");     // reset status filter
+                setSelectedTraining("ALL");
+                setStatusFilter("ALL");
               }}
             >
               <MenuItem value="ALL">All Teams</MenuItem>
-              {Object.keys(data).map((team) => (
-                <MenuItem key={team} value={team}>{team}</MenuItem>
-              ))}
+              {Object.entries(data)
+                .filter(([_, rows]) => rows.length > 0)
+                .map(([team]) => (
+                  <MenuItem key={team} value={team}>
+                    {team}
+                  </MenuItem>
+                ))}
             </Select>
           </div>
 
-          {/* Training Filter */}
           <div className="user-select" style={{ marginTop: "15px" }}>
             <h3>Select Training</h3>
             <Select
@@ -259,7 +321,9 @@ export default function MemberDashboard() {
             >
               <MenuItem value="ALL">All Trainings</MenuItem>
               {trainingTitles.map((title, idx) => (
-                <MenuItem key={idx} value={title}>{title}</MenuItem>
+                <MenuItem key={idx} value={title}>
+                  {title}
+                </MenuItem>
               ))}
             </Select>
           </div>
@@ -271,19 +335,6 @@ export default function MemberDashboard() {
             columns={trainingColumns}
             autoHeight
             pageSize={10}
-          //   getRowClassName={(params) => {
-          //     const due = params.row.due_date ? new Date(params.row.due_date) : null;
-          //     if (due && !isNaN(due.getTime()) && params.row.ut_status !== "Completed" && due < today)
-          //       return "row-overdue";
-          //     if (params.row.ut_status === "Pending") return "row-pending";
-          //     if (params.row.ut_status === "Completed") return "row-completed";
-          //     return "";
-          //   }}
-          //   sx={{
-          //     "& .row-overdue": { backgroundColor: "#ffcccc !important" },
-          //     "& .row-pending": { backgroundColor: "#fff3cd !important" },
-          //     "& .row-completed": { backgroundColor: "#d4edda !important" },
-          //   }}
           />
         </div>
       </div>

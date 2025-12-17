@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
-import { MenuItem, Select } from "@mui/material";
+import { MenuItem, Select, TextField } from "@mui/material";
 import "../view/userlayout.css";
 
 export default function LeadTeam() {
@@ -8,8 +8,9 @@ export default function LeadTeam() {
   const [selectedTeam, setSelectedTeam] = useState("ALL");
   const [teams, setTeams] = useState([]);
   const [statusFilter, setStatusFilter] = useState("ALL");
-  const [selectedTraining, setSelectedTraining] = useState("ALL"); 
-  const [searchText, setSearchText] = useState(""); // Search state
+  const [selectedTraining, setSelectedTraining] = useState("ALL");
+  const [searchText, setSearchText] = useState("");
+
   const userEmail = localStorage.getItem("user_email") || "Email";
   const userId = localStorage.getItem("user_id");
   const userFirstName = localStorage.getItem("user_fn") || "FirstName";
@@ -27,13 +28,25 @@ export default function LeadTeam() {
       .then((res) => res.json())
       .then((rows) => {
         const grouped = {};
-        rows.forEach((row) => {
-          if (!grouped[row.team_name]) grouped[row.team_name] = [];
-          grouped[row.team_name].push(row);
-        });
+
+        rows
+          // 🔴 CHANGE #1
+          // Remove members that do NOT have an assigned training
+          .filter(
+            (row) =>
+              row.usertraining_id != null &&
+              row.training_title != null
+          )
+          .forEach((row) => {
+            if (!grouped[row.team_name]) grouped[row.team_name] = [];
+            grouped[row.team_name].push(row);
+          });
+
         setData(grouped);
       })
-      .catch((err) => console.error("Error fetching team training data:", err));
+      .catch((err) =>
+        console.error("Error fetching team training data:", err)
+      );
   }, [userId]);
 
   const saveUpdate = (row) => {
@@ -68,12 +81,22 @@ export default function LeadTeam() {
           ? Object.values(data).flat()
           : data[selectedTeam] || []
         : selectedTeam === "ALL"
-        ? Object.values(data).flat().filter((r) => r.training_title === selectedTraining)
-        : (data[selectedTeam] || []).filter((r) => r.training_title === selectedTraining);
+        ? Object.values(data)
+            .flat()
+            .filter((r) => r.training_title === selectedTraining)
+        : (data[selectedTeam] || []).filter(
+            (r) => r.training_title === selectedTraining
+          );
 
     const totalMembers = rows.length;
-    const completedMembers = rows.filter((r) => r.ut_status === "Completed").length;
-    const progressPercent = totalMembers === 0 ? 0 : Math.round((completedMembers / totalMembers) * 100);
+    const completedMembers = rows.filter(
+      (r) => r.ut_status === "Completed"
+    ).length;
+
+    const progressPercent =
+      totalMembers === 0
+        ? 0
+        : Math.round((completedMembers / totalMembers) * 100);
 
     return { totalMembers, completedMembers, progressPercent };
   };
@@ -86,47 +109,37 @@ export default function LeadTeam() {
     { field: "training_desc", headerName: "Description", flex: 2 },
     { field: "training_link", headerName: "Link", flex: 3 },
     {
-  field: "ut_status",
-  headerName: "Status",
-  width: 150,
-  renderCell: (params) => {
-    const status = params.row.ut_status;
-    const isOverdue =
-      params.row.due_date &&
-      new Date(params.row.due_date) < new Date() &&
-      status !== "Completed";
+      field: "ut_status",
+      headerName: "Status",
+      width: 150,
+      renderCell: (params) => {
+        const status = params.row.ut_status;
+        const isOverdue =
+          params.row.due_date &&
+          new Date(params.row.due_date) < new Date() &&
+          status !== "Completed";
 
-    let bgColor = "transparent";
-    let textColor = "#000";
+        let bgColor = "transparent";
 
-    if (isOverdue) {
-      bgColor = "#f796a5ff";  // overdue red
-      //textColor = "#a10000";
-    } else if (status === "Pending") {
-      bgColor = "#eff7b8ff";  // yellow
-      //textColor = "#856404";
-    } else if (status === "Completed") {
-      bgColor = "#9bf8c5ff";  // green
-      //textColor = "#155724";
-    }
+        if (isOverdue) bgColor = "#f796a5ff";
+        else if (status === "Pending") bgColor = "#eff7b8ff";
+        else if (status === "Completed") bgColor = "#9bf8c5ff";
 
-    return (
-      <div
-        style={{
-          width: "100%",
-          padding: "5px 8px",
-          borderRadius: "6px",
-          textAlign: "center",
-          backgroundColor: bgColor,
-          color: textColor,
-        }}
-      >
-        {status}
-      </div>
-    );
-  },
-},
-
+        return (
+          <div
+            style={{
+              width: "100%",
+              padding: "5px 8px",
+              borderRadius: "6px",
+              textAlign: "center",
+              backgroundColor: bgColor,
+            }}
+          >
+            {status}
+          </div>
+        );
+      },
+    },
     { field: "due_date", headerName: "Due Date", width: 100 },
     { field: "ut_assigndate", headerName: "Assigned", width: 100 },
     { field: "ut_completedate", headerName: "Completed", width: 100 },
@@ -141,19 +154,34 @@ export default function LeadTeam() {
 
   if (statusFilter === "Overdue") {
     filteredRows = filteredRows.filter(
-      (r) => r.due_date && new Date(r.due_date) < today && r.ut_status !== "Completed"
+      (r) =>
+        r.due_date &&
+        new Date(r.due_date) < today &&
+        r.ut_status !== "Completed"
     );
   } else if (statusFilter === "Pending") {
-    filteredRows = filteredRows.filter((r) => r.ut_status === "Pending");
+    filteredRows = filteredRows.filter(
+      (r) => r.ut_status === "Pending"
+    );
   } else if (statusFilter === "Completed") {
-    filteredRows = filteredRows.filter((r) => r.ut_status === "Completed");
+    filteredRows = filteredRows.filter(
+      (r) => r.ut_status === "Completed"
+    );
   }
 
   if (selectedTraining !== "ALL") {
-    filteredRows = filteredRows.filter((r) => r.training_title === selectedTraining);
+    filteredRows = filteredRows.filter(
+      (r) => r.training_title === selectedTraining
+    );
   }
 
-  // Apply search filter
+  // 🔴 CHANGE #2
+  // Final safety filter so members without training NEVER reach the grid
+  filteredRows = filteredRows.filter(
+    (r) => r.usertraining_id != null && r.training_title != null
+  );
+
+  // Search filter (UNCHANGED)
   if (searchText.trim() !== "") {
     filteredRows = filteredRows.filter((r) =>
       [r.user_fn, r.user_ln, r.training_title, r.training_desc, r.ut_status]
@@ -165,48 +193,53 @@ export default function LeadTeam() {
 
   const KPIs = {
     total: filteredRows.length,
-    completed: filteredRows.filter((r) => r.ut_status === "Completed").length,
-    pending: filteredRows.filter((r) => r.ut_status === "Pending").length,
+    completed: filteredRows.filter(
+      (r) => r.ut_status === "Completed"
+    ).length,
+    pending: filteredRows.filter(
+      (r) => r.ut_status === "Pending"
+    ).length,
     overdue: filteredRows.filter(
-      (r) => r.due_date && new Date(r.due_date) < today && r.ut_status !== "Completed"
+      (r) =>
+        r.due_date &&
+        new Date(r.due_date) < today &&
+        r.ut_status !== "Completed"
     ).length,
   };
 
-  const trainingProgress = getTrainingProgress();
-
-  const rows = filteredRows.map((row, i) => ({ ...row, id: i }));
+  const rows = filteredRows.map((row, i) => ({
+    ...row,
+    id: i,
+  }));
 
   const allRows = Object.values(data).flat();
-  const trainingTitles = Array.from(new Set(allRows.map((r) => r.training_title)));
+  const trainingTitles = Array.from(
+    new Set(allRows.map((r) => r.training_title))
+  );
 
   return (
     <div className="dashboard-container">
-      {/* KPI CARDS */}
       <div className="kpi-container">
-        <div
-          className="kpi-card"
-          onClick={() => setStatusFilter("ALL")}
-          style={{ cursor: "pointer" }}
-        >
+        <div className="kpi-card" onClick={() => setStatusFilter("ALL")}>
           Total Trainings: {KPIs.total}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#f796a5ff", cursor: "pointer" }}
+          style={{ background: "#f796a5ff" }}
           onClick={() => setStatusFilter("Overdue")}
         >
           Overdue: {KPIs.overdue}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#9bf8c5ff", cursor: "pointer" }}
+          style={{ background: "#9bf8c5ff" }}
           onClick={() => setStatusFilter("Completed")}
         >
           Completed: {KPIs.completed}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#eff7b8ff", cursor: "pointer" }}
+          style={{ background: "#eff7b8ff" }}
           onClick={() => setStatusFilter("Pending")}
         >
           Pending: {KPIs.pending}
@@ -214,37 +247,26 @@ export default function LeadTeam() {
       </div>
 
       <div className="user-layout">
-        {/* LEFT PANEL */}
         <div className="user-left">
-          <div
-            className="user-info-box"
-            style={{ marginBottom: "15px", padding: "10px", borderRadius: "8px" }}
-          >
-            <h3 style={{ margin: 0 }}>My Members</h3>
-            <p style={{ margin: "5px 0" }}>
-              <b>Email:</b> {userEmail}
-            </p>
-            <p style={{ margin: "5px 0" }}>
-              <b>First Name:</b> {userFirstName}
-            </p>
-            <p style={{ margin: "5px 0" }}>
-              <b>Last Name:</b> {userLastName}
-            </p>
+          <div className="user-info-box">
+            <h3>My Members</h3>
+            <p><b>Email:</b> {userEmail}</p>
+            <p><b>First Name:</b> {userFirstName}</p>
+            <p><b>Last Name:</b> {userLastName}</p>
           </div>
 
-          {/* Search Filter */}
+          {/* SEARCH — preserved */}
           <div className="user-select" style={{ marginBottom: "15px" }}>
             <h3>Search</h3>
-            <input
-              type="text"
-              placeholder="Search"
-              value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
-              style={{  boxSizing: "border-box",width: "100%", padding: "8px", borderRadius: "6px", border: "1px solid #ccc", overflow: "hidden" }}
-            />
+            <TextField
+                          fullWidth
+                          size="small"
+                          placeholder="Search"
+                          value={searchText}
+                          onChange={(e) => setSearchText(e.target.value)}
+                        />
           </div>
 
-          {/* Team Filter */}
           <div className="user-select">
             <h3>Select Team</h3>
             <Select
@@ -261,7 +283,6 @@ export default function LeadTeam() {
             </Select>
           </div>
 
-          {/* Training Filter */}
           <div className="user-select" style={{ marginTop: "15px" }}>
             <h3>Select Training</h3>
             <Select
@@ -285,30 +306,6 @@ export default function LeadTeam() {
             columns={trainingColumns}
             autoHeight
             pageSize={10}
-            // getRowClassName={(params) => {
-            //   const due = params.row.due_date
-            //     ? new Date(params.row.due_date)
-            //     : null;
-
-            //   if (
-            //     due &&
-            //     !isNaN(due.getTime()) &&
-            //     params.row.ut_status !== "Completed" &&
-            //     due < today
-            //   )
-            //     return "row-overdue";
-
-            //   if (params.row.ut_status === "Pending") return "row-pending";
-
-            //   if (params.row.ut_status === "Completed") return "row-completed";
-
-            //   return "";
-            // }}
-            // sx={{
-            //   "& .row-overdue": { backgroundColor: "#ffcccc !important" },
-            //   "& .row-pending": { backgroundColor: "#fff3cd !important" },
-            //   "& .row-completed": { backgroundColor: "#d4edda !important" },
-            // }}
           />
         </div>
       </div>

@@ -165,55 +165,7 @@ getTrainingTeams: (req, res) => {
       res.json(result);
     });
   },
-  /*
-  changePassword: async (req, res) => {
-    const { user_id, currentPassword, newPassword } = req.body;
 
-    if (!user_id || !currentPassword || !newPassword) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    try {
-      // 1️⃣ Get existing password from DB
-      const sql = `SELECT user_password FROM user_member WHERE user_id = ?`;
-      db.query(sql, [user_id], async (err, result) => {
-        if (err) {
-          console.error("DB Error:", err);
-          return res.status(500).json({ error: "Database error" });
-        }
-
-        if (result.length === 0) {
-          return res.status(404).json({ error: "User not found" });
-        }
-
-        const hashedPassword = result[0].user_password;
-
-        // 2️⃣ Verify current password
-        const isMatch = await bcrypt.compare(currentPassword, hashedPassword);
-        if (!isMatch) {
-          return res.status(401).json({ error: "Current password is incorrect" });
-        }
-
-        // 3️⃣ Hash new password
-        const newHashedPassword = await bcrypt.hash(newPassword, 10);
-
-        // 4️⃣ Update password in DB
-        const updateSql = `UPDATE user_member SET user_password = ? WHERE user_id = ?`;
-        db.query(updateSql, [newHashedPassword, user_id], (updateErr) => {
-          if (updateErr) {
-            console.error("DB Update Error:", updateErr);
-            return res.status(500).json({ error: "Failed to update password" });
-          }
-
-          res.json({ message: "Password updated successfully" });
-        });
-      });
-    } catch (error) {
-      console.error("Error in changePassword:", error);
-      res.status(500).json({ error: "Internal server error" });
-    }
-  },
-*/
 changePassword: async (req, res) => {
   const { user_id, currentPassword, newPassword } = req.body;
 

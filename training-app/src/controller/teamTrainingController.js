@@ -159,7 +159,7 @@ addTeamToTraining: (req, res) => {
             now,         // ut_assigndate
             null,        // ut_completedate
             team_id,
-            due_date     // NEW — assign same due_date to users
+            due_date     // assign same due_date to users
           ]);
 
           const sqlInsertUserTraining = `

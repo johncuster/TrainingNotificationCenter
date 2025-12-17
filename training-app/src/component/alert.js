@@ -8,16 +8,10 @@ if (!container) {
   document.body.appendChild(container);
 }
 
-/**
- * Show a right-side alert popup
- * @param {string} message - The alert message
- * @param {string} type - Optional type ('success', 'error', 'info')
- */
 export function showAlert(message, type = 'info') {
   const alert = document.createElement('div');
-  alert.className = `alert-popup ${type}`; // use CSS class for type styling
+  alert.className = `alert-popup ${type}`;
 
-  // Optional: add icons per type
   let icon = '';
   switch(type) {
     case 'success':
@@ -38,14 +32,13 @@ export function showAlert(message, type = 'info') {
     <span class="close-btn">&times;</span>
   `;
 
-  // Close button functionality
   alert.querySelector('.close-btn').addEventListener('click', () => {
     container.removeChild(alert);
   });
 
   container.appendChild(alert);
 
-  // Auto-remove after 4 seconds
+  // Remove alert after a while
   setTimeout(() => {
     if (container.contains(alert)) alert.remove();
   }, 4000);

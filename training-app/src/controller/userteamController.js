@@ -20,7 +20,6 @@ const userteamController = {
       return res.status(400).json({ error: "Missing team_id or user_id" });
     }
 
-    // Start transaction
     db.beginTransaction(err => {
       if (err) return res.status(500).json({ error: "Database transaction error" });
 
