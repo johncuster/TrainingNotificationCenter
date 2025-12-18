@@ -1,8 +1,6 @@
-// CreateTeamModal.jsx
 import React, { useState } from "react";
 import { Modal, Box, Button, TextField } from "@mui/material";
 import { showAlert } from "../component/alert"; 
-
 const modalStyle = {
   position: "absolute",
   top: "50%",

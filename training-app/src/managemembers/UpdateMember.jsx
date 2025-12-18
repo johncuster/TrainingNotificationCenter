@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-//import "./memberFormStyle.css";
 import {
   Dialog,
   DialogTitle,
@@ -27,17 +26,15 @@ const UpdateMember = ({ isOpen, onClose, onSubmit, initialData }) => {
     setFormData({ ...formData, [name]: value });
   };
 
-  // Fetch available teams when modal opens
   useEffect(() => {
     if (isOpen) {
-      fetch("http://localhost:8081/team") // your endpoint for all teams
+      fetch("http://localhost:8081/team") 
         .then((res) => res.json())
         .then((teams) => setAvailableTeams(Array.isArray(teams) ? teams : []))
         .catch((err) => console.error("Failed to fetch teams:", err));
     }
   }, [isOpen]);
 
-  // Populate form with initial data
   useEffect(() => {
     if (initialData) {
       setFormData({
@@ -84,73 +81,6 @@ const UpdateMember = ({ isOpen, onClose, onSubmit, initialData }) => {
                 <Button variant="contained" onClick={handleSubmit}>Create</Button>
               </DialogActions>
             </Dialog>
-    // <div className="modal-overlay" onClick={onClose}>
-    //   <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-    //     <button className="close-btn" onClick={onClose}>
-    //       &times;
-    //     </button>
-    //     <h2>Edit Member</h2>
-
-    //     <form onSubmit={handleSubmit} className="create-form">
-    //       <label>
-    //         Last Name:<br />
-    //         <input
-    //           className="text-input"
-    //           type="text"
-    //           name="user_ln"
-    //           value={formData.user_ln}
-    //           onChange={handleChange}
-    //           required
-    //         />
-    //       </label>
-
-    //       <label>
-    //         First Name:<br />
-    //         <input
-    //           className="text-input"
-    //           type="text"
-    //           name="user_fn"
-    //           value={formData.user_fn}
-    //           onChange={handleChange}
-    //           required
-    //         />
-    //       </label>
-
-    //       <label>
-    //         User Role:<br />
-    //         <select
-    //           className="text-input"
-    //           name="user_role"
-    //           value={formData.user_role}
-    //           onChange={handleChange}
-    //           required
-    //         >
-    //           <option value="member">member</option>
-    //           <option value="lead">lead</option>
-    //         </select>
-    //       </label>
-
-    //       <label>
-    //         Email:<br />
-    //         <input
-    //           className="text-input"
-    //           type="email"
-    //           name="user_email"
-    //           value={formData.user_email}
-    //           onChange={handleChange}
-    //           required
-    //         />
-    //       </label>
-
-    //       <br />
-    //       <div className="modal-buttons">
-    //         <button type="submit" className="create-btn">
-    //           Update
-    //         </button>
-    //       </div>
-    //     </form>
-    //   </div>
-    // </div>
   );
 };
 

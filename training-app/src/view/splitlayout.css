@@ -1,22 +1,22 @@
-body{
+body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-/* trainingLayout.css */
+
 .container-layout {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); 
+  grid-template-columns: repeat(2, 1fr);
   gap: 24px;
   padding-right: 50px;
   padding-left: 50px;
   min-height: 100vh;
-  align-items: start;  
-  grid-auto-rows: auto; 
+  align-items: start;
+  grid-auto-rows: auto;
   background: #f5f5f5;
   padding-top: 25px;
 }
 
 .left-panel {
-  /* flex: 1; */
+
   grid-column: 1;
   min-width: 45%;
   background-color: white;
@@ -29,17 +29,18 @@ body{
 .right-panel {
   grid-column: 2;
   min-width: 45%;
-  background-color: white; 
+  background-color: white;
   padding: 10px;
   margin-top: 10px;
   max-height: fit-content;
   box-sizing: border-box;
 }
 
-.left-panel, .right-panel {
-  height: auto;           /* ✅ Natural height */
+.left-panel,
+.right-panel {
+  height: auto;
   align-self: start;
   display: inline-block;
   border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }

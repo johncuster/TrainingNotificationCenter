@@ -18,7 +18,7 @@ const trainingController = {
     db.query(trainingQueries.createTraining, [training_title, training_desc, training_link], (err, result) => {
       console.log("SQL :", training_title, training_desc, training_link);
       if (err) {
-        console.error("DB Error:", err.sqlMessage || err); // show what failed
+        console.error("DB Error:", err.sqlMessage || err); 
         return res.status(500).json({ error: err });
       }
       console.log("Created Training4");

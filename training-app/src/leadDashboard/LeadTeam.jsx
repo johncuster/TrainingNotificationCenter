@@ -1,6 +1,16 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { MenuItem, Select, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Link,
+} from "@mui/material";
+import { showAlert } from "../component/alert"; 
 import "../view/userlayout.css";
 
 export default function LeadTeam() {
@@ -10,6 +20,8 @@ export default function LeadTeam() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [selectedTraining, setSelectedTraining] = useState("ALL");
   const [searchText, setSearchText] = useState("");
+  const [openTraining, setOpenTraining] = useState(false);
+  const [selectedTrainingRow, setSelectedTrainingRow] = useState(null);
 
   const userEmail = localStorage.getItem("user_email") || "Email";
   const userId = localStorage.getItem("user_id");
@@ -29,10 +41,7 @@ export default function LeadTeam() {
       .then((rows) => {
         const grouped = {};
 
-        rows
-          // 🔴 CHANGE #1
-          // Remove members that do NOT have an assigned training
-          .filter(
+        rows.filter(
             (row) =>
               row.usertraining_id != null &&
               row.training_title != null
@@ -49,60 +58,44 @@ export default function LeadTeam() {
       );
   }, [userId]);
 
-  const saveUpdate = (row) => {
-    return fetch(
-      `http://localhost:8081/user_training/update/${row.usertraining_id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ut_status: row.ut_status,
-          usertraining_id: row.usertraining_id,
-        }),
-      }
-    ).then((res) => res.json());
-  };
-
-  const handleSaveAll = async () => {
+  const markComplete = async (row) => {
     try {
-      const allRows = Object.values(data).flat();
-      await Promise.all(allRows.map((row) => saveUpdate(row)));
-      alert("Saved successfully!");
+      const res = await fetch(
+        `http://localhost:8081/user_training/update/${row.usertraining_id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ut_status: "Completed",
+            usertraining_id: row.usertraining_id,
+          }),
+        }
+      );
+
+      if (!res.ok) throw new Error("Failed to update");
+      const teamName = row.team_name;
+      setData((prevData) => {
+        const updatedTeamRows = prevData[teamName].map((r) =>
+          r.usertraining_id === row.usertraining_id
+            ? {
+                ...r,
+                ut_status: "Completed",
+                ut_completedate: new Date().toISOString(),
+              }
+            : r
+        );
+        return { ...prevData, [teamName]: updatedTeamRows };
+      });
+
+      showAlert("Training marked as Completed", "success");
     } catch (err) {
       console.error(err);
-      alert("Failed to save.");
+      showAlert("Failed to mark as Completed", "error");
     }
   };
 
-  const getTrainingProgress = () => {
-    const rows =
-      selectedTraining === "ALL"
-        ? selectedTeam === "ALL"
-          ? Object.values(data).flat()
-          : data[selectedTeam] || []
-        : selectedTeam === "ALL"
-        ? Object.values(data)
-            .flat()
-            .filter((r) => r.training_title === selectedTraining)
-        : (data[selectedTeam] || []).filter(
-            (r) => r.training_title === selectedTraining
-          );
-
-    const totalMembers = rows.length;
-    const completedMembers = rows.filter(
-      (r) => r.ut_status === "Completed"
-    ).length;
-
-    const progressPercent =
-      totalMembers === 0
-        ? 0
-        : Math.round((completedMembers / totalMembers) * 100);
-
-    return { totalMembers, completedMembers, progressPercent };
-  };
-
   const trainingColumns = [
-    { field: "team_name", headerName: "Team", flex: 2 },
+    { field: "team_name", headerName: "Team", width: 120 },
     { field: "user_fn", headerName: "First Name", flex: 2 },
     { field: "user_ln", headerName: "Last Name", flex: 2 },
     { field: "training_title", headerName: "Training Title", flex: 2 },
@@ -113,7 +106,7 @@ export default function LeadTeam() {
       headerName: "Status",
       width: 150,
       renderCell: (params) => {
-        const status = params.row.ut_status;
+        const status = params.row.ut_status || "Pending";
         const isOverdue =
           params.row.due_date &&
           new Date(params.row.due_date) < new Date() &&
@@ -129,13 +122,46 @@ export default function LeadTeam() {
           <div
             style={{
               width: "100%",
-              padding: "5px 8px",
+              padding: "2px 4px",
               borderRadius: "6px",
-              textAlign: "center",
               backgroundColor: bgColor,
             }}
           >
-            {status}
+          <Select
+            value={status}
+            disabled={params.row.ut_completedate != null}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            fullWidth
+            size="small"
+            style={{ backgroundColor: "transparent" }}
+            onChange={(e) => {
+              const newValue = e.target.value;
+
+              if (newValue === "Completed") {
+                if (
+                  window.confirm(
+                    `Mark "${params.row.training_title}" as Completed? This cannot be undone.`
+                  )
+                ) {
+                  markComplete(params.row); 
+                }
+              } else {
+                const teamName = params.row.team_name;
+                setData((prevData) => {
+                  const updatedTeamRows = prevData[teamName].map((row) =>
+                    row.usertraining_id === params.row.usertraining_id
+                      ? { ...row, ut_status: newValue }
+                      : row
+                  );
+                  return { ...prevData, [teamName]: updatedTeamRows };
+                });
+              }
+            }}
+          >
+            <MenuItem value="Pending">Pending</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+          </Select>
           </div>
         );
       },
@@ -175,13 +201,10 @@ export default function LeadTeam() {
     );
   }
 
-  // 🔴 CHANGE #2
-  // Final safety filter so members without training NEVER reach the grid
   filteredRows = filteredRows.filter(
     (r) => r.usertraining_id != null && r.training_title != null
   );
 
-  // Search filter (UNCHANGED)
   if (searchText.trim() !== "") {
     filteredRows = filteredRows.filter((r) =>
       [r.user_fn, r.user_ln, r.training_title, r.training_desc, r.ut_status]
@@ -220,26 +243,26 @@ export default function LeadTeam() {
   return (
     <div className="dashboard-container">
       <div className="kpi-container">
-        <div className="kpi-card" onClick={() => setStatusFilter("ALL")}>
+        <div style={{cursor: "pointer"}} className="kpi-card" onClick={() => setStatusFilter("ALL")}>
           Total Trainings: {KPIs.total}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#f796a5ff" }}
+          style={{ background: "#f796a5ff", cursor: "pointer" }}
           onClick={() => setStatusFilter("Overdue")}
         >
           Overdue: {KPIs.overdue}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#9bf8c5ff" }}
+          style={{ background: "#9bf8c5ff", cursor: "pointer" }}
           onClick={() => setStatusFilter("Completed")}
         >
           Completed: {KPIs.completed}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#eff7b8ff" }}
+          style={{ background: "#eff7b8ff", cursor: "pointer" }}
           onClick={() => setStatusFilter("Pending")}
         >
           Pending: {KPIs.pending}
@@ -253,9 +276,9 @@ export default function LeadTeam() {
             <p><b>Email:</b> {userEmail}</p>
             <p><b>First Name:</b> {userFirstName}</p>
             <p><b>Last Name:</b> {userLastName}</p>
+            <p><b>Team Lead of</b> {teams.map(team => team.team_name).join(", ")}</p>
           </div>
 
-          {/* SEARCH — preserved */}
           <div className="user-select" style={{ marginBottom: "15px" }}>
             <h3>Search</h3>
             <TextField
@@ -306,9 +329,59 @@ export default function LeadTeam() {
             columns={trainingColumns}
             autoHeight
             pageSize={10}
+            onRowDoubleClick={(params) => {
+              setSelectedTrainingRow(params.row);
+              setOpenTraining(true);
+            }}
           />
         </div>
       </div>
+        <Dialog
+          open={openTraining}
+          onClose={() => setOpenTraining(false)}
+          maxWidth="md"
+          fullWidth
+        >
+        <DialogTitle>Training Details</DialogTitle>
+
+        <DialogContent dividers>
+          {selectedTrainingRow && (
+            <>
+              <Typography variant="h6" gutterBottom>
+                {selectedTrainingRow.training_title}
+              </Typography>
+
+              <Typography
+                variant="body1"
+                style={{ whiteSpace: "pre-wrap", marginBottom: "16px" }}
+              >
+                
+              </Typography>
+
+              <Typography
+                variant="body1"
+                style={{ whiteSpace: "pre-wrap", marginBottom: "16px" }}
+              >
+                {selectedTrainingRow.training_desc}
+              </Typography>
+
+              {selectedTrainingRow.training_link && (
+                <Link
+                  href={selectedTrainingRow.training_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {selectedTrainingRow.training_link}
+                </Link>
+              )}
+            </>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setOpenTraining(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

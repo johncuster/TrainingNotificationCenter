@@ -21,13 +21,11 @@ export default function TeamTable({ teams = [], onSelectTeam, refreshTeams }) {
     if (!window.confirm(`Delete the selected team?`)) return;
 
     try {
-      // DELETE request to backend
       const res = await fetch(`http://localhost:8081/team/${Number(selection[0])}`, {
         method: "DELETE",
       });
       if (!res.ok) throw new Error("Delete failed");
 
-      // Clear selection and refresh parent
       setSelection([]);
       onSelectTeam(null);
       if (refreshTeams) await refreshTeams();

@@ -1,12 +1,8 @@
   import React from "react";
-  import "./App.css";
   import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-  //components
   import AdminNavbar from "./component/AdminNavbar";
   import IsNavBar from "./component/IsNavBar.jsx";
 
-  //pages
   import MemberPage from "./managemembers/MemberPage.jsx";
   import Login from "./login/Login.jsx";
   import LeadDashboard from "./leadDashboard/LeadDashboard.jsx";
@@ -16,8 +12,8 @@
   import TrainingPage from "./managetraining/TrainingPage.jsx";
   import MemberDashboard from "./memberDashboard/MemberDashboard.jsx";
 
-  import { AuthProvider } from "./AuthContext";
-  import ProtectedRoute from "./ProtectedRoute";
+  import { AuthProvider } from "./component/AuthContext.jsx";
+  import ProtectedRoute from "./component/ProtectedRoute.js";
   import Signup from "./login/SignUp.jsx";
   
 

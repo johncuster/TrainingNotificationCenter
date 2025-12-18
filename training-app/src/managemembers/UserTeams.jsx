@@ -18,13 +18,11 @@ export default function UserTeams({ userId, userRole, onLeadUpdate }) {
   useEffect(() => {
     if (!userId) return;
 
-    // Fetch teams the user belongs to
     fetch(`http://localhost:8081/team/user/${userId}`)
       .then((res) => res.json())
       .then((data) => setTeams(Array.isArray(data) ? data : []))
       .catch(console.error);
 
-    // Fetch teams the user leads
     fetch(`http://localhost:8081/team_lead/${userId}`)
       .then((res) => res.json())
       .then((data) =>
@@ -55,7 +53,6 @@ export default function UserTeams({ userId, userRole, onLeadUpdate }) {
         Teams
       </Typography>
 
-      {/* No Teams */}
       {teams.length === 0 ? (
         <Typography variant="body2" color="text.secondary">
           This user is not assigned to any teams.

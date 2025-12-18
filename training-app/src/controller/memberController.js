@@ -16,15 +16,11 @@ const memberController = {
   createMember: async (req, res) => {
   console.log("Create member request received");
 
-  // Default password
   const defaultPassword = '@Analytics123';
   const { user_ln, user_fn, user_role, user_email } = req.body;
 
   try {
-    // 1️⃣ Hash the default password
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
-
-    // 2️⃣ Insert the new member into the database
     const insertQuery = `
       INSERT INTO user_member 
       (user_ln, user_fn, user_role, user_email, user_password)
@@ -84,7 +80,6 @@ const memberController = {
   const userId = req.params.user_id;
   console.log("Deleting user with ID:", userId);
 
-  // Array of deletion queries
   const queries = [
   "DELETE FROM team_lead WHERE user_id = ?",
   "DELETE FROM user_training WHERE user_id = ?",
@@ -92,7 +87,6 @@ const memberController = {
   "DELETE FROM user_member WHERE user_id = ?"
 ];
 
-  // Function to run queries sequentially
   const runQuery = (index) => {
     if (index >= queries.length) {
       console.log("All deletions complete");
@@ -181,7 +175,6 @@ changePassword: async (req, res) => {
 
       const hashedPassword = result[0].user_password;
 
-      // If current password is NULL in DB, skip verification
       if (hashedPassword && currentPassword) {
         const isMatch = await bcrypt.compare(currentPassword, hashedPassword);
         if (!isMatch) {
@@ -189,7 +182,6 @@ changePassword: async (req, res) => {
         }
       }
 
-      // Hash new password
       const newHashedPassword = await bcrypt.hash(newPassword, 10);
       const updateSql = `UPDATE user_member SET user_password = ? WHERE user_id = ?`;
 

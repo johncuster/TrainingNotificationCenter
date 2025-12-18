@@ -12,7 +12,6 @@ const authController = {
 
   const { user_email, user_password } = req.body;
 
-  // ✅ Validate input
   if (!user_email || !user_password) {
     return res.status(400).json({ error: "Username and password are required" });
   }
@@ -27,7 +26,7 @@ const authController = {
 
     if (result.length === 0) {
       console.log("User not found:", user_email);
-      return res.status(401).json({ error: "Invalid username or password" }); // Generic error
+      return res.status(401).json({ error: "Invalid username or password" });
     }
 
     const user = result[0];
@@ -39,7 +38,7 @@ const authController = {
       console.log("Password valid?", validPass);
       if (!validPass) {
         console.log("Invalid password attempt for user:", user_email);
-        return res.status(401).json({ error: "Invalid username or password" }); // Generic error
+        return res.status(401).json({ error: "Invalid username or password" });
       }
 
       const token = jwt.sign(
@@ -50,7 +49,6 @@ const authController = {
 
       console.log(`User ${user_email} logged in successfully as ${user.user_role}`);
 
-      // ✅ Return user info and token
       return res.json({
         message: "Login successful",
         token,

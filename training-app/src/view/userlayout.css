@@ -1,29 +1,28 @@
-body{
+body {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-/* Container for the whole dashboard */
+
 .dashboard-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 equal columns = KPI reference */
-  gap: 20px; 
-  row-gap: 20px; /* space between KPI and panels */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  row-gap: 20px;
   padding-top: 30px;
   padding-left: 50px;
   padding-right: 50px;
   box-sizing: border-box;
   min-height: 100vh;
-  align-items: start;  
+  align-items: start;
   background: #f5f7fa;
-  grid-auto-rows: max-content; /* prevents rows from stretching */
+  grid-auto-rows: max-content;
 }
 
-/* KPI cards at top */
 .kpi-container {
-  grid-column: 1 / -1;      /* span all columns */
+  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  margin-bottom: 0;         /* remove unnecessary gap */
+  margin-bottom: 0;
 }
 
 .kpi-card {
@@ -34,17 +33,16 @@ body{
   font-size: 16px;
   font-weight: 600;
   color: #333;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-/* Layout wrapper for panels */
+
 .user-layout {
-  display: contents; /* allows children to follow grid columns directly */
+  display: contents;
 }
 
-/* LEFT PANEL */
 .user-left {
-  grid-column: 1 / 2; /* aligns with first KPI card */
+  grid-column: 1 / 2;
   min-width: 280px;
   max-height: fit-content;
   padding: 20px;
@@ -56,12 +54,11 @@ body{
   background-color: white;
   padding: 10px;
   border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
   font-size: 15px;
   max-height: fit-content;
 }
 
-/* USER INFO BOX inside left panel */
 .user-info-box {
   background-color: #ffffff;
   padding: 15px 20px;
@@ -83,22 +80,19 @@ body{
   color: #555;
 }
 
-/* RIGHT PANEL */
 .user-right {
-  grid-column: 2 / 5; /* aligns with last 3 KPI cards */
+  grid-column: 2 / 5;
   background: #ffffff;
   padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 3px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* TEAM SELECT DROPDOWN */
 .user-left .MuiSelect-root {
   margin-bottom: 20px;
   font-size: 12px;
 }
 
-/* SAVE BUTTON */
 .user-right .MuiButton-root {
   display: flex;
   margin-top: 15px;
@@ -106,24 +100,22 @@ body{
   justify-content: flex-end;
 }
 
-/* DataGrid styling */
 .user-left .MuiDataGrid-root,
 .user-right .MuiDataGrid-root {
   margin-top: 10px;
   border-radius: 10px;
 }
 
-/* Hover highlight for rows in DataGrid */
 .MuiDataGrid-row:hover {
   background-color: rgba(0, 123, 255, 0.05);
 }
 
-/* Optional: nicer scrollbars */
+
 .MuiDataGrid-virtualScroller::-webkit-scrollbar {
   width: 6px;
 }
 
 .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb {
-  background-color: rgba(0,0,0,0.2);
+  background-color: rgba(0, 0, 0, 0.2);
   border-radius: 3px;
 }

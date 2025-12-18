@@ -51,23 +51,16 @@ const IsNavBar = (props) => {
         <div>
             
         {showAdminNavBar == true && (<>
-            <div style={{background: "#22313B", height: "1px",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}>
-    
-                  </div>
-                  <AdminNavbar /></>)}
+            <div style={{background: "#22313B", height: "1px",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}></div>
+                <AdminNavbar /></>)}
 
         {showMemberNavBar == true && (<>
-            <div style={{background: "#22313B", height: "1px",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}>
-               
-            </div>
-            <MemberNavbar /></>)}
+            <div style={{background: "#22313B", height: "1px",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}></div>
+                <MemberNavbar /></>)}
 
         {showLeadNavBar == true && (<>
-            <div style={{background: "#22313B", height: "1px",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}>
-                
-            </div>
-            <LeadNavbar /></>)}
-        
+            <div style={{background: "#22313B", height: "1px",margin: 0, padding: 0, color: "white", paddingTop: 5, paddingBottom: 0.5, textAlign:"center", fontSize:10}}></div>
+                <LeadNavbar /></>)}
         </div>
     );
 }

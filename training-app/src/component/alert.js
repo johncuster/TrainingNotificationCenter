@@ -1,6 +1,5 @@
 import '../view/alert.css';
 
-// Create a container for alerts if it doesn't exist
 let container = document.querySelector('.alert-container');
 if (!container) {
   container = document.createElement('div');
@@ -38,7 +37,6 @@ export function showAlert(message, type = 'info') {
 
   container.appendChild(alert);
 
-  // Remove alert after a while
   setTimeout(() => {
     if (container.contains(alert)) alert.remove();
   }, 4000);

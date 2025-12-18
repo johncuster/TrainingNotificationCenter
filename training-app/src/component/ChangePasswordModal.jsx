@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { useAuth } from '../AuthContext';
+import { useAuth } from './AuthContext';
 import {
   Dialog,
   DialogTitle,
@@ -8,7 +8,6 @@ import {
   DialogActions,
   TextField,
   Button,
-  CircularProgress,
 } from '@mui/material';
 
 const ChangePasswordModal = ({ onClose }) => {
@@ -102,52 +101,6 @@ const ChangePasswordModal = ({ onClose }) => {
         </DialogActions>
       </form>
     </Dialog>
-    // <div className="modal-backdrop">
-    //   <div className="modal">
-    //     <h2>Change Password</h2>
-    //     <form onSubmit={handleSubmit} className="space-y-4">
-
-    //       <label>
-    //         Current Password
-    //         <input
-    //           type="password"
-    //           value={currentPassword}
-    //           onChange={(e) => setCurrentPassword(e.target.value)}
-    //           required
-    //         />
-    //       </label>
-
-    //       <label>
-    //         New Password
-    //         <input
-    //           type="password"
-    //           value={newPassword}
-    //           onChange={(e) => setNewPassword(e.target.value)}
-    //           required
-    //         />
-    //       </label>
-
-    //       <label>
-    //         Confirm New Password
-    //         <input
-    //           type="password"
-    //           value={confirmPassword}
-    //           onChange={(e) => setConfirmPassword(e.target.value)}
-    //           required
-    //         />
-    //       </label>
-
-    //       <div className="modal-buttons flex justify-end gap-2">
-    //         <button type="button" onClick={onClose} disabled={loading} className="px-4 py-2 bg-gray-300 rounded">
-    //           Cancel
-    //         </button>
-    //         <button type="submit" disabled={loading} className="px-4 py-2 bg-blue-600 text-white rounded">
-    //           {loading ? 'Saving...' : 'Save'}
-    //         </button>
-    //       </div>
-    //     </form>
-    //   </div>
-    // </div>
   );
 };
 

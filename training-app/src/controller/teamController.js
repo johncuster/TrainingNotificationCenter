@@ -66,7 +66,6 @@ const teamController = {
   const teamId = req.params.team_id;
   console.log("Deleting team with ID:", teamId);
 
-  // Queries in order: delete children first, then parent
   const queries = [
     "DELETE FROM team_training WHERE team_id = ?",
     "DELETE FROM team_lead WHERE team_id = ?",
@@ -74,7 +73,6 @@ const teamController = {
     "DELETE FROM team WHERE team_id = ?"
   ];
 
-  // Function to run queries sequentially
   const runQuery = (index) => {
     if (index >= queries.length) {
       console.log("All deletions complete");
@@ -116,7 +114,6 @@ const teamController = {
   });
   },
 
-  // GET: all teams a user belongs to
 getTeamsForUser: (req, res) => {
   const { user_id } = req.params;
 

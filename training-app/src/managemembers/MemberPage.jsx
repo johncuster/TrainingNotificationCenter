@@ -6,7 +6,7 @@ import UpdateMember from "./UpdateMember";
 import UserTeams from "./UserTeams";
 import { showAlert } from "../component/alert"; 
 import "../view/splitlayout.css";
-import "./memberLayout.css";
+import "../view/memberLayout.css";
 
 export default function MemberPage() {
   const [members, setMembers] = useState([]);
@@ -113,7 +113,6 @@ export default function MemberPage() {
     { field: "user_email", headerName: "Email", flex: 1 },
   ];
 
-  // ⭐ FILTER MEMBERS ACCORDING TO SEARCH
   const filteredMembers = members.filter((m) =>
     [m.user_fn, m.user_ln, m.user_email, m.user_role]
       .join(" ")
@@ -123,19 +122,14 @@ export default function MemberPage() {
 
   return (
     <div className="container-layout">
-
-      {/* LEFT PANEL */}
       <div className="left-panel">
         <h2>Members</h2>
-
-        {/* ⭐ BUTTONS LEFT + SEARCH RIGHT (same style as your example) */}
         <Stack
           direction="row"
           alignItems="center"
           justifyContent="space-between"
           sx={{ mb: 1 }}
         >
-          {/* Buttons on the left */}
           <Stack direction="row" spacing={2}>
             <Button variant="contained" onClick={() => setOpenCreate(true)}>
               Add Member
@@ -157,7 +151,6 @@ export default function MemberPage() {
             </Button>
           </Stack>
 
-          {/* Search on the right */}
           <TextField
             label="Search"
             variant="outlined"
@@ -168,7 +161,6 @@ export default function MemberPage() {
           />
         </Stack>
 
-        {/* DATA GRID */}
         <DataGrid
           rows={filteredMembers.map(m => ({ ...m, id: m.user_id }))}
           columns={columns}
@@ -178,103 +170,94 @@ export default function MemberPage() {
           autoHeight
         />
       </div>
-
-      {/* RIGHT PANEL */}
       <div className="right-panel">
-  {selectedMember ? (
-    <Box
-      sx={{
-        p: 3,
-        bgcolor: "white",
-        borderRadius: 2,
-        boxShadow: 2,
-        height: "100%",
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-      }}
-    >
-      {/* Header */}
-      <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
-        Member Details
-      </Typography>
-
-      {/* Member Info Card */}
-      <Box
-        sx={{
-          p: 2,
-          bgcolor: "grey.100",
-          borderRadius: 2,
-          boxShadow: "inset 0 0 4px rgba(0,0,0,0.1)",
-        }}
-      >
-        <Stack spacing={1.2}>
-          <Typography
-            variant="h5"
-            sx={{ fontWeight: 600, mb: 1 }}
+        {selectedMember ? (
+          <Box
+            sx={{
+              p: 3,
+              bgcolor: "white",
+              borderRadius: 2,
+              boxShadow: 2,
+              height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
           >
-            {selectedMember.user_fn} {selectedMember.user_ln}
-          </Typography>
+            <Typography variant="h5" sx={{ mb: 1, fontWeight: 600 }}>
+              Member Details
+            </Typography>
 
-          <Typography variant="body1">
-            <b>Role:</b> {selectedMember.user_role}
-          </Typography>
+            <Box
+              sx={{
+                p: 2,
+                bgcolor: "grey.100",
+                borderRadius: 2,
+                boxShadow: "inset 0 0 4px rgba(0,0,0,0.1)",
+              }}
+            >
+              <Stack spacing={1.2}>
+                <Typography
+                  variant="h5"
+                  sx={{ fontWeight: 600, mb: 1 }}
+                >
+                  {selectedMember.user_fn} {selectedMember.user_ln}
+                </Typography>
 
-          <Typography variant="body1">
-            <b>Email:</b> {selectedMember.user_email}
-          </Typography>
-        </Stack>
-      </Box>
+                <Typography variant="body1">
+                  <b>Role:</b> {selectedMember.user_role}
+                </Typography>
 
-      {/* UserTeams Component */}
-      <Box
-        sx={{
-          mt: 1,
-          p: 2,
-          borderRadius: 2,
-          border: "1px solid #ddd",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-        }}
-      >
-        <Typography
-          variant="h6"
-          sx={{ mb: 1.5, fontWeight: 600 }}
-        >
-          Team Assignments
-        </Typography>
+                <Typography variant="body1">
+                  <b>Email:</b> {selectedMember.user_email}
+                </Typography>
+              </Stack>
+            </Box>
+            <Box
+              sx={{
+                mt: 1,
+                p: 2,
+                borderRadius: 2,
+                border: "1px solid #ddd",
+                boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+              }}
+            >
+              <Typography
+                variant="h6"
+                sx={{ mb: 1.5, fontWeight: 600 }}
+              >
+                Team Assignments
+              </Typography>
 
-        <UserTeams
-          userId={selectedMember.user_id}
-          userRole={selectedMember.user_role}
-          onLeadUpdate={(updatedLeadTeams) =>
-            handleEditSubmit(selectedMember, updatedLeadTeams)
-          }
-        />
-      </Box>
-    </Box>
-  ) : (
-    /* When no member is selected */
-    <Box
-      sx={{
-        height: "100%",
-        p: 3,
-        bgcolor: "white",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        borderRadius: 2,
-        boxShadow: 2,
-      }}
-    >
-      <Typography variant="h5" color="text.secondary">
-        Select a Member
-      </Typography>
-    </Box>
-  )}
-</div>
+              <UserTeams
+                userId={selectedMember.user_id}
+                userRole={selectedMember.user_role}
+                onLeadUpdate={(updatedLeadTeams) =>
+                  handleEditSubmit(selectedMember, updatedLeadTeams)
+                }
+              />
+            </Box>
+          </Box>
+        ) : (
+          <Box
+            sx={{
+              height: "100%",
+              p: 3,
+              bgcolor: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: 2,
+              boxShadow: 2,
+            }}
+          >
+            <Typography variant="h5" color="text.secondary">
+              Select a Member
+            </Typography>
+          </Box>
+        )}
+      </div>
 
-
-      {/* MODALS */}
       <CreateMember
         isOpen={openCreate}
         onClose={() => setOpenCreate(false)}

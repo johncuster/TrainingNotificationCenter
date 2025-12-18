@@ -13,7 +13,7 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
 
   const [dueDates, setDueDates] = useState({}); 
     useEffect(() => {
-    setSelectedTeamId(null); // reset selection when training changes
+    setSelectedTeamId(null);
   }, [trainingId, teams]);
 
   const handleDelete = async () => {
@@ -30,7 +30,6 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
     }
   };
 
-  // Double-click handler to show members
   const handleRowDoubleClick = async (params) => {
     const teamId = params.row.team_id;
     const teamName = params.row.team_name;
@@ -47,25 +46,21 @@ export default function TrainingTeamTable({ trainingId, teams = [], allTeams = [
     }
   };
 
-  // New: handle date change
   const handleDateChange = (teamId, date) => {
     setDueDates(prev => ({ ...prev, [teamId]: date }));
   };
 
-  // New: save due date
   const saveDueDate = async (teamId) => {
     const selectedDate = dueDates[teamId];
     if (!selectedDate) return showAlert("Please select a due date", "info");
 
     try {
-      // Update team_training
       await fetch(`http://localhost:8081/team_training/due_date/${trainingId}/${teamId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ due_date: selectedDate })
       });
 
-      // Update user_training
       await fetch(`http://localhost:8081/user_training/due_date/${trainingId}/${teamId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

@@ -1,7 +1,6 @@
 import React from "react";
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-//import "../adminView/adminGlobal.css";  
 
 const MemberContainer = ({data, onSelectMember}) => {
   const [currentPage, setCurrentPage] = useState(1);s
@@ -28,26 +27,22 @@ const MemberContainer = ({data, onSelectMember}) => {
       user_email: "",
     });
 
-  //Data Filtering Logic
   const filteredData = data.filter((row) =>
     (!filters.user_id || row.user_id.toString().includes(filters.user_id)) &&
     (!filters.user_ln || row.user_ln?.toLowerCase().includes(filters.user_ln.toLowerCase()))
   );
 
-//Pagination Logic
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
 
-  //Handling Checkbox Selection Logic
   const handleCheckboxChange = (user_id) => {
     setSelectedRows((prev) =>
       prev.includes(user_id) ? prev.filter((rowId) => rowId !== user_id) : [...prev, user_id]
     );
   };
 
-  //If Select All is checked
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       const currentPageIds = currentRows.map((row) => row.user_id);

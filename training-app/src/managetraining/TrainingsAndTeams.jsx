@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import TrainingTable from "./TrainingTable";           // Left panel
-import TrainingTeamTable from "./TrainingTeamTable";   // Right panel
+import TrainingTable from "./TrainingTable";           
+import TrainingTeamTable from "./TrainingTeamTable";
 import "../view/splitlayout.css";
 
 export default function TrainingsAndTeams({ trainings, allTeams, refreshTrainings }) {
@@ -44,7 +44,7 @@ export default function TrainingsAndTeams({ trainings, allTeams, refreshTraining
 
       <div className="right-panel">
         <TrainingTeamTable
-          trainingId={selectedTraining?.training_id || null}  // can be null
+          trainingId={selectedTraining?.training_id || null}  
           teams={assignedTeams}
           allTeams={allTeams}
           refreshTeams={() => fetchAssignedTeams(selectedTraining?.training_id)}

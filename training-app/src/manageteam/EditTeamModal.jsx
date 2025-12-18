@@ -1,4 +1,3 @@
-// EditTeamModal.jsx
 import React, { useEffect, useState } from "react";
 import { Modal, Box, Button, TextField } from "@mui/material";
 import { showAlert } from "../component/alert"; 

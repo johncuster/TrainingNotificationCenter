@@ -1,8 +1,6 @@
-// controller/teamTrainingController.js
 const db = require('../db/db.js');
 
 const teamTrainingController = {
-
   getAllTeamTraining: (req, res) => {
   const sqlTeamTraining = `
     SELECT teamtraining_id, training_id, team_id
@@ -19,9 +17,8 @@ const teamTrainingController = {
       return res.json([]);
     }
 
-    let processed = 0; // counter to track completed syncs
+    let processed = 0; 
 
-    // Function to check if all items have been processed
     const checkDone = () => {
       processed++;
       if (processed === teamTrainings.length) {
@@ -61,7 +58,7 @@ const teamTrainingController = {
           const missingUsers = userIds.filter(uid => !existingIds.includes(uid));
 
           if (missingUsers.length === 0) {
-            return checkDone(); // all users already have training
+            return checkDone(); 
           }
 
           const now = new Date().toISOString().slice(0, 19).replace("T", " ");
@@ -116,7 +113,6 @@ addTeamToTraining: (req, res) => {
 
     console.log("team_training inserted/updated");
 
-    // Get all users in that team
     const sqlGetUsers = `SELECT user_id FROM user_team WHERE team_id = ?`;
 
     db.query(sqlGetUsers, [team_id], (err, users) => {
@@ -132,7 +128,6 @@ addTeamToTraining: (req, res) => {
       const userIds = users.map(u => u.user_id);
       const placeholders = userIds.map(() => '?').join(',');
 
-      // Check existing user_training entries
       const sqlCheckExisting = `
         SELECT user_id FROM user_training
         WHERE training_id = ? AND team_id = ? AND user_id IN (${placeholders})
@@ -150,7 +145,6 @@ addTeamToTraining: (req, res) => {
 
         const now = new Date().toISOString().slice(0, 19).replace("T", " ");
 
-        // Insert missing user_training rows
         if (newUsers.length > 0) {
           const insertValues = newUsers.map(uid => [
             uid,
@@ -177,8 +171,7 @@ addTeamToTraining: (req, res) => {
             console.log("Inserted new user_training rows");
           });
         }
-
-        // Update due_date for all existing user_training rows
+        
         const sqlUpdateExisting = `
           UPDATE user_training
           SET due_date = ?

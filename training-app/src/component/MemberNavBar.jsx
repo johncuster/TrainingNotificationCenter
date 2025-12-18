@@ -1,10 +1,9 @@
 import { useMatch, useResolvedPath, Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { useAuth } from '../AuthContext';
+import { useAuth } from './AuthContext';
 import ChangePasswordModal from './ChangePasswordModal';
 import { useState } from 'react';
 import logo from "../resources/infor-bgless.png";
-
 import '../view/navbar.css';
 
 const MemberNavBar = () => {
@@ -13,8 +12,8 @@ const MemberNavBar = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleLogout = () => {
-        logout();        // Clear localStorage & auth state
-        navigate('/login'); // Redirect to login page
+        logout();    
+        navigate('/login'); 
     };
     return (
         <header className="navbar-header">

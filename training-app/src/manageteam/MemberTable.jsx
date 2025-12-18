@@ -18,13 +18,9 @@ export default function MemberTable({ team }) {
   const [selectedMemberId, setSelectedMemberId] = useState(null);
   const [openAdd, setOpenAdd] = useState(false);
   const [searchText, setSearchText] = useState("");
-
-  // NEW STATES
   const [openTrainings, setOpenTrainings] = useState(false);
   const [memberTrainings, setMemberTrainings] = useState([]);
   const [selectedMemberName, setSelectedMemberName] = useState("");
-
-  // Function to load members and determine their display roles
   const loadMembers = async () => {
     if (!team) {
       setMembers([]);
@@ -84,27 +80,6 @@ export default function MemberTable({ team }) {
     }
   };
 
-  // NEW: Double-click handler → show trainings
-  const handleRowDoubleClick = async (params) => {
-    const userId = params.row.user_id;
-    const name = `${params.row.user_fn} ${params.row.user_ln}`;
-
-    try {
-      const res = await fetch(
-        `http://localhost:8081/user_training/member/${selectedMemberId}`
-      );
-      const data = await res.json();
-
-      setMemberTrainings(data);
-      setSelectedMemberName(name);
-      setOpenTrainings(true);
-    } catch (err) {
-      console.error("Failed to load member trainings:", err);
-      showAlert("Failed to load member trainings", "error");
-    }
-  };
-
-  // Filter members based on search text
   const filteredMembers = members.filter((m) =>
     [m.user_fn, m.user_ln, m.display_role]
       .join(" ")
@@ -114,7 +89,6 @@ export default function MemberTable({ team }) {
 
   return (
     <div>
-      {/* Header */}
       {!team && <h2>Members</h2>}
       {team && (
         <Stack
@@ -123,9 +97,6 @@ export default function MemberTable({ team }) {
           justifyContent="space-between"
           sx={{ mb: 0 }}
         >
-          {/* <Typography variant="h5">
-            Members of {team.team_name}
-          </Typography> */}
           <h2>{team.team_name} Members</h2>
           <Box
             sx={{
@@ -142,7 +113,6 @@ export default function MemberTable({ team }) {
         </Stack>
       )}
 
-      {/* Actions + Search */}
       <Stack
         direction="row"
         alignItems="center"
@@ -176,7 +146,6 @@ export default function MemberTable({ team }) {
         />
       </Stack>
 
-      {/* Members DataGrid */}
       <DataGrid
         rows={filteredMembers.map((m) => ({ ...m, id: m.user_id }))}
         columns={[
@@ -187,12 +156,9 @@ export default function MemberTable({ team }) {
         pageSize={10}
         rowsPerPageOptions={[5, 10, 20]}
         onRowClick={(params) => setSelectedMemberId(params.id)}
-        // onRowDoubleClick={handleRowDoubleClick}
         hideFooterSelectedRowCount
         localeText={{ noRowsLabel: team ? "No members" : "Select a team" }}
       />
-
-      {/* Add Member Modal */}
       {team && (
         <AddMemberModal
           open={openAdd}
@@ -204,8 +170,6 @@ export default function MemberTable({ team }) {
           }}
         />
       )}
-
-      {/* Trainings Dialog */}
       <Dialog
         open={openTrainings}
         onClose={() => setOpenTrainings(false)}

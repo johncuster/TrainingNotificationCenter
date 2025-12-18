@@ -9,7 +9,6 @@ const syncController = {
       return res.status(400).json({ error: "Missing team_id or training_id" });
     }
 
-    // Insert into team_training
     const insertTeamTraining = `
       INSERT IGNORE INTO team_training (team_id, training_id)
       VALUES (?, ?)
@@ -18,7 +17,6 @@ const syncController = {
     db.query(insertTeamTraining, [team_id, training_id], (err) => {
       if (err) return res.status(500).json({ error: err });
 
-      // Get all users in this team
       const getTeamUsers = `SELECT user_id FROM user_team WHERE team_id = ?`;
 
       db.query(getTeamUsers, [team_id], (err, users) => {

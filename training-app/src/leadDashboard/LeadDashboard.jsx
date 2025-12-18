@@ -1,6 +1,15 @@
 import { useState, useEffect } from "react";
 import { DataGrid } from "@mui/x-data-grid";
 import { MenuItem, Select, TextField } from "@mui/material";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+  Link,
+} from "@mui/material";
 import "../view/userlayout.css";
 import { showAlert } from "../component/alert"; 
 
@@ -15,20 +24,15 @@ export default function LeadDashboard() {
   const userId = localStorage.getItem("user_id");
   const userFirstName = localStorage.getItem("user_fn") || "FirstName";
   const userLastName = localStorage.getItem("user_ln") || "LastName";
+  const [openTraining, setOpenTraining] = useState(false);
+  const [selectedTrainingRow, setSelectedTrainingRow] = useState(null);
 
-  // ================================
-  // FETCH DATA
-  // ================================
   useEffect(() => {
     fetch(`http://localhost:8081/member/${userId}`)
       .then((res) => res.json())
       .then((rows) => {
         const grouped = {};
-
-        rows
-          // 🔴 CHANGE #1
-          // Filter out rows where no training is assigned
-          .filter(
+        rows.filter(
             (row) =>
               row.usertraining_id != null &&
               row.training_title != null
@@ -43,9 +47,6 @@ export default function LeadDashboard() {
       .catch((err) => console.error("Error fetching member data:", err));
   }, [userId]);
 
-  // ================================
-  // MARK COMPLETE
-  // ================================
   const markComplete = async (row) => {
     try {
       const res = await fetch(
@@ -61,9 +62,7 @@ export default function LeadDashboard() {
       );
 
       if (!res.ok) throw new Error("Failed to update");
-
       const teamName = row.team_name;
-
       setData((prevData) => {
         const updatedTeamRows = prevData[teamName].map((r) =>
           r.usertraining_id === row.usertraining_id
@@ -84,9 +83,6 @@ export default function LeadDashboard() {
     }
   };
 
-  // ================================
-  // KPI CALCULATIONS
-  // ================================
   const getKPIs = () => {
     const rows =
       selectedTeam === "ALL"
@@ -110,14 +106,36 @@ export default function LeadDashboard() {
 
   const KPIs = getKPIs();
 
-  // ================================
-  // DATA GRID COLUMNS
-  // ================================
   const trainingColumns = [
-    { field: "team_name", headerName: "Team", width: 150 },
-    { field: "training_title", headerName: "Training Title", flex: 1 },
+    { field: "team_name", headerName: "Team", width: 120 },
+    { field: "training_title", headerName: "Training Title", flex: 3 },
     { field: "training_desc", headerName: "Description", flex: 1 },
-    { field: "training_link", headerName: "Link", flex: 1 },
+    {
+      field: "training_link",
+      headerName: "Link",
+      flex: 1,
+      renderCell: (params) => {
+        const url = params.value;
+
+        if (!url) return null;
+
+        return (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              color: "#1976d2",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+          >
+            {url}
+          </a>
+        );
+      },
+    },
     {
       field: "ut_status",
       headerName: "Status",
@@ -144,42 +162,41 @@ export default function LeadDashboard() {
               backgroundColor: bgColor,
             }}
           >
-            <Select
-              value={status}
-              disabled={params.row.ut_completedate != null}
-              onClick={(e) => e.stopPropagation()}
-              onMouseDown={(e) => e.stopPropagation()}
-              fullWidth
-              size="small"
-              style={{ backgroundColor: "transparent" }}
-              onChange={(e) => {
-                const newValue = e.target.value;
+          <Select
+            value={status}
+            disabled={params.row.ut_completedate != null}
+            onClick={(e) => e.stopPropagation()}
+            onMouseDown={(e) => e.stopPropagation()}
+            fullWidth
+            size="small"
+            style={{ backgroundColor: "transparent" }}
+            onChange={(e) => {
+              const newValue = e.target.value;
 
-                if (newValue === "Completed") {
-                  if (
-                    window.confirm(
-                      `Mark "${params.row.training_title}" as Completed? This cannot be undone.`
-                    )
-                  ) {
-                    markComplete(params.row);
-                    window.location.reload();
-                  }
-                } else {
-                  const teamName = params.row.team_name;
-                  setData((prevData) => {
-                    const updatedTeamRows = prevData[teamName].map((row) =>
-                      row.usertraining_id === params.row.usertraining_id
-                        ? { ...row, ut_status: newValue }
-                        : row
-                    );
-                    return { ...prevData, [teamName]: updatedTeamRows };
-                  });
+              if (newValue === "Completed") {
+                if (
+                  window.confirm(
+                    `Mark "${params.row.training_title}" as Completed? This cannot be undone.`
+                  )
+                ) {
+                  markComplete(params.row);
                 }
-              }}
-            >
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Completed">Completed</MenuItem>
-            </Select>
+              } else {
+                const teamName = params.row.team_name;
+                setData((prevData) => {
+                  const updatedTeamRows = prevData[teamName].map((row) =>
+                    row.usertraining_id === params.row.usertraining_id
+                      ? { ...row, ut_status: newValue }
+                      : row
+                  );
+                  return { ...prevData, [teamName]: updatedTeamRows };
+                });
+              }
+            }}
+          >
+            <MenuItem value="Pending">Pending</MenuItem>
+            <MenuItem value="Completed">Completed</MenuItem>
+          </Select>
           </div>
         );
       },
@@ -189,9 +206,6 @@ export default function LeadDashboard() {
     { field: "ut_completedate", headerName: "Completed", width: 150 },
   ];
 
-  // ================================
-  // FILTERING LOGIC
-  // ================================
   const allRows = Object.values(data).flat();
   const trainingTitles = Array.from(
     new Set(allRows.map((r) => r.training_title))
@@ -230,40 +244,37 @@ export default function LeadDashboard() {
     );
   }
 
-  // 🔴 CHANGE #2
   rows = rows.filter(
     (r) => r.usertraining_id != null && r.training_title != null
   );
 
   rows = rows.map((row, i) => ({ ...row, id: i }));
 
-  // ================================
-  // RENDER
-  // ================================
   return (
     <div className="dashboard-container">
       <div className="kpi-container">
-        <div className="kpi-card" onClick={() => setStatusFilter("ALL")}>
+        <div style={{ cursor: "pointer" }} className="kpi-card" onClick={() => setStatusFilter("ALL")}>
           Total Trainings: {KPIs.total}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#f796a5ff" }}
+          style={{ background: "#f796a5ff", cursor: "pointer" }}
           onClick={() => setStatusFilter("Overdue")}
         >
           Overdue: {KPIs.overdue}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#9bf8c5ff" }}
+          style={{ background: "#9bf8c5ff", cursor: "pointer" }}
           onClick={() => setStatusFilter("Completed")}
         >
           Completed: {KPIs.completed}
         </div>
         <div
           className="kpi-card"
-          style={{ background: "#eff7b8ff" }}
+          style={{ background: "#eff7b8ff", cursor: "pointer"  }}
           onClick={() => setStatusFilter("Pending")}
+         
         >
           Pending: {KPIs.pending}
         </div>
@@ -278,7 +289,6 @@ export default function LeadDashboard() {
             <p><b>Last Name:</b> {userLastName}</p>
           </div>
 
-          {/* 🔴 RESTORED SEARCH (nothing else changed) */}
           <div className="user-select" style={{ marginBottom: "15px" }}>
             <h3>Search</h3>
             <TextField
@@ -335,9 +345,52 @@ export default function LeadDashboard() {
             columns={trainingColumns}
             autoHeight
             pageSize={10}
+            onRowDoubleClick={(params) => {
+              setSelectedTrainingRow(params.row);
+              setOpenTraining(true);
+            }}
           />
         </div>
       </div>
+      <Dialog
+        open={openTraining}
+        onClose={() => setOpenTraining(false)}
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle>Training Details</DialogTitle>
+
+        <DialogContent dividers>
+          {selectedTrainingRow && (
+            <>
+              <Typography variant="h6" gutterBottom>
+                {selectedTrainingRow.training_title}
+              </Typography>
+
+              <Typography
+                variant="body1"
+                style={{ whiteSpace: "pre-wrap", marginBottom: "16px" }}
+              >
+                {selectedTrainingRow.training_desc}
+              </Typography>
+
+              {selectedTrainingRow.training_link && (
+                <Link
+                  href={selectedTrainingRow.training_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {selectedTrainingRow.training_link}
+                </Link>
+              )}
+            </>
+          )}
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setOpenTraining(false)}>Close</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

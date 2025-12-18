@@ -105,21 +105,19 @@ body{
 
 }
 
-/* Modal backdrop to darken the background */
 .modal-backdrop {
-    position: fixed;          /* Sit on top of everything */
+    position: fixed;          
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    background-color: rgba(0, 0, 0, 0.5); 
     display: flex;
-    justify-content: center;  /* Center horizontally */
-    align-items: center;      /* Center vertically */
-    z-index: 1000;            /* High value to appear above everything */
+    justify-content: center; 
+    align-items: center;      
+    z-index: 1000;           
 }
 
-/* Modal box */
 .modal-backdrop .modal {
     background: #fff;
     padding: 2rem;
@@ -128,11 +126,10 @@ body{
     max-width: 400px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
     position: relative;
-    z-index: 1001;            /* Ensure it’s above the backdrop */
-    animation: popIn 0.2s ease-out; /* Optional pop animation */
+    z-index: 1001;           
+    animation: popIn 0.2s ease-out;
 }
 
-/* Pop-in animation */
 @keyframes popIn {
     0% {
         transform: scale(0.8);
@@ -144,7 +141,6 @@ body{
     }
 }
 
-/* Inputs and buttons inside modal */
 .modal-backdrop .modal label {
     display: block;
     margin-bottom: 1rem;

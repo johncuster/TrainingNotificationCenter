@@ -124,13 +124,12 @@ const userTrainingController = {
   },
   getKpi: (req, res) => {
     const { userId } = req.params;
-    const { team } = req.query; // ?team=XYZ (optional)
+    const { team } = req.query; 
 
     if (!userId) {
       return res.status(400).json({ error: "Missing userId" });
     }
 
-    // Base SQL
     let sql = `
       SELECT 
         ut_status,
@@ -142,7 +141,6 @@ const userTrainingController = {
     
     const params = [userId];
 
-    // Optional filter by team
     if (team && team !== "ALL") {
       sql += " AND team_name = ?";
       params.push(team);

@@ -1,4 +1,3 @@
-// TeamsAndMembers.jsx
 import React, { useState } from "react";
 import TeamTable from "./TeamTable";
 import MemberTable from "./MemberTable";
@@ -12,8 +11,8 @@ export default function TeamsAndMembers({ teams, refreshTeams }) {
       <div className="left-panel">
         <TeamTable
           teams={teams}
-          onSelectTeam={setSelectedTeam}    // gets team object or null
-          refreshTeams={refreshTeams}      // to call after create/edit/delete
+          onSelectTeam={setSelectedTeam}  
+          refreshTeams={refreshTeams}    
         />
       </div>
 
