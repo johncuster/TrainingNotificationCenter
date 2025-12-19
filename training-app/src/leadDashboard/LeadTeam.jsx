@@ -163,7 +163,7 @@ export default function LeadTeam() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          gap: 0.5, // space between bar and text
+          gap: 0.3, // space between bar and text
         }}>
         
           <LinearProgress
