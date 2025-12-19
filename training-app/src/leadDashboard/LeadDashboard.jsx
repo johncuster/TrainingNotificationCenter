@@ -108,7 +108,7 @@ export default function LeadDashboard() {
 
   const trainingColumns = [
     { field: "team_name", headerName: "Team", width: 120 },
-    { field: "training_title", headerName: "Training Title", flex: 3 },
+    { field: "training_title", headerName: "Training Title", flex: 2 },
     { field: "training_desc", headerName: "Description", flex: 1 },
     {
       field: "training_link",
@@ -283,7 +283,7 @@ export default function LeadDashboard() {
       <div className="user-layout">
         <div className="user-left">
           <div className="user-info-box">
-            <h3>My Trainings</h3>
+            <h3>Information:</h3>
             <p><b>Email:</b> {userEmail}</p>
             <p><b>First Name:</b> {userFirstName}</p>
             <p><b>Last Name:</b> {userLastName}</p>

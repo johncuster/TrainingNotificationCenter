@@ -284,7 +284,7 @@ export default function MemberDashboard() {
       <div className="user-layout">
         <div className="user-left">
           <div className="user-info-box">
-            <h3>My Trainings</h3>
+            <h3>Information:</h3>
             <p><b>Email:</b> {userEmail}</p>
             <p><b>First Name:</b> {userFirstName}</p>
             <p><b>Last Name:</b> {userLastName}</p>

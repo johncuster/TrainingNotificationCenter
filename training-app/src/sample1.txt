@@ -1,0 +1,276 @@
+import { useState, useEffect, useMemo } from "react";
+import { DataGrid } from "@mui/x-data-grid";
+import { MenuItem, Select, TextField } from "@mui/material";
+import "../view/userlayout.css";
+import { showAlert } from "../component/alert";
+
+export default function LeadTeam() {
+  const [rawData, setRawData] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [selectedTeam, setSelectedTeam] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [searchText, setSearchText] = useState("");
+  const [selectedTraining, setSelectedTraining] = useState(null);
+
+  const userId = localStorage.getItem("user_id");
+  const userEmail = localStorage.getItem("user_email");
+  const userFirstName = localStorage.getItem("user_fn");
+  const userLastName = localStorage.getItem("user_ln");
+
+  /* ---------------- FETCH TEAMS ---------------- */
+  useEffect(() => {
+    fetch(`http://localhost:8081/team_lead/${userId}`)
+      .then((res) => res.json())
+      .then(setTeams)
+      .catch(console.error);
+  }, [userId]);
+
+  /* ---------------- FETCH MEMBERS ---------------- */
+  useEffect(() => {
+    fetch(`http://localhost:8081/team_training/lead/${userId}/members`)
+      .then((res) => res.json())
+      .then((rows) =>
+        setRawData(rows.filter(r => r.usertraining_id && r.training_title))
+      )
+      .catch(console.error);
+  }, [userId]);
+
+  /* ---------------- UPDATE STATUS ---------------- */
+  const markComplete = async (row) => {
+    try {
+      const res = await fetch(
+        `http://localhost:8081/user_training/update/${row.usertraining_id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ut_status: "Completed",
+            usertraining_id: row.usertraining_id,
+          }),
+        }
+      );
+
+      if (!res.ok) throw new Error();
+
+      setRawData((prev) =>
+        prev.map((r) =>
+          r.usertraining_id === row.usertraining_id
+            ? { ...r, ut_status: "Completed", ut_completedate: new Date().toISOString() }
+            : r
+        )
+      );
+
+      showAlert("Training marked as Completed", "success");
+    } catch {
+      showAlert("Failed to mark as Completed", "error");
+    }
+  };
+
+  /* ---------------- TRAINING SUMMARY ---------------- */
+  const trainings = useMemo(() => {
+    const grouped = {};
+    rawData.forEach((r) => {
+      if (!grouped[r.training_title]) grouped[r.training_title] = [];
+      grouped[r.training_title].push(r);
+    });
+
+    return Object.entries(grouped).map(([title, members], i) => {
+      const completed = members.filter(m => m.ut_status === "Completed").length;
+      return {
+        id: i,
+        training_title: title,
+        progress: Math.round((completed / members.length) * 100),
+        members
+      };
+    });
+  }, [rawData]);
+
+  /* ---------------- FILTER MEMBERS ---------------- */
+  const today = new Date();
+
+  const filteredMembers = useMemo(() => {
+    if (!selectedTraining) return [];
+
+    let rows = [...selectedTraining.members];
+
+    if (selectedTeam !== "ALL") {
+      rows = rows.filter(r => r.team_name === selectedTeam);
+    }
+
+    if (statusFilter === "Overdue") {
+      rows = rows.filter(
+        r => r.due_date && new Date(r.due_date) < today && r.ut_status !== "Completed"
+      );
+    } else if (statusFilter === "Completed") {
+      rows = rows.filter(r => r.ut_status === "Completed");
+    } else if (statusFilter === "Pending") {
+      rows = rows.filter(r => r.ut_status === "Pending");
+    }
+
+    if (searchText.trim()) {
+      rows = rows.filter(r =>
+        [r.user_fn, r.user_ln, r.team_name, r.ut_status]
+          .join(" ").toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    return rows.map((r, i) => ({ ...r, id: i }));
+  }, [selectedTraining, selectedTeam, statusFilter, searchText]);
+
+  /* ---------------- KPI ---------------- */
+  const KPIs = {
+    total: filteredMembers.length,
+    completed: filteredMembers.filter(r => r.ut_status === "Completed").length,
+    pending: filteredMembers.filter(r => r.ut_status === "Pending").length,
+    overdue: filteredMembers.filter(
+      r => r.due_date && new Date(r.due_date) < today && r.ut_status !== "Completed"
+    ).length
+  };
+
+  /* ---------------- COLUMNS ---------------- */
+  const trainingColumns = [
+    { field: "training_title", headerName: "Training Title", flex: 2 },
+    {
+      field: "progress",
+      headerName: "Progress (%)",
+      width: 130,
+      renderCell: (p) => (
+        <strong style={{
+          color: p.value === 100 ? "#2e7d32" : p.value >= 50 ? "#ed6c02" : "#d32f2f"
+        }}>
+          {p.value} %
+        </strong>
+      )
+    }
+  ];
+
+  const memberColumns = [
+    { field: "team_name", headerName: "Team", width: 120 },
+    { field: "user_ln", headerName: "Last Name", flex: 1 },
+    { field: "user_fn", headerName: "First Name", flex: 1 },
+    {
+      field: "ut_status",
+      headerName: "Status",
+      width: 150,
+      renderCell: (params) => {
+        const status = params.row.ut_status || "Pending";
+        const isOverdue =
+          params.row.due_date &&
+          new Date(params.row.due_date) < today &&
+          status !== "Completed";
+
+        let bg = "transparent";
+        if (isOverdue) bg = "#f796a5ff";
+        else if (status === "Pending") bg = "#eff7b8ff";
+        else if (status === "Completed") bg = "#9bf8c5ff";
+
+        return (
+          <div style={{
+            width: "100%",
+            borderRadius: 6,
+            backgroundColor: bg
+          }}>
+            <Select
+              value={status}
+              size="small"
+              fullWidth
+              disabled={params.row.ut_completedate != null}
+              onClick={(e) => e.stopPropagation()}
+              onMouseDown={(e) => e.stopPropagation()}
+              onChange={(e) => {
+                if (e.target.value === "Completed") {
+                  if (window.confirm(
+                    `Mark "${params.row.training_title}" as Completed? This cannot be undone.`
+                  )) {
+                    markComplete(params.row);
+                  }
+                }
+              }}
+            >
+              <MenuItem value="Pending">Pending</MenuItem>
+              <MenuItem value="Completed">Completed</MenuItem>
+            </Select>
+          </div>
+        );
+      }
+    },
+    { field: "due_date", headerName: "Due Date", width: 110 }
+  ];
+
+  return (
+    <div className="dashboard-container">
+      {/* ---------------- KPI ---------------- */}
+      <div className="kpi-container">
+        <div className="kpi-card" onClick={() => setStatusFilter("ALL")}>
+          Total: {KPIs.total}
+        </div>
+        <div className="kpi-card" style={{ background: "#f796a5ff" }}
+          onClick={() => setStatusFilter("Overdue")}>
+          Overdue: {KPIs.overdue}
+        </div>
+        <div className="kpi-card" style={{ background: "#9bf8c5ff" }}
+          onClick={() => setStatusFilter("Completed")}>
+          Completed: {KPIs.completed}
+        </div>
+        <div className="kpi-card" style={{ background: "#eff7b8ff" }}
+          onClick={() => setStatusFilter("Pending")}>
+          Pending: {KPIs.pending}
+        </div>
+      </div>
+
+      <div className="user-layout">
+        {/* ---------------- LEFT ---------------- */}
+        <div className="user-left">
+          <div className="user-info-box">
+            <h3>My Members</h3>
+            <p><b>Email:</b> {userEmail}</p>
+            <p><b>First Name:</b> {userFirstName}</p>
+            <p><b>Last Name:</b> {userLastName}</p>
+            <p><b>Team Lead of:</b> {teams.map(t => t.team_name).join(", ")}</p>
+          </div>
+
+          <div className="user-select">
+            <h3>Select Team</h3>
+            <Select fullWidth value={selectedTeam}
+              onChange={(e) => setSelectedTeam(e.target.value)}>
+              <MenuItem value="ALL">All Teams</MenuItem>
+              {teams.map(t => (
+                <MenuItem key={t.team_id} value={t.team_name}>{t.team_name}</MenuItem>
+              ))}
+            </Select>
+          </div>
+
+          <div className="user-select" style={{ marginTop: 15 }}>
+            <h3>Trainings</h3>
+            <DataGrid
+              rows={trainings}
+              columns={trainingColumns}
+              autoHeight
+              pageSize={8}
+              onRowClick={(p) => setSelectedTraining(p.row)}
+            />
+          </div>
+        </div>
+
+        {/* ---------------- RIGHT ---------------- */}
+        <div className="user-right">
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Search members"
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            sx={{ mb: 1 }}
+          />
+
+          <DataGrid
+            rows={filteredMembers}
+            columns={memberColumns}
+            autoHeight
+            pageSize={10}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
